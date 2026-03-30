@@ -57,23 +57,15 @@ except Exception as e:
 async function main() {
   loadEnv();
 
-  // 获取最新的备份文件
-  const backupDir = join(process.cwd(), '.backups');
-  const fs = require('fs');
-  const files = fs.readdirSync(backupDir)
-    .filter((f: string) => f.startsWith('backup-') && f.endsWith('.json'))
-    .sort()
-    .reverse();
-
-  if (files.length === 0) {
-    console.error('No backup files found in .backups/');
+  // 使用固定的生产备份文件
+  const backupFile = join(process.cwd(), 'scripts/production-backup.json');
+  
+  if (!existsSync(backupFile)) {
+    console.error('Backup file not found: scripts/production-backup.json');
     process.exit(1);
   }
-
-  const latestBackup = files[0];
-  const backupFile = join(backupDir, latestBackup);
   
-  console.log(`Using backup file: ${latestBackup}`);
+  console.log(`Using backup file: scripts/production-backup.json`);
   console.log('');
 
   // 读取备份数据
