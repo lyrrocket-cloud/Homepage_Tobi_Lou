@@ -13,60 +13,108 @@ interface ChinaMapProps {
 const CHINA_MAP_URL = 'https://raw.githubusercontent.com/waylau/svg-china-map/master/china-map/china.geo.json';
 const CHINA_MAP_BACKUP = 'https://geo.datav.aliyun.com/areas_v3/bound/100000_full.json';
 
-// 省份代码到数据库 ID 的映射（根据数据库中的实际ID）
-// 数据库中的省份 ID 从 100 开始
+// 省份代码到数据库 ID 的映射（备份数据源格式）
 const provinceCodeToId: Record<string, number> = {
+  '110000': 100, '120000': 101, '310000': 108, '500000': 121,
+  '130000': 102, '140000': 103, '150000': 104,
+  '210000': 105, '220000': 106, '230000': 107,
+  '320000': 109, '330000': 110, '340000': 111, '350000': 112, '360000': 113, '370000': 114,
+  '410000': 115, '420000': 116, '430000': 117,
+  '440000': 118, '450000': 119, '460000': 120,
+  '510000': 122, '520000': 123, '530000': 124, '540000': 125,
+  '610000': 126, '620000': 127, '630000': 128, '640000': 129, '650000': 130,
+  '710000': 131, '810000': 132, '820000': 133,
+};
+
+// 省份名称到数据库 ID 的映射（主数据源格式）
+// 数据库中的省份 ID 从 100 开始
+const provinceNameToId: Record<string, number> = {
   // 直辖市
-  '110000': 100,  // 北京
-  '120000': 101,  // 天津
-  '310000': 108,  // 上海
-  '500000': 121,  // 重庆
+  '北京': 100,
+  '北京市': 100,
+  '天津': 101,
+  '天津市': 101,
+  '上海': 108,
+  '上海市': 108,
+  '重庆': 121,
+  '重庆市': 121,
   
   // 华北地区
-  '130000': 102,  // 河北
-  '140000': 103,  // 山西
-  '150000': 104,  // 内蒙古
+  '河北': 102,
+  '河北省': 102,
+  '山西': 103,
+  '山西省': 103,
+  '内蒙古': 104,
+  '内蒙古自治区': 104,
   
   // 东北地区
-  '210000': 105,  // 辽宁
-  '220000': 106,  // 吉林
-  '230000': 107,  // 黑龙江
+  '辽宁': 105,
+  '辽宁省': 105,
+  '吉林': 106,
+  '吉林省': 106,
+  '黑龙江': 107,
+  '黑龙江省': 107,
   
   // 华东地区
-  '320000': 109,  // 江苏
-  '330000': 110,  // 浙江
-  '340000': 111,  // 安徽
-  '350000': 112,  // 福建
-  '360000': 113,  // 江西
-  '370000': 114,  // 山东
+  '江苏': 109,
+  '江苏省': 109,
+  '浙江': 110,
+  '浙江省': 110,
+  '安徽': 111,
+  '安徽省': 111,
+  '福建': 112,
+  '福建省': 112,
+  '江西': 113,
+  '江西省': 113,
+  '山东': 114,
+  '山东省': 114,
   
   // 华中地区
-  '410000': 115,  // 河南
-  '420000': 116,  // 湖北
-  '430000': 117,  // 湖南
+  '河南': 115,
+  '河南省': 115,
+  '湖北': 116,
+  '湖北省': 116,
+  '湖南': 117,
+  '湖南省': 117,
   
   // 华南地区
-  '440000': 118,  // 广东
-  '450000': 119,  // 广西
-  '460000': 120,  // 海南
+  '广东': 118,
+  '广东省': 118,
+  '广西': 119,
+  '广西壮族自治区': 119,
+  '海南': 120,
+  '海南省': 120,
   
   // 西南地区
-  '510000': 122,  // 四川
-  '520000': 123,  // 贵州
-  '530000': 124,  // 云南
-  '540000': 125,  // 西藏
+  '四川': 122,
+  '四川省': 122,
+  '贵州': 123,
+  '贵州省': 123,
+  '云南': 124,
+  '云南省': 124,
+  '西藏': 125,
+  '西藏自治区': 125,
   
   // 西北地区
-  '610000': 126,  // 陕西
-  '620000': 127,  // 甘肃
-  '630000': 128,  // 青海
-  '640000': 129,  // 宁夏
-  '650000': 130,  // 新疆
+  '陕西': 126,
+  '陕西省': 126,
+  '甘肃': 127,
+  '甘肃省': 127,
+  '青海': 128,
+  '青海省': 128,
+  '宁夏': 129,
+  '宁夏回族自治区': 129,
+  '新疆': 130,
+  '新疆维吾尔自治区': 130,
+  '新疆维吾尔族自治区': 130,
   
   // 港澳台
-  '710000': 131,  // 台湾
-  '810000': 132,  // 香港
-  '820000': 133,  // 澳门
+  '台湾': 131,
+  '台湾省': 131,
+  '香港': 132,
+  '香港特别行政区': 132,
+  '澳门': 133,
+  '澳门特别行政区': 133,
 };
 
 export function ChinaMap({ onRegionClick, selectedRegion, visitedRegions = new Set() }: ChinaMapProps) {
@@ -119,14 +167,25 @@ export function ChinaMap({ onRegionClick, selectedRegion, visitedRegions = new S
   };
 
   const getRegionId = (geo: any): number => {
-    const code = getProvinceCode(geo);
-    const mappedId = provinceCodeToId[code];
-    if (mappedId) {
-      return mappedId;
+    // 首先尝试使用省份名称映射
+    const name = getProvinceName(geo);
+    const mappedById = provinceNameToId[name];
+    if (mappedById) {
+      return mappedById;
     }
-    // 如果没有映射，尝试直接转换
-    const parsedId = parseInt(code);
-    return isNaN(parsedId) ? 0 : parsedId;
+    
+    // 如果名称映射失败，尝试使用 adcode（备用数据源格式）
+    const code = geo.properties.adcode?.toString() ||
+                 geo.properties.id?.toString() ||
+                 geo.properties.code?.toString() || '';
+    
+    if (code && provinceCodeToId[code]) {
+      return provinceCodeToId[code];
+    }
+    
+    // 如果都没有映射，返回 0
+    console.log('[ChinaMap] No mapping for name:', name, 'code:', code);
+    return 0;
   };
 
   const handleMouseEnter = (geo: any, event: React.MouseEvent) => {
@@ -206,6 +265,7 @@ export function ChinaMap({ onRegionClick, selectedRegion, visitedRegions = new S
                         strokeWidth: 0.5,
                         outline: 'none',
                         transition: 'all 0.3s ease',
+                        cursor: 'pointer',
                       },
                       hover: {
                         fill: '#CEA472',
@@ -221,6 +281,7 @@ export function ChinaMap({ onRegionClick, selectedRegion, visitedRegions = new S
                         stroke: '#CEA472',
                         strokeWidth: 1.5,
                         outline: 'none',
+                        cursor: 'pointer',
                       },
                     }}
                   />
