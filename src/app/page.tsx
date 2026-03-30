@@ -53,7 +53,7 @@ import { Region } from '@/app/api/regions/route';
 const ChinaMap = dynamic(() => import('@/components/china-map').then(mod => ({ default: mod.ChinaMap })), {
   ssr: false,
   loading: () => (
-    <div className="w-full aspect-[4/3] min-h-[300px] max-h-[480px] bg-black/40 backdrop-blur-md rounded-lg border border-[#CEA472]/20 flex items-center justify-center">
+    <div className="w-full aspect-[4/3] min-h-[280px] md:min-h-[400px] lg:min-h-[500px] bg-black/40 backdrop-blur-md rounded-lg border border-[#CEA472]/20 flex items-center justify-center">
       <div className="animate-spin rounded-full h-12 w-12 border-2 border-[#CEA472] border-t-transparent"></div>
     </div>
   )
@@ -392,7 +392,7 @@ function VisitTracker() {
       {/* 左右分栏布局 */}
       <div className="flex flex-col lg:flex-row gap-6 items-start">
         {/* 左侧：响应式地图 */}
-        <div className="flex-shrink-0 w-full lg:w-auto lg:max-w-[640px]">
+        <div className="flex-1 w-full">
           <ChinaMap
             selectedRegion={selectedRegion}
             visitedRegions={visitedRegions}
@@ -400,8 +400,8 @@ function VisitTracker() {
           />
         </div>
 
-        {/* 右侧：打卡记录列表 - 与地图等高，可滚动 */}
-        <div className="flex-1 w-full lg:w-auto h-[300px] lg:h-[480px] overflow-y-auto">
+        {/* 右侧：打卡记录列表 - 固定宽度，可滚动 */}
+        <div className="w-full lg:w-[320px] flex-shrink-0 h-[300px] lg:h-auto lg:max-h-[500px] overflow-y-auto">
           <VisitList
             regionId={selectedRegion?.id || null}
             regionName={selectedRegion?.name || ''}
