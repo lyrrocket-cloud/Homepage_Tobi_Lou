@@ -1,0 +1,7 @@
+#!/bin/bash
+set -e
+
+echo "📦 Installing dependencies..."
+pnpm install
+
+echo "✅ Dependencies installed!"
