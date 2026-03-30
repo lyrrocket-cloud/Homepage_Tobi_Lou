@@ -641,19 +641,20 @@ export default function Home() {
             <h3 className="text-4xl font-bold text-[#CEA472]">
               照片集
             </h3>
-            {/* 管理按钮 */}
-            <PhotoManager 
-              photos={photos} 
-              onPhotosUpdate={(updatedPhotos) => setPhotos(updatedPhotos)} 
-            />
-            {/* 回顶端按钮 */}
-            <button
-              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-              className="ml-auto p-2 rounded-full bg-black/40 border border-[#CEA472]/20 hover:border-[#CEA472]/50 hover:bg-black/60 transition-all"
-              title="回到顶端"
-            >
-              <ArrowUp className="w-5 h-5 text-[#CEA472]" />
-            </button>
+            {/* 管理按钮和回顶端按钮放在右侧 */}
+            <div className="ml-auto flex items-center gap-2">
+              <PhotoManager 
+                photos={photos} 
+                onPhotosUpdate={(updatedPhotos) => setPhotos(updatedPhotos)} 
+              />
+              <button
+                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                className="p-2 rounded-full bg-black/40 border border-[#CEA472]/20 hover:border-[#CEA472]/50 hover:bg-black/60 transition-all"
+                title="回到顶端"
+              >
+                <ArrowUp className="w-5 h-5 text-[#CEA472]" />
+              </button>
+            </div>
           </div>
 
           {/* 照片网格 */}
@@ -723,19 +724,20 @@ export default function Home() {
             <h3 className="text-4xl font-bold text-[#CEA472]">
               视频集
             </h3>
-            {/* 视频管理按钮 */}
-            <VideoManager 
-              videos={videos} 
-              onVideosUpdate={(updatedVideos) => setVideos(updatedVideos)} 
-            />
-            {/* 回顶端按钮 */}
-            <button
-              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-              className="ml-auto p-2 rounded-full bg-black/40 border border-[#CEA472]/20 hover:border-[#CEA472]/50 hover:bg-black/60 transition-all"
-              title="回到顶端"
-            >
-              <ArrowUp className="w-5 h-5 text-[#CEA472]" />
-            </button>
+            {/* 管理按钮和回顶端按钮放在右侧 */}
+            <div className="ml-auto flex items-center gap-2">
+              <VideoManager 
+                videos={videos} 
+                onVideosUpdate={(updatedVideos) => setVideos(updatedVideos)} 
+              />
+              <button
+                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                className="p-2 rounded-full bg-black/40 border border-[#CEA472]/20 hover:border-[#CEA472]/50 hover:bg-black/60 transition-all"
+                title="回到顶端"
+              >
+                <ArrowUp className="w-5 h-5 text-[#CEA472]" />
+              </button>
+            </div>
           </div>
 
           {/* 视频网格 */}
@@ -814,19 +816,20 @@ export default function Home() {
             <h3 className="text-4xl font-bold text-[#CEA472]">
               工具箱
             </h3>
-            {/* 工具箱管理按钮 */}
-            <ToolManager 
-              tools={tools} 
-              onToolsUpdate={(updatedTools) => setTools(updatedTools)} 
-            />
-            {/* 回顶端按钮 */}
-            <button
-              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-              className="ml-auto p-2 rounded-full bg-black/40 border border-[#CEA472]/20 hover:border-[#CEA472]/50 hover:bg-black/60 transition-all"
-              title="回到顶端"
-            >
-              <ArrowUp className="w-5 h-5 text-[#CEA472]" />
-            </button>
+            {/* 管理按钮和回顶端按钮放在右侧 */}
+            <div className="ml-auto flex items-center gap-2">
+              <ToolManager 
+                tools={tools} 
+                onToolsUpdate={(updatedTools) => setTools(updatedTools)} 
+              />
+              <button
+                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                className="p-2 rounded-full bg-black/40 border border-[#CEA472]/20 hover:border-[#CEA472]/50 hover:bg-black/60 transition-all"
+                title="回到顶端"
+              >
+                <ArrowUp className="w-5 h-5 text-[#CEA472]" />
+              </button>
+            </div>
           </div>
 
           {/* 工具网格 */}
