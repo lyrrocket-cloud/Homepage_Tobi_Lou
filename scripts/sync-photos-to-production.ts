@@ -93,7 +93,7 @@ async function main() {
       console.log('  正在上传到生产环境...');
       
       const formData = new FormData();
-      const blob = new Blob([fileBuffer], { type: 'image/jpeg' });
+      const blob = new Blob([new Uint8Array(fileBuffer)], { type: 'image/jpeg' });
       formData.append('file', blob, photo.image);
       formData.append('password', PASSWORD);
 
