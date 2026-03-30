@@ -98,13 +98,15 @@ export default function PhotoGallery() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const editFileInputRef = useRef<HTMLInputElement>(null);
 
-  // 加载地区数据
+  // 加载地区数据（只加载中国省份一级）
   const loadRegions = async () => {
     try {
-      const response = await fetch('/api/regions?withChildren=true');
+      const response = await fetch('/api/regions?type=china');
       const data = await response.json();
       if (data.success && data.data) {
-        setRegions(data.data);
+        // 只保留省一级（parent_id 为 null）
+        const provinces = data.data.filter((r: Region) => !r.parentId);
+        setRegions(provinces);
       }
     } catch (error) {
       console.error('加载地区失败:', error);
@@ -423,20 +425,13 @@ export default function PhotoGallery() {
     return photo.region?.name || '未知地点';
   };
 
-  // 渲染地区选择器选项
-  const renderRegionOptions = (regionList: Region[], level: number = 0): React.ReactNode[] => {
-    const options: React.ReactNode[] = [];
-    regionList.forEach(region => {
-      options.push(
-        <option key={region.id} value={region.id}>
-          {'　'.repeat(level)}{region.name}
-        </option>
-      );
-      if (region.children && region.children.length > 0) {
-        options.push(...renderRegionOptions(region.children, level + 1));
-      }
-    });
-    return options;
+  // 渲染地区选择器选项（只显示省份）
+  const renderRegionOptions = (regionList: Region[]): React.ReactNode[] => {
+    return regionList.map(region => (
+      <option key={region.id} value={region.id}>
+        {region.name}
+      </option>
+    ));
   };
 
   return (
