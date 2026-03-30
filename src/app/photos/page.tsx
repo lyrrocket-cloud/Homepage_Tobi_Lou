@@ -422,15 +422,13 @@ export default function PhotoGallery() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 {/* 返回主页按钮 */}
-                <a
-                  href="https://96vw3m4rvp.coze.site"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <button
+                  onClick={() => window.location.href = '/'}
                   className="p-1.5 rounded-md text-[#CEA472] hover:bg-white/5 transition-colors"
                   title="返回主页"
                 >
                   <Home className="w-5 h-5" />
-                </a>
+                </button>
                 {/* 分隔符 */}
                 <span className="text-[#CEA472]/30">|</span>
                 {/* 标题 */}
