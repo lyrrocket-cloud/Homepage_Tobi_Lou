@@ -36,14 +36,14 @@ interface DbPhoto {
   updated_at: string | null;
 }
 
-// 默认照片数据（9张）- 使用本地静态图片
+// 默认照片数据（9张）
 const defaultPhotos: Photo[] = [
   {
     id: 1,
     title: '元阳梯田',
     location: '中国云南',
     date: '2026.01',
-    image: '/assets/yunnan-025.jpg',
+    image: 'photos/yunnan-025.jpg',
     url: 'https://lyrrocket.quickconnect.cn/mo/sharing/TVaRw7iRq',
     order: 1,
   },
@@ -52,7 +52,7 @@ const defaultPhotos: Photo[] = [
     title: '新天鹅堡',
     location: '德国',
     date: '2025.12',
-    image: '/assets/germany-031.jpg',
+    image: 'photos/germany-031.jpg',
     url: 'https://lyrrocket.quickconnect.cn/mo/sharing/a9FuKhqcd',
     order: 2,
   },
@@ -61,7 +61,7 @@ const defaultPhotos: Photo[] = [
     title: '马特洪峰',
     location: '欧洲',
     date: '2025.10',
-    image: '/assets/europe-053.jpg',
+    image: 'photos/europe-053.jpg',
     url: 'https://lyrrocket.quickconnect.cn/mo/sharing/t2SsMNSu8',
     order: 3,
   },
@@ -70,7 +70,7 @@ const defaultPhotos: Photo[] = [
     title: '武功山',
     location: '中国江西',
     date: '2025.09',
-    image: '/assets/jiangxi-032.jpg',
+    image: 'photos/jiangxi-032.jpg',
     url: 'https://lyrrocket.quickconnect.cn/mo/sharing/36y3K2gm1',
     order: 4,
   },
@@ -79,7 +79,7 @@ const defaultPhotos: Photo[] = [
     title: '国清寺',
     location: '中国浙江',
     date: '2025.07',
-    image: '/assets/zhejiang-003.jpg',
+    image: 'photos/zhejiang-003.jpg',
     url: 'https://lyrrocket.quickconnect.cn/mo/sharing/ghF4s7F9D',
     order: 5,
   },
@@ -88,35 +88,35 @@ const defaultPhotos: Photo[] = [
     title: '千户苗寨',
     location: '中国贵州',
     date: '2025.05',
-    image: '/assets/guizhou-036.jpg',
+    image: 'photos/guizhou-036.jpg',
     url: 'https://lyrrocket.quickconnect.cn/mo/sharing/1ylcTSRaI',
     order: 6,
   },
   {
     id: 7,
-    title: '桂林山水',
-    location: '中国广西',
-    date: '2025.01',
-    image: '/assets/guizhou-036.jpg',
-    url: 'https://lyrrocket.quickconnect.cn/mo/sharing/7rStU2vWx',
+    title: '稻城亚丁',
+    location: '中国四川',
+    date: '2025.03',
+    image: 'photos/sichuan-042.jpg',
+    url: 'https://lyrrocket.quickconnect.cn/mo/sharing/3kLmN9oPq',
     order: 7,
   },
   {
     id: 8,
-    title: '张家界',
-    location: '中国湖南',
-    date: '2024.12',
-    image: '/assets/jiangxi-032.jpg',
-    url: 'https://lyrrocket.quickconnect.cn/mo/sharing/4yVwM1nZx',
+    title: '桂林山水',
+    location: '中国广西',
+    date: '2025.01',
+    image: 'photos/guangxi-058.jpg',
+    url: 'https://lyrrocket.quickconnect.cn/mo/sharing/7rStU2vWx',
     order: 8,
   },
   {
     id: 9,
-    title: '稻城亚丁',
-    location: '中国四川',
-    date: '2025.03',
-    image: '/assets/yunnan-025.jpg',
-    url: 'https://lyrrocket.quickconnect.cn/mo/sharing/3kLmN9oPq',
+    title: '张家界',
+    location: '中国湖南',
+    date: '2024.12',
+    image: 'photos/hunan-067.jpg',
+    url: 'https://lyrrocket.quickconnect.cn/mo/sharing/4yVwM1nZx',
     order: 9,
   },
 ];
@@ -206,15 +206,23 @@ export async function GET() {
 
     const photos = (data as DbPhoto[]).map(dbToPhoto);
     
-    // 为每张照片设置访问URL
-    const photosWithUrls = photos.map((photo) => {
-      // 如果是本地路径（以 /assets/ 开头），直接使用
-      if (photo.image.startsWith('/assets/')) {
-        return { ...photo, imageUrl: photo.image };
-      }
-      // 如果是对象存储路径，尝试生成签名URL
-      return { ...photo, imageUrl: photo.image };
-    });
+    // 为每张照片生成访问URL
+    const photosWithUrls = await Promise.all(
+      photos.map(async (photo) => {
+        try {
+          // 尝试从对象存储生成访问URL
+          const url = await storage.generatePresignedUrl({
+            key: photo.image,
+            expireTime: 86400, // 1天有效期
+          });
+          return { ...photo, imageUrl: url };
+        } catch (error) {
+          console.error(`[Photos API] Failed to generate URL for ${photo.image}:`, error);
+          // 如果对象存储中没有文件，返回本地路径
+          return { ...photo, imageUrl: `/assets/${photo.image.replace('photos/', '')}` };
+        }
+      })
+    );
 
     console.log('[Photos API] Returning', photosWithUrls.length, 'photos');
     return NextResponse.json({ success: true, data: photosWithUrls });
