@@ -33,7 +33,6 @@ import { PhotoManager } from '@/components/photo-manager';
 import { VideoManager } from '@/components/video-manager';
 import { ToolManager } from '@/components/tool-manager';
 import { OptimizedImage } from '@/components/OptimizedImage';
-import { RegionMap } from '@/components/visit-map';
 import { Photo } from '@/app/api/photos/route';
 import { Video as VideoType } from '@/app/api/videos/route';
 import { Tool } from '@/app/api/tools/route';
