@@ -7,6 +7,7 @@ interface ChinaMapProps {
   onRegionClick: (regionId: number, regionName: string) => void;
   selectedRegion?: { id: number; name: string } | null;
   visitedRegions?: Set<number>;
+  className?: string;
 }
 
 // 地图数据源
@@ -117,7 +118,7 @@ const provinceNameToId: Record<string, number> = {
   '澳门特别行政区': 133,
 };
 
-export function ChinaMap({ onRegionClick, selectedRegion, visitedRegions = new Set() }: ChinaMapProps) {
+export function ChinaMap({ onRegionClick, selectedRegion, visitedRegions = new Set(), className = '' }: ChinaMapProps) {
   const [mapData, setMapData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -208,7 +209,7 @@ export function ChinaMap({ onRegionClick, selectedRegion, visitedRegions = new S
 
   if (loading) {
     return (
-      <div className="w-[640px] h-[480px] bg-black/40 backdrop-blur-md rounded-lg border border-[#CEA472]/20 flex items-center justify-center">
+      <div className={`w-full aspect-[4/3] min-h-[300px] max-h-[480px] bg-black/40 backdrop-blur-md rounded-lg border border-[#CEA472]/20 flex items-center justify-center ${className}`}>
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-2 border-[#CEA472] border-t-transparent mx-auto mb-4"></div>
           <p className="text-white/60">加载地图中...</p>
@@ -219,7 +220,7 @@ export function ChinaMap({ onRegionClick, selectedRegion, visitedRegions = new S
 
   if (error || !mapData) {
     return (
-      <div className="w-[640px] h-[480px] bg-black/40 backdrop-blur-md rounded-lg border border-[#CEA472]/20 flex items-center justify-center">
+      <div className={`w-full aspect-[4/3] min-h-[300px] max-h-[480px] bg-black/40 backdrop-blur-md rounded-lg border border-[#CEA472]/20 flex items-center justify-center ${className}`}>
         <div className="text-center">
           <p className="text-white/60 mb-4">{error || '地图数据加载失败'}</p>
           <button
@@ -234,7 +235,7 @@ export function ChinaMap({ onRegionClick, selectedRegion, visitedRegions = new S
   }
 
   return (
-    <div className="relative w-[640px] h-[480px] bg-black/40 backdrop-blur-md rounded-lg border border-[#CEA472]/20 overflow-hidden select-none">
+    <div className={`relative w-full aspect-[4/3] min-h-[300px] max-h-[480px] bg-black/40 backdrop-blur-md rounded-lg border border-[#CEA472]/20 overflow-hidden select-none ${className}`}>
       <ComposableMap
         projection="geoMercator"
         projectionConfig={{

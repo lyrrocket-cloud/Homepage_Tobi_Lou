@@ -35,6 +35,7 @@ import {
   Gift,
   Settings,
   Lock,
+  RefreshCw,
 } from 'lucide-react';
 import { PhotoManager } from '@/components/photo-manager';
 import { VideoManager } from '@/components/video-manager';
@@ -52,7 +53,7 @@ import { Region } from '@/app/api/regions/route';
 const ChinaMap = dynamic(() => import('@/components/china-map').then(mod => ({ default: mod.ChinaMap })), {
   ssr: false,
   loading: () => (
-    <div className="w-[640px] h-[480px] bg-black/40 backdrop-blur-md rounded-lg border border-[#CEA472]/20 flex items-center justify-center">
+    <div className="w-full aspect-[4/3] min-h-[300px] max-h-[480px] bg-black/40 backdrop-blur-md rounded-lg border border-[#CEA472]/20 flex items-center justify-center">
       <div className="animate-spin rounded-full h-12 w-12 border-2 border-[#CEA472] border-t-transparent"></div>
     </div>
   )
@@ -390,19 +391,17 @@ function VisitTracker() {
 
       {/* 左右分栏布局 */}
       <div className="flex flex-col lg:flex-row gap-6 items-start">
-        {/* 左侧：固定大小的地图 */}
-        <div className={`flex-shrink-0 ${isMobile ? 'w-full' : ''}`}>
-          <div className={isMobile ? 'transform scale-75 origin-top-left' : ''}>
-            <ChinaMap
-              selectedRegion={selectedRegion}
-              visitedRegions={visitedRegions}
-              onRegionClick={handleRegionClick}
-            />
-          </div>
+        {/* 左侧：响应式地图 */}
+        <div className="flex-shrink-0 w-full lg:w-auto lg:max-w-[640px]">
+          <ChinaMap
+            selectedRegion={selectedRegion}
+            visitedRegions={visitedRegions}
+            onRegionClick={handleRegionClick}
+          />
         </div>
 
         {/* 右侧：打卡记录列表 - 与地图等高，可滚动 */}
-        <div className="flex-1 w-full lg:w-auto h-[500px] overflow-y-auto">
+        <div className="flex-1 w-full lg:w-auto h-[300px] lg:h-[480px] overflow-y-auto">
           <VisitList
             regionId={selectedRegion?.id || null}
             regionName={selectedRegion?.name || ''}
@@ -545,6 +544,15 @@ export default function Home() {
         <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/80 to-black/90" />
         <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-transparent to-black/60" />
       </div>
+
+      {/* 右上角同步图标 */}
+      <a
+        href="/admin/sync"
+        className="fixed top-4 right-4 z-50 p-2 bg-black/40 backdrop-blur-md rounded-full border border-[#CEA472]/20 hover:border-[#CEA472]/50 hover:bg-black/60 transition-all duration-300 group"
+        title="数据同步"
+      >
+        <RefreshCw className="w-5 h-5 text-[#CEA472]/70 group-hover:text-[#CEA472] transition-colors" />
+      </a>
 
       {/* Hero 区域 */}
       <section className="relative py-20 pt-32 px-4">
