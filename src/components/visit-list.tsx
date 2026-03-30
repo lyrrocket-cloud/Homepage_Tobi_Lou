@@ -12,6 +12,7 @@ interface PhotoVisit {
   date: string;
   year: number;
   image_url: string;
+  url?: string;
   category: string;
   region?: {
     id: number;
@@ -144,47 +145,48 @@ function VisitCard({ visit, showRegion = false }: VisitCardProps) {
     return `${year}年${month}月`;
   };
 
+  // 点击图片跳转外部链接
+  const handleImageClick = () => {
+    if (visit.url) {
+      window.open(visit.url, '_blank');
+    }
+  };
+
   return (
-    <div className="bg-black/40 border border-[#CEA472]/10 hover:border-[#CEA472]/30 rounded-lg overflow-hidden transition-all duration-300 hover:bg-black/60">
-      {/* 图片区域 */}
+    <div className="bg-black/40 border border-[#CEA472]/10 hover:border-[#CEA472]/30 rounded-lg overflow-hidden transition-all duration-300 hover:bg-black/60 flex">
+      {/* 左侧：文字信息 */}
+      <div className="flex-1 p-3 flex flex-col justify-center">
+        <div className="flex items-center gap-2 mb-2">
+          <MapPin className="w-4 h-4 text-[#CEA472]/70 flex-shrink-0" />
+          <span className="text-[#FFFFFF] text-base font-medium truncate">
+            {showRegion && visit.region?.name ? visit.region.name : visit.title}
+          </span>
+        </div>
+        <div className="flex items-center gap-2">
+          <Calendar className="w-3 h-3 text-[#CEA472]/70 flex-shrink-0" />
+          <p className="text-[#FFFFFF]/70 text-xs">{formatDate(visit.date)}</p>
+        </div>
+      </div>
+      
+      {/* 右侧：图片 */}
       {visit.image_url && (
-        <div className="relative h-32 w-full">
+        <div 
+          className={`relative w-24 h-24 flex-shrink-0 ${visit.url ? 'cursor-pointer' : ''}`}
+          onClick={handleImageClick}
+        >
           <Image
             src={visit.image_url}
             alt={visit.title}
             fill
             className="object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+          {visit.url && (
+            <div className="absolute inset-0 bg-black/0 hover:bg-black/20 transition-colors flex items-center justify-center">
+              <ExternalLink className="w-4 h-4 text-white opacity-0 hover:opacity-100 transition-opacity" />
+            </div>
+          )}
         </div>
       )}
-      
-      {/* 信息区域 */}
-      <div className="p-3">
-        <div className="flex items-center justify-between mb-2">
-          <div className="flex items-center gap-2">
-            <MapPin className="w-4 h-4 text-[#CEA472]/70 flex-shrink-0" />
-            <span className="text-[#FFFFFF] text-base font-medium">
-              {showRegion && visit.region?.name ? visit.region.name : visit.title}
-            </span>
-          </div>
-        </div>
-        <div className="flex items-center gap-2 mb-2">
-          <Calendar className="w-3 h-3 text-[#CEA472]/70 flex-shrink-0" />
-          <p className="text-[#FFFFFF]/70 text-xs">{formatDate(visit.date)}</p>
-        </div>
-        {visit.image_url && (
-          <a
-            href={visit.image_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 text-xs text-[#CEA472] hover:text-[#CEA472]/80 transition-colors"
-          >
-            查看大图
-            <ExternalLink className="w-3 h-3" />
-          </a>
-        )}
-      </div>
     </div>
   );
 }
