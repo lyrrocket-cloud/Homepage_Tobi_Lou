@@ -228,7 +228,7 @@ export function PhotoManager({ photos: initialPhotos, onPhotosUpdate }: PhotoMan
         onClick={handleOpenManager}
         variant="outline"
         size="icon"
-        className="absolute right-0 top-0 bg-black/40 border-[#CEA472]/30 hover:bg-[#CEA472]/20 hover:border-[#CEA472]/50"
+        className="bg-black/40 border-[#CEA472]/30 hover:bg-[#CEA472]/20 hover:border-[#CEA472]/50"
       >
         <Settings className="w-4 h-4 text-[#CEA472]" />
       </Button>
