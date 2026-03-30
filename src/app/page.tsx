@@ -531,9 +531,18 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f] text-white relative overflow-hidden font-sans">
+    <div className="min-h-screen bg-[#0a0a0f] text-white relative font-sans">
+      {/* 右上角同步图标 - 固定在最顶端 */}
+      <a
+        href="/admin/sync"
+        className="fixed top-4 right-4 z-[100] p-2 bg-black/40 backdrop-blur-md border border-[#CEA472]/30 hover:border-[#CEA472]/50 hover:bg-[#CEA472]/20 transition-all duration-300"
+        title="数据同步"
+      >
+        <RefreshCw className="w-4 h-4 text-[#CEA472]" />
+      </a>
+      
       {/* 背景图片 */}
-      <div className="fixed inset-0 z-0">
+      <div className="fixed inset-0 z-0 overflow-hidden">
         <Image
           src="/assets/background.jpg"
           alt="Background"
@@ -545,15 +554,6 @@ export default function Home() {
         <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/80 to-black/90" />
         <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-transparent to-black/60" />
       </div>
-
-      {/* 右上角同步图标 */}
-      <a
-        href="/admin/sync"
-        className="fixed top-4 right-4 z-50 p-2 bg-black/40 backdrop-blur-md border border-[#CEA472]/30 hover:border-[#CEA472]/50 hover:bg-[#CEA472]/20 transition-all duration-300"
-        title="数据同步"
-      >
-        <RefreshCw className="w-4 h-4 text-[#CEA472]" />
-      </a>
 
       {/* Hero 区域 */}
       <section className="relative py-20 pt-32 px-4">
