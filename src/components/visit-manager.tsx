@@ -326,12 +326,6 @@ export function VisitManager({ defaultRegionId = null, defaultRegionName = '', o
                   </option>
                 ))}
               </select>
-              {/* 调试信息 */}
-              {process.env.NODE_ENV === 'development' && (
-                <div className="text-[#FFFFFF]/30 text-xs mt-1">
-                  Debug: regions={JSON.stringify(regions.map(r => ({id: r.id, name: r.name})).slice(0, 5))}
-                </div>
-              )}
             </div>
 
             <div>
