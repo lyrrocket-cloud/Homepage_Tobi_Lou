@@ -722,31 +722,49 @@ export default function PhotoGallery() {
 
       {/* 密码验证弹窗 */}
       <Dialog open={isPasswordOpen} onOpenChange={setIsPasswordOpen}>
-        <DialogContent className="sm:max-w-md bg-[#0a0a0f] border-[#CEA472]/20">
+        <DialogContent className="bg-[#0a0a0f] border-[#CEA472]/30 text-white max-w-md" showCloseButton={false}>
           <DialogHeader>
-            <DialogTitle className="text-white flex items-center gap-2">
-              <Lock className="w-5 h-5 text-[#CEA472]" />
-              请输入管理密码
+            <DialogTitle className="flex items-center gap-2 text-[#CEA472]">
+              <Lock className="w-5 h-5" />
+              管理员验证
             </DialogTitle>
           </DialogHeader>
-          <div className="space-y-4">
-            <Input
-              type="password"
-              placeholder="请输入密码"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handlePasswordSubmit()}
-              className="bg-black/40 border-[#CEA472]/30 text-white"
-            />
-            {passwordError && (
-              <p className="text-red-500 text-sm">密码错误，请重试</p>
-            )}
-            <Button
-              onClick={handlePasswordSubmit}
-              className="w-full bg-[#CEA472] hover:bg-[#CEA472]/80 text-[#0a0a0f]"
-            >
-              确认
-            </Button>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="photo-password" className="text-[#FFFFFF]/80">
+                请输入管理密码
+              </Label>
+              <Input
+                id="photo-password"
+                type="password"
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  setPasswordError(false);
+                }}
+                onKeyDown={(e) => e.key === 'Enter' && handlePasswordSubmit()}
+                placeholder="输入密码..."
+                className="bg-black/40 border-[#CEA472]/30 text-white placeholder:text-white/40 focus:border-[#CEA472]"
+              />
+              {passwordError && (
+                <p className="text-red-400 text-sm">密码错误，请重试</p>
+              )}
+            </div>
+            <div className="flex gap-3 justify-end">
+              <Button
+                variant="outline"
+                onClick={() => setIsPasswordOpen(false)}
+                className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10"
+              >
+                取消
+              </Button>
+              <Button
+                onClick={handlePasswordSubmit}
+                className="bg-[#CEA472] hover:bg-[#CEA472]/80 text-[#0a0a0f]"
+              >
+                确认
+              </Button>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
