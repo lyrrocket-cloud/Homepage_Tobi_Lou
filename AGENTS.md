@@ -57,6 +57,21 @@ src/
 - `COZE_SUPABASE_ANON_KEY`: Supabase 匿名访问密钥
 - `COZE_PROJECT_DOMAIN_DEFAULT`: 项目访问域名
 - `DEPLOY_RUN_PORT`: 服务端口（5000）
+- `COZE_BUCKET_ENDPOINT_URL`: 对象存储端点 URL
+- `COZE_BUCKET_NAME`: 当前环境的 bucket 名称
+
+#### 共享存储配置
+
+默认情况下，预览环境和生产环境使用不同的 bucket。如果希望两个环境共享同一个存储：
+
+1. 设置 `SHARED_BUCKET_NAME` 环境变量为统一的 bucket 名称
+2. 两个环境都会使用这个共享的 bucket
+3. 照片文件将在两个环境间自动同步
+
+示例：
+```
+SHARED_BUCKET_NAME=bucket_1774837406196
+```
 
 ### 构建和运行
 

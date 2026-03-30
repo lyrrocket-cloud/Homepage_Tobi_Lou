@@ -1,18 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { S3Storage } from 'coze-coding-dev-sdk';
 import { getSupabaseClient } from '@/storage/database/supabase-client';
+import { getStorage } from '@/lib/storage';
 
 // 导出路由配置
 export const dynamic = 'force-dynamic';
 
-// 初始化对象存储
-const storage = new S3Storage({
-  endpointUrl: process.env.COZE_BUCKET_ENDPOINT_URL,
-  accessKey: '',
-  secretKey: '',
-  bucketName: process.env.COZE_BUCKET_NAME,
-  region: 'cn-beijing',
-});
+// 获取存储实例
+const storage = getStorage();
 
 // 照片备份源 URL 前缀（预览环境的存储 URL）
 // 这个需要根据实际情况配置

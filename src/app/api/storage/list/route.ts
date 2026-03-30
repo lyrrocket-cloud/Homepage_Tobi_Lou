@@ -1,17 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { S3Storage } from 'coze-coding-dev-sdk';
+import { getStorage } from '@/lib/storage';
 
 // 导出路由配置
 export const dynamic = 'force-dynamic';
 
-// 初始化对象存储
-const storage = new S3Storage({
-  endpointUrl: process.env.COZE_BUCKET_ENDPOINT_URL,
-  accessKey: '',
-  secretKey: '',
-  bucketName: process.env.COZE_BUCKET_NAME,
-  region: 'cn-beijing',
-});
+// 获取存储实例
+const storage = getStorage();
 
 // GET - 列出对象存储中的文件
 export async function GET(request: NextRequest) {

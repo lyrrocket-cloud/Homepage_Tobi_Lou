@@ -1,11 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { RefreshCw, CheckCircle, XCircle, Loader2 } from 'lucide-react';
+import { RefreshCw, CheckCircle, XCircle, Loader2, Database, Cloud } from 'lucide-react';
 
 interface SyncResult {
   status: string;
@@ -20,11 +20,30 @@ interface SyncResponse {
   timestamp: string;
 }
 
+interface StorageInfo {
+  bucketName: string;
+  isShared: boolean;
+  message: string;
+}
+
 export default function SyncAdminPage() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<SyncResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [storageInfo, setStorageInfo] = useState<StorageInfo | null>(null);
+
+  // 获取存储信息
+  useEffect(() => {
+    fetch('/api/storage/info')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          setStorageInfo(data.data);
+        }
+      })
+      .catch(console.error);
+  }, []);
 
   const handleSync = async () => {
     if (!password) {
@@ -142,9 +161,44 @@ export default function SyncAdminPage() {
           </CardContent>
         </Card>
 
+        {/* 存储信息 */}
+        {storageInfo && (
+          <Card className="bg-black/40 border-[#CEA472]/20 mt-6">
+            <CardHeader>
+              <CardTitle className="text-[#CEA472] flex items-center gap-2">
+                <Cloud className="w-5 h-5" />
+                存储配置
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-[#FFFFFF]/60">Bucket 名称</span>
+                  <span className="text-[#FFFFFF] font-mono text-sm">{storageInfo.bucketName}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-[#FFFFFF]/60">存储模式</span>
+                  <span className={storageInfo.isShared ? 'text-green-400' : 'text-yellow-400'}>
+                    {storageInfo.isShared ? '共享存储 ✓' : '独立存储'}
+                  </span>
+                </div>
+                <p className="text-[#FFFFFF]/40 text-sm pt-2 border-t border-[#CEA472]/10">
+                  {storageInfo.message}
+                </p>
+                {!storageInfo.isShared && (
+                  <div className="bg-yellow-400/10 text-yellow-400 text-sm p-3 rounded-lg">
+                    <p className="font-medium mb-1">提示：当前使用独立存储</p>
+                    <p>预览环境和生产环境的照片文件不会自动同步。如需共享存储，请联系管理员配置 SHARED_BUCKET_NAME 环境变量。</p>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         <div className="mt-6 text-center text-[#FFFFFF]/40 text-sm">
           <p>备份数据来源：预览环境最新数据</p>
-          <p className="mt-1">包含：regions, photos, videos, tools, visits 表</p>
+          <p className="mt-1">包含：regions, gallery_photos, photos, videos, tools 表</p>
         </div>
       </div>
     </div>
