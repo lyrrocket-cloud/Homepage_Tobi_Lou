@@ -706,7 +706,7 @@ export default function Home() {
             <Button
               size="lg"
               className="gap-2 bg-[#CEA472] hover:bg-[#CEA472]/80 text-[#0a0a0f] shadow-lg font-semibold px-8 border-0"
-              onClick={() => window.open('https://code.coze.cn/p/7611364295640924195/preview', '_blank')}
+              onClick={() => window.location.href = '/photos'}
             >
               <Camera className="w-5 h-5" />
               更多照片

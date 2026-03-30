@@ -1,0 +1,220 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { getSupabaseClient } from '@/storage/database/supabase-client';
+import { S3Storage } from 'coze-coding-dev-sdk';
+
+// 初始化对象存储
+const storage = new S3Storage({
+  endpointUrl: process.env.COZE_BUCKET_ENDPOINT_URL,
+  accessKey: '',
+  secretKey: '',
+  bucketName: process.env.COZE_BUCKET_NAME,
+  region: 'cn-beijing',
+});
+
+// 照片类型定义
+interface GalleryPhoto {
+  id: number;
+  title: string;
+  location: string;
+  date: string;
+  year: number;
+  image_key: string;
+  image_url: string;
+  url?: string;
+  category: string;
+  created_at: string;
+  updated_at?: string;
+}
+
+// 获取所有照片
+export async function GET() {
+  try {
+    const client = getSupabaseClient();
+    
+    const { data, error } = await client
+      .from('gallery_photos')
+      .select('*')
+      .order('date', { ascending: false });
+
+    if (error) {
+      console.error('获取照片失败:', error);
+      return NextResponse.json({ error: '获取照片失败' }, { status: 500 });
+    }
+
+    // 为每张照片刷新签名 URL
+    const photosWithUrls = await Promise.all(
+      (data || []).map(async (photo: GalleryPhoto) => {
+        try {
+          const imageUrl = await storage.generatePresignedUrl({
+            key: photo.image_key,
+            expireTime: 2592000, // 30 天
+          });
+          return {
+            ...photo,
+            image_url: imageUrl,
+          };
+        } catch {
+          return photo;
+        }
+      })
+    );
+
+    return NextResponse.json({ photos: photosWithUrls });
+  } catch (error) {
+    console.error('获取照片失败:', error);
+    return NextResponse.json({ error: '获取照片失败' }, { status: 500 });
+  }
+}
+
+// 添加照片
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const { title, location, date, year, imageKey, imageUrl, url, category } = body;
+
+    if (!title || !location || !date || !year || !imageKey || !imageUrl || !category) {
+      return NextResponse.json({ error: '缺少必要字段' }, { status: 400 });
+    }
+
+    const client = getSupabaseClient();
+
+    const { data, error } = await client
+      .from('gallery_photos')
+      .insert({
+        title,
+        location,
+        date,
+        year,
+        image_key: imageKey,
+        image_url: imageUrl,
+        url: url || null,
+        category,
+      })
+      .select()
+      .single();
+
+    if (error) {
+      console.error('添加照片失败:', error);
+      return NextResponse.json({ error: '添加照片失败' }, { status: 500 });
+    }
+
+    return NextResponse.json({ photo: data });
+  } catch (error) {
+    console.error('添加照片失败:', error);
+    return NextResponse.json({ error: '添加照片失败' }, { status: 500 });
+  }
+}
+
+// 删除照片
+export async function DELETE(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+
+    if (!id) {
+      return NextResponse.json({ error: '缺少照片 ID' }, { status: 400 });
+    }
+
+    const client = getSupabaseClient();
+
+    // 先获取照片信息，以便删除对象存储中的文件
+    const { data: photo, error: fetchError } = await client
+      .from('gallery_photos')
+      .select('image_key')
+      .eq('id', id)
+      .single();
+
+    if (fetchError) {
+      console.error('获取照片失败:', fetchError);
+      return NextResponse.json({ error: '获取照片失败' }, { status: 500 });
+    }
+
+    // 删除数据库记录
+    const { error: deleteError } = await client
+      .from('gallery_photos')
+      .delete()
+      .eq('id', id);
+
+    if (deleteError) {
+      console.error('删除照片失败:', deleteError);
+      return NextResponse.json({ error: '删除照片失败' }, { status: 500 });
+    }
+
+    // 删除对象存储中的文件
+    if (photo?.image_key) {
+      try {
+        await storage.deleteFile({ fileKey: photo.image_key });
+      } catch (e) {
+        console.error('删除存储文件失败:', e);
+      }
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('删除照片失败:', error);
+    return NextResponse.json({ error: '删除照片失败' }, { status: 500 });
+  }
+}
+
+// 更新照片
+export async function PUT(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const { id, title, location, date, year, imageKey, imageUrl, url, category } = body;
+
+    if (!id || !title || !location || !date || !year || !imageKey || !imageUrl || !category) {
+      return NextResponse.json({ error: '缺少必要字段' }, { status: 400 });
+    }
+
+    const client = getSupabaseClient();
+
+    // 先获取旧照片信息
+    const { data: oldPhoto, error: fetchError } = await client
+      .from('gallery_photos')
+      .select('image_key')
+      .eq('id', id)
+      .single();
+
+    if (fetchError) {
+      console.error('获取照片失败:', fetchError);
+      return NextResponse.json({ error: '获取照片失败' }, { status: 500 });
+    }
+
+    // 更新数据库记录
+    const { data, error } = await client
+      .from('gallery_photos')
+      .update({
+        title,
+        location,
+        date,
+        year,
+        image_key: imageKey,
+        image_url: imageUrl,
+        url: url || null,
+        category,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('更新照片失败:', error);
+      return NextResponse.json({ error: '更新照片失败' }, { status: 500 });
+    }
+
+    // 如果图片更换了，删除旧的存储文件
+    if (oldPhoto?.image_key && oldPhoto.image_key !== imageKey) {
+      try {
+        await storage.deleteFile({ fileKey: oldPhoto.image_key });
+      } catch (e) {
+        console.error('删除旧存储文件失败:', e);
+      }
+    }
+
+    return NextResponse.json({ photo: data });
+  } catch (error) {
+    console.error('更新照片失败:', error);
+    return NextResponse.json({ error: '更新照片失败' }, { status: 500 });
+  }
+}
