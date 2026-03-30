@@ -82,6 +82,7 @@ Desktop.ini
 !.backups/.gitkeep
 backup-*.json
 !scripts/production-backup.json
+!scripts/photos-backup.json
 
 # Temporary files
 *.tmp
