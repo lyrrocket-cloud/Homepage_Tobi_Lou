@@ -36,6 +36,7 @@ import {
   Settings,
   Lock,
   RefreshCw,
+  ArrowUp,
 } from 'lucide-react';
 import { PhotoManager } from '@/components/photo-manager';
 import { VideoManager } from '@/components/video-manager';
@@ -53,7 +54,7 @@ import { Region } from '@/app/api/regions/route';
 const ChinaMap = dynamic(() => import('@/components/china-map').then(mod => ({ default: mod.ChinaMap })), {
   ssr: false,
   loading: () => (
-    <div className="w-full aspect-[4/3] min-h-[280px] md:min-h-[400px] lg:min-h-[500px] bg-black/40 backdrop-blur-md rounded-lg border border-[#CEA472]/20 flex items-center justify-center">
+    <div className="w-full h-[300px] md:h-[480px] bg-black/40 backdrop-blur-md rounded-lg border border-[#CEA472]/20 flex items-center justify-center">
       <div className="animate-spin rounded-full h-12 w-12 border-2 border-[#CEA472] border-t-transparent"></div>
     </div>
   )
@@ -389,8 +390,8 @@ function VisitTracker() {
         </div>
       </div>
 
-      {/* 左右分栏布局 */}
-      <div className="flex flex-col lg:flex-row gap-6 items-start">
+      {/* 左右分栏布局 - 桌面和平板保持地图在左、打卡记录在右 */}
+      <div className="flex flex-col md:flex-row gap-6 items-stretch">
         {/* 左侧：响应式地图 */}
         <div className="flex-1 w-full">
           <ChinaMap
@@ -400,8 +401,8 @@ function VisitTracker() {
           />
         </div>
 
-        {/* 右侧：打卡记录列表 - 固定宽度，可滚动 */}
-        <div className="w-full lg:w-[320px] flex-shrink-0 h-[300px] lg:h-auto lg:max-h-[500px] overflow-y-auto">
+        {/* 右侧：打卡记录列表 - 固定宽度，与地图等高 */}
+        <div className="w-full md:w-[320px] flex-shrink-0 h-[300px] md:h-[480px] overflow-y-auto">
           <VisitList
             regionId={selectedRegion?.id || null}
             regionName={selectedRegion?.name || ''}
@@ -645,6 +646,14 @@ export default function Home() {
               photos={photos} 
               onPhotosUpdate={(updatedPhotos) => setPhotos(updatedPhotos)} 
             />
+            {/* 回顶端按钮 */}
+            <button
+              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+              className="ml-auto p-2 rounded-full bg-black/40 border border-[#CEA472]/20 hover:border-[#CEA472]/50 hover:bg-black/60 transition-all"
+              title="回到顶端"
+            >
+              <ArrowUp className="w-5 h-5 text-[#CEA472]" />
+            </button>
           </div>
 
           {/* 照片网格 */}
@@ -719,6 +728,14 @@ export default function Home() {
               videos={videos} 
               onVideosUpdate={(updatedVideos) => setVideos(updatedVideos)} 
             />
+            {/* 回顶端按钮 */}
+            <button
+              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+              className="ml-auto p-2 rounded-full bg-black/40 border border-[#CEA472]/20 hover:border-[#CEA472]/50 hover:bg-black/60 transition-all"
+              title="回到顶端"
+            >
+              <ArrowUp className="w-5 h-5 text-[#CEA472]" />
+            </button>
           </div>
 
           {/* 视频网格 */}
@@ -802,6 +819,14 @@ export default function Home() {
               tools={tools} 
               onToolsUpdate={(updatedTools) => setTools(updatedTools)} 
             />
+            {/* 回顶端按钮 */}
+            <button
+              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+              className="ml-auto p-2 rounded-full bg-black/40 border border-[#CEA472]/20 hover:border-[#CEA472]/50 hover:bg-black/60 transition-all"
+              title="回到顶端"
+            >
+              <ArrowUp className="w-5 h-5 text-[#CEA472]" />
+            </button>
           </div>
 
           {/* 工具网格 */}
