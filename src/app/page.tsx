@@ -319,11 +319,6 @@ function VisitTracker() {
     }
   };
 
-  const handleOpenManager = () => {
-    // 跳转到照片集页面
-    window.location.href = '/photos';
-  };
-
   return (
     <div className="space-y-6">
       {/* 标题区域 */}
@@ -363,7 +358,6 @@ function VisitTracker() {
             regionId={selectedRegion?.id || null}
             regionName={selectedRegion?.name || ''}
             onRefresh={fetchVisitedRegions}
-            onAddVisit={handleOpenManager}
           />
         </div>
       </div>

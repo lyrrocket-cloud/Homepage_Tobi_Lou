@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState, useCallback } from 'react';
-import { MapPin, Calendar, ExternalLink, Plus, Camera } from 'lucide-react';
+import { MapPin, Calendar, ExternalLink, Camera } from 'lucide-react';
 import Image from 'next/image';
 
 // 照片类型定义（从 gallery_photos 获取）
@@ -25,10 +25,9 @@ interface VisitListProps {
   regionId: number | null;
   regionName: string;
   onRefresh?: () => void;
-  onAddVisit?: () => void;
 }
 
-export function VisitList({ regionId, regionName, onRefresh, onAddVisit }: VisitListProps) {
+export function VisitList({ regionId, regionName, onRefresh }: VisitListProps) {
   const [visits, setVisits] = useState<PhotoVisit[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -96,38 +95,14 @@ export function VisitList({ regionId, regionName, onRefresh, onAddVisit }: Visit
             <p className="text-[#CEA472]/60">
               {regionName ? '该地区暂无照片记录' : '暂无照片记录'}
             </p>
-            {onAddVisit && (
-              <button
-                onClick={onAddVisit}
-                className="mt-4 px-4 py-2 bg-[#CEA472]/20 hover:bg-[#CEA472]/30 text-[#CEA472] border border-[#CEA472]/30 rounded transition-colors text-sm flex items-center gap-2 mx-auto"
-              >
-                <Plus className="w-4 h-4" />
-                添加照片
-              </button>
-            )}
           </div>
         </div>
       ) : (
-        <>
-          <div className="flex-1 overflow-y-auto space-y-3 pr-2">
-            {visits.map((visit) => (
-              <VisitCard key={visit.id} visit={visit} showRegion={!regionId} />
-            ))}
-          </div>
-          
-          {/* 底部添加按钮 */}
-          {onAddVisit && (
-            <div className="mt-4 pt-4 border-t border-[#CEA472]/10 flex-shrink-0">
-              <button
-                onClick={onAddVisit}
-                className="w-full px-4 py-2 bg-[#CEA472]/10 hover:bg-[#CEA472]/20 text-[#CEA472] border border-[#CEA472]/30 rounded transition-colors flex items-center justify-center gap-2"
-              >
-                <Plus className="w-4 h-4" />
-                添加照片
-              </button>
-            </div>
-          )}
-        </>
+        <div className="flex-1 overflow-y-auto space-y-3 pr-2">
+          {visits.map((visit) => (
+            <VisitCard key={visit.id} visit={visit} showRegion={!regionId} />
+          ))}
+        </div>
       )}
     </div>
   );
