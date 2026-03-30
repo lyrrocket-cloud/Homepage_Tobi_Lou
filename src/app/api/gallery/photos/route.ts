@@ -12,10 +12,10 @@ const storage = new S3Storage({
 });
 
 // 照片类型定义
-interface GalleryPhoto {
+export interface GalleryPhoto {
   id: number;
   title: string;
-  location: string;
+  region_id: number;
   date: string;
   year: number;
   image_key: string;
@@ -24,6 +24,11 @@ interface GalleryPhoto {
   category: string;
   created_at: string;
   updated_at?: string;
+  region?: {
+    id: number;
+    name: string;
+    type: string;
+  };
 }
 
 // 获取所有照片
@@ -33,7 +38,7 @@ export async function GET() {
     
     const { data, error } = await client
       .from('gallery_photos')
-      .select('*')
+      .select('*, regions(id, name, type)')
       .order('date', { ascending: false });
 
     if (error) {
@@ -70,9 +75,9 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { title, location, date, year, imageKey, imageUrl, url, category } = body;
+    const { title, regionId, date, year, imageKey, imageUrl, url, category } = body;
 
-    if (!title || !location || !date || !year || !imageKey || !imageUrl || !category) {
+    if (!title || !regionId || !date || !year || !imageKey || !imageUrl || !category) {
       return NextResponse.json({ error: '缺少必要字段' }, { status: 400 });
     }
 
@@ -82,7 +87,7 @@ export async function POST(request: NextRequest) {
       .from('gallery_photos')
       .insert({
         title,
-        location,
+        region_id: regionId,
         date,
         year,
         image_key: imageKey,
@@ -90,7 +95,7 @@ export async function POST(request: NextRequest) {
         url: url || null,
         category,
       })
-      .select()
+      .select('*, regions(id, name, type)')
       .single();
 
     if (error) {
@@ -160,9 +165,9 @@ export async function DELETE(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
-    const { id, title, location, date, year, imageKey, imageUrl, url, category } = body;
+    const { id, title, regionId, date, year, imageKey, imageUrl, url, category } = body;
 
-    if (!id || !title || !location || !date || !year || !imageKey || !imageUrl || !category) {
+    if (!id || !title || !regionId || !date || !year || !imageKey || !imageUrl || !category) {
       return NextResponse.json({ error: '缺少必要字段' }, { status: 400 });
     }
 
@@ -185,7 +190,7 @@ export async function PUT(request: NextRequest) {
       .from('gallery_photos')
       .update({
         title,
-        location,
+        region_id: regionId,
         date,
         year,
         image_key: imageKey,
@@ -195,7 +200,7 @@ export async function PUT(request: NextRequest) {
         updated_at: new Date().toISOString(),
       })
       .eq('id', id)
-      .select()
+      .select('*, regions(id, name, type)')
       .single();
 
     if (error) {

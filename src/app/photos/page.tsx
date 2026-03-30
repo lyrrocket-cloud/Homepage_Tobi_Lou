@@ -6,14 +6,15 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Plus, MapPin, Calendar, ChevronRight, Camera, Upload, Loader2, Check, Lock, Settings, Trash2, Edit, Pencil, Home, ChevronLeft, Menu } from 'lucide-react';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Plus, MapPin, Calendar, ChevronRight, Camera, Upload, Loader2, Check, Lock, Settings, Trash2, Edit, Home, ChevronLeft, Menu } from 'lucide-react';
+import React from 'react';
 
 // 照片类型定义
 interface Photo {
   id: number;
   title: string;
-  location: string;
+  region_id: number;
   date: string;
   year: number;
   image_key: string;
@@ -21,6 +22,20 @@ interface Photo {
   url?: string;
   category: string;
   created_at: string;
+  region?: {
+    id: number;
+    name: string;
+    type: string;
+  };
+}
+
+// 地区类型定义
+interface Region {
+  id: number;
+  name: string;
+  type: string;
+  parentId: number | null;
+  children?: Region[];
 }
 
 // 生成年份数组 (2026-2011)
@@ -47,11 +62,12 @@ const ADMIN_PASSWORD = 'tobi7758258';
 export default function PhotoGallery() {
   // 照片数据
   const [photos, setPhotos] = useState<Photo[]>([]);
+  const [regions, setRegions] = useState<Region[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const [selectedYear, setSelectedYear] = useState<number | 'all' | string>('all');
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [isTimelineVisible, setIsTimelineVisible] = useState(true); // 时间轴显示状态
+  const [isTimelineVisible, setIsTimelineVisible] = useState(true);
   const [isManageOpen, setIsManageOpen] = useState(false);
   const [isPasswordOpen, setIsPasswordOpen] = useState(false);
   const [isAddPhotoOpen, setIsAddPhotoOpen] = useState(false);
@@ -63,7 +79,7 @@ export default function PhotoGallery() {
   const [isSaving, setIsSaving] = useState(false);
   const [newPhoto, setNewPhoto] = useState<{
     title: string;
-    location: string;
+    regionId: number | null;
     yearMonth: string;
     image: string;
     imageKey: string;
@@ -71,7 +87,7 @@ export default function PhotoGallery() {
     categories: string[];
   }>({
     title: '',
-    location: '',
+    regionId: null,
     yearMonth: '',
     image: '',
     imageKey: '',
@@ -81,6 +97,19 @@ export default function PhotoGallery() {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const editFileInputRef = useRef<HTMLInputElement>(null);
+
+  // 加载地区数据
+  const loadRegions = async () => {
+    try {
+      const response = await fetch('/api/regions?withChildren=true');
+      const data = await response.json();
+      if (data.success && data.data) {
+        setRegions(data.data);
+      }
+    } catch (error) {
+      console.error('加载地区失败:', error);
+    }
+  };
 
   // 从数据库加载照片
   const loadPhotos = async () => {
@@ -97,8 +126,9 @@ export default function PhotoGallery() {
     }
   };
 
-  // 初始化加载照片
+  // 初始化加载
   useEffect(() => {
+    loadRegions();
     loadPhotos();
   }, []);
 
@@ -107,9 +137,6 @@ export default function PhotoGallery() {
     setSelectedYear('all');
     setSelectedCategories([]);
   };
-
-  // 检查是否已筛选
-  const hasActiveFilters = selectedYear !== 'all' || selectedCategories.length > 0;
 
   // 切换分类筛选
   const toggleCategoryFilter = (categoryId: string) => {
@@ -122,7 +149,7 @@ export default function PhotoGallery() {
     });
   };
 
-  // 切换照片分类标签（添加照片表单）
+  // 切换照片分类标签
   const togglePhotoCategory = (categoryId: string) => {
     setNewPhoto(prev => ({
       ...prev,
@@ -218,7 +245,7 @@ export default function PhotoGallery() {
         body: JSON.stringify({
           id: editingPhoto.id,
           title: editingPhoto.title,
-          location: editingPhoto.location,
+          regionId: editingPhoto.region_id,
           date: editingPhoto.date,
           year: parseInt(editingPhoto.date.split('-')[0]),
           imageKey: editingPhoto.image_key,
@@ -244,30 +271,28 @@ export default function PhotoGallery() {
   };
 
   // 按年份和分类筛选照片
-  const filteredPhotos = photos
-    .filter(photo => {
-      let matchYear = true;
-      
-      if (selectedYear === 'all') {
-        matchYear = true;
-      } else if (typeof selectedYear === 'number') {
-        matchYear = photo.year === selectedYear;
-      } else {
-        // 特殊年份范围
-        const special = specialYears.find(s => s.id === selectedYear);
-        if (special) {
-          if (special.id === '-1989') {
-            matchYear = (photo.year || 0) <= 1989;
-          } else {
-            matchYear = (photo.year || 0) >= special.startYear && (photo.year || 0) <= special.endYear;
-          }
+  const filteredPhotos = photos.filter(photo => {
+    let matchYear = true;
+    
+    if (selectedYear === 'all') {
+      matchYear = true;
+    } else if (typeof selectedYear === 'number') {
+      matchYear = photo.year === selectedYear;
+    } else {
+      const special = specialYears.find(s => s.id === selectedYear);
+      if (special) {
+        if (special.id === '-1989') {
+          matchYear = (photo.year || 0) <= 1989;
+        } else {
+          matchYear = (photo.year || 0) >= special.startYear && (photo.year || 0) <= special.endYear;
         }
       }
-      
-      const matchCategory = selectedCategories.length === 0 ? true : 
-        selectedCategories.some(cat => (photo.category || '').split(',').includes(cat));
-      return matchYear && matchCategory;
-    });
+    }
+    
+    const matchCategory = selectedCategories.length === 0 ? true : 
+      selectedCategories.some(cat => (photo.category || '').split(',').includes(cat));
+    return matchYear && matchCategory;
+  });
 
   // 获取指定年份的照片数量
   const getYearCount = (year: number) => {
@@ -324,14 +349,12 @@ export default function PhotoGallery() {
 
   // 添加照片到数据库
   const handleAddPhoto = async () => {
-    if (!newPhoto.title || !newPhoto.location || !newPhoto.yearMonth || !newPhoto.image || newPhoto.categories?.length === 0) return;
+    if (!newPhoto.title || !newPhoto.regionId || !newPhoto.yearMonth || !newPhoto.image || newPhoto.categories?.length === 0) return;
 
     setIsSaving(true);
 
     try {
       const year = parseInt(newPhoto.yearMonth.split('-')[0]);
-      
-      // 将多个分类合并为逗号分隔的字符串
       const categoryString = newPhoto.categories.join(',');
       
       await fetch('/api/gallery/photos', {
@@ -339,7 +362,7 @@ export default function PhotoGallery() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           title: newPhoto.title,
-          location: newPhoto.location,
+          regionId: newPhoto.regionId,
           date: newPhoto.yearMonth,
           year: year,
           imageKey: newPhoto.imageKey,
@@ -349,13 +372,11 @@ export default function PhotoGallery() {
         }),
       });
 
-      // 重新加载照片列表
       await loadPhotos();
       
-      // 重置表单
       setNewPhoto({
         title: '',
-        location: '',
+        regionId: null,
         yearMonth: '',
         image: '',
         imageKey: '',
@@ -381,7 +402,6 @@ export default function PhotoGallery() {
       });
 
       if (response.ok) {
-        // 重新加载照片列表
         await loadPhotos();
       } else {
         alert('删除失败');
@@ -398,6 +418,27 @@ export default function PhotoGallery() {
     return `${year}年${month}月`;
   };
 
+  // 获取地区名称
+  const getRegionName = (photo: Photo) => {
+    return photo.region?.name || '未知地点';
+  };
+
+  // 渲染地区选择器选项
+  const renderRegionOptions = (regionList: Region[], level: number = 0): React.ReactNode[] => {
+    const options: React.ReactNode[] = [];
+    regionList.forEach(region => {
+      options.push(
+        <option key={region.id} value={region.id}>
+          {'　'.repeat(level)}{region.name}
+        </option>
+      );
+      if (region.children && region.children.length > 0) {
+        options.push(...renderRegionOptions(region.children, level + 1));
+      }
+    });
+    return options;
+  };
+
   return (
     <div className="min-h-screen bg-[#0a0a0f] relative overflow-hidden">
       {/* 背景图 */}
@@ -409,14 +450,13 @@ export default function PhotoGallery() {
           className="object-cover"
           priority
         />
-        {/* 深色遮罩层 */}
         <div className="absolute inset-0 bg-gradient-to-r from-[#0a0a0f] via-[#0a0a0f]/95 to-[#0a0a0f]/80" />
         <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0f]/60 via-transparent to-[#0a0a0f]" />
       </div>
 
       {/* 主内容区 */}
       <div className="relative z-10">
-        {/* 顶部导航 - 置顶 */}
+        {/* 顶部导航 */}
         <header className="sticky top-0 z-50 border-b border-[#CEA472]/10 bg-[#0a0a0f]/80 backdrop-blur-md">
           <div className="px-6 py-4">
             <div className="flex items-center justify-between">
@@ -429,18 +469,12 @@ export default function PhotoGallery() {
                 >
                   <Home className="w-5 h-5" />
                 </button>
-                {/* 分隔符 */}
                 <span className="text-[#CEA472]/30">|</span>
-                {/* 标题 */}
                 <div className="flex items-center gap-3">
                   <Camera className="w-6 h-6 text-[#CEA472]" />
-                  <h1 className="text-2xl font-bold text-white tracking-wide" style={{ fontFamily: 'PangMenZhengDao, sans-serif' }}>
-                    照片集
-                  </h1>
+                  <h1 className="text-2xl font-bold text-white tracking-wide">照片集</h1>
                 </div>
               </div>
-
-              {/* 管理按钮 */}
               <Button
                 onClick={handleOpenManage}
                 variant="outline"
@@ -454,7 +488,7 @@ export default function PhotoGallery() {
         </header>
 
         <div className="flex relative">
-          {/* 时间轴切换按钮 - 移动端收起时显示 */}
+          {/* 时间轴切换按钮 - 移动端 */}
           {!isTimelineVisible && (
             <button
               onClick={() => setIsTimelineVisible(true)}
@@ -465,12 +499,11 @@ export default function PhotoGallery() {
             </button>
           )}
 
-          {/* 左侧时间轴 - 坐标轴样式 */}
+          {/* 左侧时间轴 */}
           <aside className={`min-h-[calc(100vh-73px)] sticky top-[73px] self-start transition-all duration-300 overflow-hidden ${
             isTimelineVisible ? 'w-48' : 'w-0 lg:w-48'
           }`}>
             <div className={`relative h-full py-6 w-48 ${isTimelineVisible ? 'opacity-100' : 'opacity-0 lg:opacity-100'} transition-opacity duration-300`}>
-              {/* 时间轴切换按钮 - 移动端展开时显示 */}
               {isTimelineVisible && (
                 <button
                   onClick={() => setIsTimelineVisible(false)}
@@ -481,14 +514,10 @@ export default function PhotoGallery() {
                 </button>
               )}
               
-              {/* 滚轴式时间轴 */}
               <div className="relative h-full flex flex-col">
-                {/* 顶部渐变遮罩 */}
                 <div className="absolute top-0 left-0 right-0 h-8 bg-gradient-to-b from-[#0a0a0f] to-transparent z-10 pointer-events-none" />
                 
-                {/* 滚动区域 */}
-                <div className="flex-1 overflow-y-auto px-2 py-8" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-                  {/* 坐标轴竖线 */}
+                <div className="flex-1 overflow-y-auto px-2 py-8" style={{ scrollbarWidth: 'none' }}>
                   <div className="absolute left-6 top-8 bottom-8 w-0.5 bg-[#CEA472]/20" />
                   
                   {/* 全部按钮 */}
@@ -510,7 +539,7 @@ export default function PhotoGallery() {
                     </button>
                   </div>
 
-                  {/* 近期年份（2026-2010） */}
+                  {/* 年份列表 */}
                   <div className="space-y-1 mb-2">
                     {years.map((year) => {
                       const count = getYearCount(year);
@@ -520,120 +549,57 @@ export default function PhotoGallery() {
                       return (
                         <div key={year} className="relative pl-10 group/item">
                           <span className={`absolute left-3 w-2.5 h-2.5 rounded-full border-2 transition-all ${
-                            isActive
-                              ? 'bg-[#CEA472] border-[#CEA472] scale-110'
-                              : hasPhotos
-                                ? 'bg-[#0a0a0f] border-[#CEA472]/50 group-hover/item:border-[#CEA472] group-hover/item:scale-110'
-                                : 'bg-[#0a0a0f] border-gray-700'
+                            isActive ? 'bg-[#CEA472] border-[#CEA472] scale-110'
+                              : hasPhotos ? 'bg-[#0a0a0f] border-[#CEA472]/50 group-hover/item:border-[#CEA472] group-hover/item:scale-110'
+                              : 'bg-[#0a0a0f] border-gray-700'
                           }`} />
                           <button
                             onClick={() => hasPhotos && setSelectedYear(year)}
                             disabled={!hasPhotos}
                             className={`flex items-center justify-between w-full py-0.5 transition-all text-sm ${
-                              isActive
-                                ? 'text-[#CEA472] font-medium'
-                                : hasPhotos
-                                  ? 'text-gray-400 hover:text-white'
-                                  : 'text-gray-700 cursor-not-allowed'
+                              isActive ? 'text-[#CEA472] font-medium'
+                                : hasPhotos ? 'text-gray-400 hover:text-white'
+                                : 'text-gray-700 cursor-not-allowed'
                             }`}
                           >
                             <span>{year}</span>
-                            {hasPhotos && (
-                              <span className={`text-xs ${isActive ? 'text-[#CEA472]' : 'text-gray-500'}`}>
-                                {count}
-                              </span>
-                            )}
+                            {hasPhotos && <span className={`text-xs ${isActive ? 'text-[#CEA472]' : 'text-gray-500'}`}>{count}</span>}
                           </button>
                         </div>
                       );
                     })}
                   </div>
 
-                  {/* 可展开的特殊年份范围 */}
+                  {/* 特殊年份 */}
                   {specialYears.map((special) => {
                     const count = getSpecialYearCount(special.id);
                     const isActive = selectedYear === special.id;
                     const hasPhotos = count > 0;
-                    // 生成年份列表
-                    const yearList = special.id === '-1990' 
-                      ? Array.from({ length: 10 }, (_, i) => 1990 - i) // 1990-1981
-                      : Array.from({ length: 10 }, (_, i) => special.endYear - i);
                     
                     return (
-                      <div key={special.id} className="relative group/expand mb-1">
-                        {/* 主节点 */}
-                        <div className="relative pl-10">
-                          <span className={`absolute left-3 w-2.5 h-2.5 rounded-full border-2 transition-all ${
-                            isActive
-                              ? 'bg-[#CEA472] border-[#CEA472] scale-110'
-                              : hasPhotos
-                                ? 'bg-[#0a0a0f] border-[#CEA472]/50 group-hover/expand:border-[#CEA472] group-hover/expand:scale-110'
-                                : 'bg-[#0a0a0f] border-gray-700'
-                          }`} />
-                          <button
-                            onClick={() => hasPhotos && setSelectedYear(special.id)}
-                            disabled={!hasPhotos}
-                            className={`flex items-center justify-between w-full py-0.5 transition-all text-sm ${
-                              isActive
-                                ? 'text-[#CEA472] font-medium'
-                                : hasPhotos
-                                  ? 'text-gray-500 hover:text-gray-300'
-                                  : 'text-gray-700 cursor-not-allowed'
-                            }`}
-                          >
-                            <span>{special.label}</span>
-                            {hasPhotos && (
-                              <span className="text-xs text-gray-500">{count}</span>
-                            )}
-                          </button>
-                        </div>
-                        
-                        {/* 悬停展开的子年份 */}
-                        <div className="max-h-0 overflow-hidden group-hover/expand:max-h-96 transition-all duration-300 ease-out">
-                          <div className="pl-14 space-y-0.5 pt-1">
-                            {yearList.map((year) => {
-                              const yearCount = getYearCount(year);
-                              const yearActive = selectedYear === year;
-                              const yearHasPhotos = yearCount > 0;
-                              
-                              return (
-                                <div key={year} className="relative group/sub">
-                                  {/* 子节点连接线 */}
-                                  <div className="absolute left-[-8px] top-1/2 w-3 h-px bg-[#CEA472]/20" />
-                                  <span className={`absolute left-0 w-2 h-2 rounded-full border transition-all ${
-                                    yearActive
-                                      ? 'bg-[#CEA472] border-[#CEA472]'
-                                      : yearHasPhotos
-                                        ? 'bg-[#0a0a0f] border-[#CEA472]/40 group-hover/sub:border-[#CEA472]'
-                                        : 'bg-[#0a0a0f] border-gray-700'
-                                  }`} />
-                                  <button
-                                    onClick={() => yearHasPhotos && setSelectedYear(year)}
-                                    disabled={!yearHasPhotos}
-                                    className={`flex items-center justify-between w-full py-0.5 pl-4 transition-all text-xs ${
-                                      yearActive
-                                        ? 'text-[#CEA472] font-medium'
-                                        : yearHasPhotos
-                                          ? 'text-gray-500 hover:text-gray-300'
-                                          : 'text-gray-700 cursor-not-allowed'
-                                    }`}
-                                  >
-                                    <span>{year}</span>
-                                    {yearHasPhotos && (
-                                      <span className="text-xs text-gray-600">{yearCount}</span>
-                                    )}
-                                  </button>
-                                </div>
-                              );
-                            })}
-                          </div>
-                        </div>
+                      <div key={special.id} className="relative pl-10">
+                        <span className={`absolute left-3 w-2.5 h-2.5 rounded-full border-2 transition-all ${
+                          isActive ? 'bg-[#CEA472] border-[#CEA472] scale-110'
+                            : hasPhotos ? 'bg-[#0a0a0f] border-[#CEA472]/50'
+                            : 'bg-[#0a0a0f] border-gray-700'
+                        }`} />
+                        <button
+                          onClick={() => hasPhotos && setSelectedYear(special.id)}
+                          disabled={!hasPhotos}
+                          className={`flex items-center justify-between w-full py-0.5 transition-all text-sm ${
+                            isActive ? 'text-[#CEA472] font-medium'
+                              : hasPhotos ? 'text-gray-500 hover:text-gray-300'
+                              : 'text-gray-700 cursor-not-allowed'
+                          }`}
+                        >
+                          <span>{special.label}</span>
+                          {hasPhotos && <span className="text-xs text-gray-500">{count}</span>}
+                        </button>
                       </div>
                     );
                   })}
                 </div>
                 
-                {/* 底部渐变遮罩 */}
                 <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-[#0a0a0f] to-transparent z-10 pointer-events-none" />
               </div>
             </div>
@@ -644,7 +610,6 @@ export default function PhotoGallery() {
             {/* 分类筛选栏 */}
             <div className="mb-6 flex items-center gap-3 flex-wrap">
               <span className="text-sm text-gray-400">分类：</span>
-              {/* 全部按钮 */}
               <button
                 onClick={() => setSelectedCategories([])}
                 className={`px-4 py-1.5 rounded-full text-sm transition-all ${
@@ -655,7 +620,6 @@ export default function PhotoGallery() {
               >
                 全部
               </button>
-              {/* 分隔符 */}
               <span className="text-[#CEA472]/30">|</span>
               {categories.map((cat) => {
                 const isActive = selectedCategories.includes(cat.id);
@@ -664,8 +628,7 @@ export default function PhotoGallery() {
                     key={cat.id}
                     onClick={() => toggleCategoryFilter(cat.id)}
                     className={`px-4 py-1.5 rounded-full text-sm transition-all ${
-                      isActive
-                        ? 'bg-[#CEA472] text-[#0a0a0f] font-medium'
+                      isActive ? 'bg-[#CEA472] text-[#0a0a0f] font-medium'
                         : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white'
                     }`}
                   >
@@ -675,7 +638,7 @@ export default function PhotoGallery() {
               })}
             </div>
 
-            {/* 标题区域 */}
+            {/* 标题 */}
             <div className="mb-6">
               <h2 className="text-xl font-semibold text-white flex items-center gap-2">
                 {selectedYear === 'all' ? '全部照片' : 
@@ -713,7 +676,6 @@ export default function PhotoGallery() {
                       }
                     }}
                   >
-                    {/* 图片区域 */}
                     <div className="relative aspect-[4/3] overflow-hidden">
                       <Image
                         src={photo.image_url}
@@ -723,17 +685,13 @@ export default function PhotoGallery() {
                         className="object-cover group-hover:scale-110 transition-transform duration-700"
                       />
                       
-                      {/* 右上角分类标签 - 悬停显示 */}
                       {photo.category && (
                         <div className="absolute top-2 right-2 flex flex-wrap gap-1 justify-end opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                           {photo.category.split(',').map((catId) => {
                             const cat = categories.find(c => c.id === catId);
                             if (!cat) return null;
                             return (
-                              <span
-                                key={catId}
-                                className="px-2 py-0.5 text-xs rounded-full bg-black/60 text-[#CEA472] backdrop-blur-sm"
-                              >
+                              <span key={catId} className="px-2 py-0.5 text-xs rounded-full bg-black/60 text-[#CEA472] backdrop-blur-sm">
                                 {cat.name}
                               </span>
                             );
@@ -741,21 +699,17 @@ export default function PhotoGallery() {
                         </div>
                       )}
                       
-                      {/* 悬停渐变遮罩 */}
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                      
-                      {/* 悬停标题动画 */}
                       <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-500">
                         <h4 className="text-white font-bold text-lg">{photo.title}</h4>
                       </div>
                     </div>
                     
-                    {/* 信息区域 */}
                     <CardContent className="p-4 bg-gradient-to-r from-black/60 to-black/40">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2 text-sm text-white/80">
                           <MapPin className="w-4 h-4 text-[#CEA472]" />
-                          <span className="line-clamp-1">{photo.location}</span>
+                          <span className="line-clamp-1">{getRegionName(photo)}</span>
                         </div>
                         <div className="flex items-center gap-2 text-sm text-white/60">
                           <Calendar className="w-4 h-4 text-[#CEA472]" />
@@ -787,250 +741,191 @@ export default function PhotoGallery() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handlePasswordSubmit()}
-              className={`bg-white/5 border-white/10 text-white ${passwordError ? 'border-red-500' : ''}`}
+              className="bg-black/40 border-[#CEA472]/30 text-white"
             />
             {passwordError && (
               <p className="text-red-500 text-sm">密码错误，请重试</p>
             )}
-          </div>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setIsPasswordOpen(false)}
-              className="border-white/10 text-gray-400 hover:text-white"
-            >
-              取消
-            </Button>
             <Button
               onClick={handlePasswordSubmit}
-              className="bg-[#CEA472] text-[#0a0a0f] hover:bg-[#CEA472]/90"
+              className="w-full bg-[#CEA472] hover:bg-[#CEA472]/80 text-[#0a0a0f]"
             >
               确认
             </Button>
-          </DialogFooter>
+          </div>
         </DialogContent>
       </Dialog>
 
-      {/* 管理面板弹窗 */}
+      {/* 管理弹窗 */}
       <Dialog open={isManageOpen} onOpenChange={setIsManageOpen}>
-        <DialogContent className="max-w-4xl max-h-[85vh] overflow-hidden flex flex-col bg-[#0a0a0f] border-[#CEA472]/20">
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-[#0a0a0f] border-[#CEA472]/20">
           <DialogHeader>
             <DialogTitle className="text-white flex items-center gap-2">
               <Settings className="w-5 h-5 text-[#CEA472]" />
               照片管理
             </DialogTitle>
-            <DialogDescription className="text-gray-400">
-              添加新照片或管理现有照片
-            </DialogDescription>
           </DialogHeader>
           
-          <div className="flex-1 overflow-y-auto space-y-6 py-4">
-            {/* 添加照片区域 */}
-            <div className="border border-[#CEA472]/20 rounded-lg p-4">
-              <h3 className="text-[#CEA472] font-medium mb-4 flex items-center gap-2">
-                <Plus className="w-4 h-4" />
-                添加新照片
-              </h3>
-              
-              <div className="grid grid-cols-2 gap-4">
-                {/* 图片上传 */}
-                <div className="space-y-2">
-                  <Label className="text-white text-sm">照片 *</Label>
-                  <div className="flex items-center gap-4">
+          <div className="space-y-6">
+            {/* 添加照片按钮 */}
+            <Button
+              onClick={() => {
+                setIsAddPhotoOpen(true);
+              }}
+              className="bg-[#CEA472] hover:bg-[#CEA472]/80 text-[#0a0a0f]"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              添加照片
+            </Button>
+
+            {/* 照片列表 */}
+            <div className="space-y-4">
+              {photos.map((photo) => (
+                <div key={photo.id} className="flex items-center gap-4 p-4 bg-black/40 rounded-lg border border-[#CEA472]/10">
+                  <div className="w-20 h-20 relative rounded overflow-hidden flex-shrink-0">
+                    <Image src={photo.image_url} alt={photo.title} fill className="object-cover" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h4 className="text-white font-medium truncate">{photo.title}</h4>
+                    <p className="text-gray-400 text-sm">{getRegionName(photo)} · {formatDate(photo.date)}</p>
+                    <div className="flex gap-1 mt-1">
+                      {photo.category?.split(',').map(catId => {
+                        const cat = categories.find(c => c.id === catId);
+                        return cat ? <span key={catId} className="text-xs text-[#CEA472]">{cat.name}</span> : null;
+                      })}
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button variant="outline" size="sm" onClick={() => handleOpenEdit(photo)} className="border-[#CEA472]/30 text-[#CEA472]">
+                      <Edit className="w-4 h-4" />
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={() => handleDeletePhoto(photo.id)} className="border-red-500/30 text-red-500">
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* 添加照片弹窗 */}
+      <Dialog open={isAddPhotoOpen} onOpenChange={setIsAddPhotoOpen}>
+        <DialogContent className="sm:max-w-lg bg-[#0a0a0f] border-[#CEA472]/20">
+          <DialogHeader>
+            <DialogTitle className="text-white">添加照片</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label className="text-gray-400">照片标题</Label>
+              <Input
+                value={newPhoto.title}
+                onChange={(e) => setNewPhoto(prev => ({ ...prev, title: e.target.value }))}
+                className="bg-black/40 border-[#CEA472]/30 text-white"
+                placeholder="请输入标题"
+              />
+            </div>
+
+            <div>
+              <Label className="text-gray-400">地点</Label>
+              <select
+                value={newPhoto.regionId || ''}
+                onChange={(e) => setNewPhoto(prev => ({ ...prev, regionId: Number(e.target.value) }))}
+                className="w-full px-3 py-2 bg-black/40 border border-[#CEA472]/30 rounded-md text-white"
+              >
+                <option value="">请选择地点</option>
+                {renderRegionOptions(regions)}
+              </select>
+            </div>
+
+            <div>
+              <Label className="text-gray-400">日期（年-月）</Label>
+              <Input
+                type="month"
+                value={newPhoto.yearMonth}
+                onChange={(e) => setNewPhoto(prev => ({ ...prev, yearMonth: e.target.value }))}
+                className="bg-black/40 border-[#CEA472]/30 text-white"
+              />
+            </div>
+
+            <div>
+              <Label className="text-gray-400">分类</Label>
+              <div className="flex flex-wrap gap-2 mt-2">
+                {categories.map((cat) => (
+                  <button
+                    key={cat.id}
+                    onClick={() => togglePhotoCategory(cat.id)}
+                    className={`px-3 py-1 rounded-full text-sm transition-all ${
+                      newPhoto.categories?.includes(cat.id)
+                        ? 'bg-[#CEA472] text-[#0a0a0f]'
+                        : 'bg-white/5 text-gray-400 hover:bg-white/10'
+                    }`}
+                  >
+                    {cat.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <Label className="text-gray-400">照片</Label>
+              <div className="mt-2">
+                {newPhoto.image ? (
+                  <div className="relative w-full aspect-video rounded-lg overflow-hidden">
+                    <Image src={newPhoto.image} alt="预览" fill className="object-cover" />
+                    <button
+                      onClick={() => setNewPhoto(prev => ({ ...prev, image: '', imageKey: '' }))}
+                      className="absolute top-2 right-2 p-1 bg-black/60 rounded-full text-white hover:bg-black/80"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                ) : (
+                  <label className="flex flex-col items-center justify-center w-full aspect-video border-2 border-dashed border-[#CEA472]/30 rounded-lg cursor-pointer hover:border-[#CEA472]/50 transition-colors">
+                    {isUploading ? (
+                      <Loader2 className="w-8 h-8 text-[#CEA472] animate-spin" />
+                    ) : (
+                      <>
+                        <Upload className="w-8 h-8 text-[#CEA472]/50" />
+                        <span className="text-gray-400 text-sm mt-2">点击上传照片</span>
+                      </>
+                    )}
                     <input
                       ref={fileInputRef}
                       type="file"
                       accept="image/*"
-                      onChange={handleImageUpload}
                       className="hidden"
+                      onChange={handleImageUpload}
                     />
-                    <Button
-                      onClick={() => fileInputRef.current?.click()}
-                      disabled={isUploading}
-                      variant="outline"
-                      size="sm"
-                      className="border-dashed border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10"
-                    >
-                      {isUploading ? (
-                        <>
-                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                          上传中...
-                        </>
-                      ) : (
-                        <>
-                          <Upload className="w-4 h-4 mr-2" />
-                          选择图片
-                        </>
-                      )}
-                    </Button>
-                    {newPhoto.image && (
-                      <div className="relative w-12 h-12 rounded overflow-hidden">
-                        <Image src={newPhoto.image} alt="预览" fill className="object-cover" />
-                        <div className="absolute top-0 right-0 bg-green-500 rounded-bl p-0.5">
-                          <Check className="w-2.5 h-2.5 text-white" />
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* 标题 */}
-                <div className="space-y-2">
-                  <Label className="text-white text-sm">标题 *</Label>
-                  <Input
-                    value={newPhoto.title}
-                    onChange={(e) => setNewPhoto({ ...newPhoto, title: e.target.value })}
-                    placeholder="输入照片标题"
-                    className="bg-white/5 border-white/10 text-white placeholder:text-gray-500 h-9"
-                  />
-                </div>
-
-                {/* 地点 */}
-                <div className="space-y-2">
-                  <Label className="text-white text-sm">地点 *</Label>
-                  <Input
-                    value={newPhoto.location}
-                    onChange={(e) => setNewPhoto({ ...newPhoto, location: e.target.value })}
-                    placeholder="例如：北京"
-                    className="bg-white/5 border-white/10 text-white placeholder:text-gray-500 h-9"
-                  />
-                </div>
-
-                {/* 日期 */}
-                <div className="space-y-2">
-                  <Label className="text-white text-sm">日期 *</Label>
-                  <Input
-                    type="month"
-                    value={newPhoto.yearMonth}
-                    onChange={(e) => setNewPhoto({ ...newPhoto, yearMonth: e.target.value })}
-                    className="bg-white/5 border-white/10 text-white h-9"
-                  />
-                </div>
-
-                {/* 分类 */}
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2">
-                    <Label className="text-white text-sm">分类 *</Label>
-                    <span className="text-xs text-[#CEA472] bg-[#CEA472]/10 px-2 py-0.5 rounded">可多选</span>
-                    {newPhoto.categories.length > 0 && (
-                      <span className="text-xs text-green-400 flex items-center gap-1">
-                        <Check className="w-3 h-3" />
-                        已选 {newPhoto.categories.length} 个
-                      </span>
-                    )}
-                  </div>
-                  <div className="flex flex-wrap gap-1.5">
-                    {categories.map((cat) => {
-                      const isSelected = newPhoto.categories.includes(cat.id);
-                      return (
-                        <button
-                          key={cat.id}
-                          type="button"
-                          onClick={() => togglePhotoCategory(cat.id)}
-                          className={`px-3 py-1.5 rounded-md text-sm transition-all flex items-center gap-1.5 ${
-                            isSelected
-                              ? 'bg-[#CEA472] text-[#0a0a0f] font-semibold shadow-lg shadow-[#CEA472]/20'
-                              : 'bg-white/10 text-gray-300 hover:bg-white/20 border border-white/10'
-                          }`}
-                        >
-                          {isSelected && <Check className="w-3 h-3" />}
-                          {cat.name}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* 外部链接 */}
-                <div className="space-y-2">
-                  <Label className="text-white text-sm">外部链接（可选）</Label>
-                  <Input
-                    value={newPhoto.url}
-                    onChange={(e) => setNewPhoto({ ...newPhoto, url: e.target.value })}
-                    placeholder="https://..."
-                    className="bg-white/5 border-white/10 text-white placeholder:text-gray-500 h-9"
-                  />
-                </div>
-              </div>
-
-              <div className="mt-4 flex justify-end">
-                <Button
-                  onClick={handleAddPhoto}
-                  disabled={isSaving || !newPhoto.title || !newPhoto.location || !newPhoto.yearMonth || !newPhoto.image || !newPhoto.imageKey || newPhoto.categories.length === 0}
-                  className="bg-[#CEA472] text-[#0a0a0f] hover:bg-[#CEA472]/90"
-                  size="sm"
-                >
-                  {isSaving ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      保存中...
-                    </>
-                  ) : (
-                    <>
-                      <Plus className="w-4 h-4 mr-2" />
-                      添加照片
-                    </>
-                  )}
-                </Button>
+                  </label>
+                )}
               </div>
             </div>
 
-            {/* 照片列表区域 */}
-            <div className="border border-[#CEA472]/20 rounded-lg p-4">
-              <h3 className="text-[#CEA472] font-medium mb-4 flex items-center gap-2">
-                <Camera className="w-4 h-4" />
-                现有照片 ({photos.length})
-              </h3>
-              
-              {photos.length === 0 ? (
-                <p className="text-gray-500 text-center py-8">暂无照片</p>
-              ) : (
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                  {photos.map((photo) => (
-                    <div key={photo.id} className="group relative aspect-[4/3] rounded-lg overflow-hidden bg-white/5 border border-white/10">
-                      <Image
-                        src={photo.image_url}
-                        alt={photo.title}
-                        fill
-                        className="object-cover"
-                      />
-                      {/* 信息显示 */}
-                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent p-3">
-                        <p className="text-white text-sm font-medium truncate">{photo.title}</p>
-                        <p className="text-gray-300 text-xs">{photo.location} · {photo.date}</p>
-                      </div>
-                      {/* 操作按钮 - 始终显示 */}
-                      <div className="absolute top-2 right-2 flex gap-2">
-                        <button
-                          onClick={() => handleOpenEdit(photo)}
-                          className="p-2 bg-[#CEA472] rounded-lg text-[#0a0a0f] hover:bg-[#CEA472]/80 transition-colors shadow-lg"
-                          title="编辑"
-                        >
-                          <Edit className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => handleDeletePhoto(photo.id)}
-                          className="p-2 bg-red-500 rounded-lg text-white hover:bg-red-600 transition-colors shadow-lg"
-                          title="删除"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
+            <div>
+              <Label className="text-gray-400">链接（可选）</Label>
+              <Input
+                value={newPhoto.url}
+                onChange={(e) => setNewPhoto(prev => ({ ...prev, url: e.target.value }))}
+                className="bg-black/40 border-[#CEA472]/30 text-white"
+                placeholder="点击照片跳转的链接"
+              />
+            </div>
+
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setIsAddPhotoOpen(false)} className="border-[#CEA472]/30 text-[#CEA472]">
+                取消
+              </Button>
+              <Button
+                onClick={handleAddPhoto}
+                disabled={isSaving || !newPhoto.title || !newPhoto.regionId || !newPhoto.yearMonth || !newPhoto.image || !newPhoto.categories?.length}
+                className="bg-[#CEA472] hover:bg-[#CEA472]/80 text-[#0a0a0f]"
+              >
+                {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : '添加'}
+              </Button>
             </div>
           </div>
-
-          <DialogFooter>
-            <Button
-              onClick={() => setIsManageOpen(false)}
-              className="bg-[#CEA472] text-[#0a0a0f] hover:bg-[#CEA472]/90"
-            >
-              完成
-            </Button>
-          </DialogFooter>
         </DialogContent>
       </Dialog>
 
@@ -1038,159 +933,106 @@ export default function PhotoGallery() {
       <Dialog open={isEditPhotoOpen} onOpenChange={setIsEditPhotoOpen}>
         <DialogContent className="sm:max-w-lg bg-[#0a0a0f] border-[#CEA472]/20">
           <DialogHeader>
-            <DialogTitle className="text-white flex items-center gap-2">
-              <Pencil className="w-5 h-5 text-[#CEA472]" />
-              编辑照片
-            </DialogTitle>
+            <DialogTitle className="text-white">编辑照片</DialogTitle>
           </DialogHeader>
-          
           {editingPhoto && (
-            <div className="space-y-4 py-4">
-              {/* 图片预览和上传 */}
-              <div className="space-y-2">
-                <Label className="text-white">照片</Label>
-                <div className="flex items-center gap-4">
-                  <input
-                    ref={editFileInputRef}
-                    type="file"
-                    accept="image/*"
-                    onChange={handleEditImageUpload}
-                    className="hidden"
-                  />
-                  <div className="relative w-20 h-20 rounded overflow-hidden">
-                    <Image
-                      src={editingPhoto.image_url}
-                      alt="预览"
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                  <Button
-                    onClick={() => editFileInputRef.current?.click()}
-                    disabled={isUploading}
-                    variant="outline"
-                    size="sm"
-                    className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10"
-                  >
-                    {isUploading ? (
-                      <>
-                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        上传中...
-                      </>
-                    ) : (
-                      '更换图片'
-                    )}
-                  </Button>
-                </div>
-              </div>
-
-              {/* 标题 */}
-              <div className="space-y-2">
-                <Label className="text-white">标题 *</Label>
+            <div className="space-y-4">
+              <div>
+                <Label className="text-gray-400">照片标题</Label>
                 <Input
                   value={editingPhoto.title}
-                  onChange={(e) => setEditingPhoto({ ...editingPhoto, title: e.target.value })}
-                  placeholder="输入照片标题"
-                  className="bg-white/5 border-white/10 text-white placeholder:text-gray-500"
+                  onChange={(e) => setEditingPhoto(prev => prev ? ({ ...prev, title: e.target.value }) : null)}
+                  className="bg-black/40 border-[#CEA472]/30 text-white"
                 />
               </div>
 
-              {/* 地点 */}
-              <div className="space-y-2">
-                <Label className="text-white">地点 *</Label>
-                <Input
-                  value={editingPhoto.location}
-                  onChange={(e) => setEditingPhoto({ ...editingPhoto, location: e.target.value })}
-                  placeholder="例如：北京"
-                  className="bg-white/5 border-white/10 text-white placeholder:text-gray-500"
-                />
+              <div>
+                <Label className="text-gray-400">地点</Label>
+                <select
+                  value={editingPhoto.region_id || ''}
+                  onChange={(e) => setEditingPhoto(prev => prev ? ({ ...prev, region_id: Number(e.target.value) }) : null)}
+                  className="w-full px-3 py-2 bg-black/40 border border-[#CEA472]/30 rounded-md text-white"
+                >
+                  <option value="">请选择地点</option>
+                  {renderRegionOptions(regions)}
+                </select>
               </div>
 
-              {/* 日期 */}
-              <div className="space-y-2">
-                <Label className="text-white">日期 *</Label>
+              <div>
+                <Label className="text-gray-400">日期（年-月）</Label>
                 <Input
                   type="month"
                   value={editingPhoto.date}
-                  onChange={(e) => setEditingPhoto({ ...editingPhoto, date: e.target.value })}
-                  className="bg-white/5 border-white/10 text-white"
+                  onChange={(e) => setEditingPhoto(prev => prev ? ({ ...prev, date: e.target.value }) : null)}
+                  className="bg-black/40 border-[#CEA472]/30 text-white"
                 />
               </div>
 
-              {/* 分类 */}
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <Label className="text-white">分类 *</Label>
-                  <span className="text-xs text-[#CEA472] bg-[#CEA472]/10 px-2 py-0.5 rounded">可多选</span>
-                  {editingPhoto.category && editingPhoto.category.split(',').filter(Boolean).length > 0 && (
-                    <span className="text-xs text-green-400 flex items-center gap-1">
-                      <Check className="w-3 h-3" />
-                      已选 {editingPhoto.category.split(',').filter(Boolean).length} 个
-                    </span>
-                  )}
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {categories.map((cat) => {
-                    const currentCategories = editingPhoto.category ? editingPhoto.category.split(',') : [];
-                    const isSelected = currentCategories.includes(cat.id);
-                    return (
-                      <button
-                        key={cat.id}
-                        type="button"
-                        onClick={() => toggleEditPhotoCategory(cat.id)}
-                        className={`px-4 py-2 rounded-lg text-sm transition-all flex items-center gap-1.5 ${
-                          isSelected
-                            ? 'bg-[#CEA472] text-[#0a0a0f] font-semibold shadow-lg shadow-[#CEA472]/20'
-                            : 'bg-white/10 text-gray-300 hover:bg-white/20 border border-white/10'
-                        }`}
-                      >
-                        {isSelected && <Check className="w-3.5 h-3.5" />}
-                        {cat.name}
-                      </button>
-                    );
-                  })}
+              <div>
+                <Label className="text-gray-400">分类</Label>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {categories.map((cat) => (
+                    <button
+                      key={cat.id}
+                      onClick={() => toggleEditPhotoCategory(cat.id)}
+                      className={`px-3 py-1 rounded-full text-sm transition-all ${
+                        editingPhoto.category?.split(',').includes(cat.id)
+                          ? 'bg-[#CEA472] text-[#0a0a0f]'
+                          : 'bg-white/5 text-gray-400 hover:bg-white/10'
+                      }`}
+                    >
+                      {cat.name}
+                    </button>
+                  ))}
                 </div>
               </div>
 
-              {/* 外部链接 */}
-              <div className="space-y-2">
-                <Label className="text-white">外部链接（可选）</Label>
+              <div>
+                <Label className="text-gray-400">照片</Label>
+                <div className="mt-2">
+                  <div className="relative w-full aspect-video rounded-lg overflow-hidden">
+                    <Image src={editingPhoto.image_url} alt="预览" fill className="object-cover" />
+                    <label className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 hover:opacity-100 transition-opacity cursor-pointer">
+                      {isUploading ? (
+                        <Loader2 className="w-8 h-8 text-[#CEA472] animate-spin" />
+                      ) : (
+                        <Upload className="w-8 h-8 text-white" />
+                      )}
+                      <input
+                        ref={editFileInputRef}
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={handleEditImageUpload}
+                      />
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <Label className="text-gray-400">链接（可选）</Label>
                 <Input
                   value={editingPhoto.url || ''}
-                  onChange={(e) => setEditingPhoto({ ...editingPhoto, url: e.target.value })}
-                  placeholder="https://..."
-                  className="bg-white/5 border-white/10 text-white placeholder:text-gray-500"
+                  onChange={(e) => setEditingPhoto(prev => prev ? ({ ...prev, url: e.target.value }) : null)}
+                  className="bg-black/40 border-[#CEA472]/30 text-white"
                 />
+              </div>
+
+              <div className="flex justify-end gap-2">
+                <Button variant="outline" onClick={() => setIsEditPhotoOpen(false)} className="border-[#CEA472]/30 text-[#CEA472]">
+                  取消
+                </Button>
+                <Button
+                  onClick={handleUpdatePhoto}
+                  disabled={isSaving}
+                  className="bg-[#CEA472] hover:bg-[#CEA472]/80 text-[#0a0a0f]"
+                >
+                  {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : '保存'}
+                </Button>
               </div>
             </div>
           )}
-
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => {
-                setIsEditPhotoOpen(false);
-                setEditingPhoto(null);
-              }}
-              className="border-white/10 text-gray-400 hover:text-white"
-            >
-              取消
-            </Button>
-            <Button
-              onClick={handleUpdatePhoto}
-              disabled={isSaving || !editingPhoto?.title || !editingPhoto?.location || !editingPhoto?.date}
-              className="bg-[#CEA472] text-[#0a0a0f] hover:bg-[#CEA472]/90"
-            >
-              {isSaving ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  保存中...
-                </>
-              ) : (
-                '保存修改'
-              )}
-            </Button>
-          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>
