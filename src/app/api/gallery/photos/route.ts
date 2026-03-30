@@ -38,7 +38,7 @@ export async function GET() {
     
     const { data, error } = await client
       .from('gallery_photos')
-      .select('*, regions(id, name, type)')
+      .select('*, region:regions(id, name, type)')
       .order('date', { ascending: false });
 
     if (error) {
@@ -95,7 +95,7 @@ export async function POST(request: NextRequest) {
         url: url || null,
         category,
       })
-      .select('*, regions(id, name, type)')
+      .select('*, region:regions(id, name, type)')
       .single();
 
     if (error) {
@@ -200,7 +200,7 @@ export async function PUT(request: NextRequest) {
         updated_at: new Date().toISOString(),
       })
       .eq('id', id)
-      .select('*, regions(id, name, type)')
+      .select('*, region:regions(id, name, type)')
       .single();
 
     if (error) {
