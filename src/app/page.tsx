@@ -6,14 +6,6 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import {
   Camera,
   Video,
   Wrench,
@@ -34,7 +26,6 @@ import {
   Star,
   Gift,
   Settings,
-  Lock,
   RefreshCw,
   ArrowUp,
 } from 'lucide-react';
@@ -43,11 +34,9 @@ import { VideoManager } from '@/components/video-manager';
 import { ToolManager } from '@/components/tool-manager';
 import { OptimizedImage } from '@/components/OptimizedImage';
 import { RegionMap } from '@/components/visit-map';
-import { VisitManager } from '@/components/visit-manager';
 import { Photo } from '@/app/api/photos/route';
 import { Video as VideoType } from '@/app/api/videos/route';
 import { Tool } from '@/app/api/tools/route';
-import { Visit } from '@/app/api/visits/route';
 import { Region } from '@/app/api/regions/route';
 
 // 动态导入地图组件（SSR: false）
@@ -289,12 +278,6 @@ const defaultTools: Tool[] = [
 function VisitTracker() {
   const [selectedRegion, setSelectedRegion] = useState<{ id: number; name: string } | null>(null);
   const [visitedRegions, setVisitedRegions] = useState<Set<number>>(new Set());
-  const [visitManagerKey, setVisitManagerKey] = useState(0);
-  const [shouldOpenVisitManager, setShouldOpenVisitManager] = useState(false);
-  const [isManagerOpen, setIsManagerOpen] = useState(false);
-  const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false);
-  const [password, setPassword] = useState('');
-  const [passwordError, setPasswordError] = useState('');
   const [isMobile, setIsMobile] = useState(false);
 
   // 检测移动端
@@ -307,14 +290,14 @@ function VisitTracker() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // 获取已访问的地区
+  // 获取已访问的地区（从 gallery_photos 获取）
   const fetchVisitedRegions = async () => {
     try {
-      const response = await fetch('/api/visits?includeRegion=true');
+      const response = await fetch('/api/gallery/photos');
       const result = await response.json();
-      if (result.success) {
+      if (result.photos) {
         const visitedIds = new Set<number>(
-          result.data.map((visit: Visit) => visit.regionId)
+          result.photos.map((photo: { region_id: number }) => photo.region_id)
         );
         setVisitedRegions(visitedIds);
       }
@@ -334,38 +317,11 @@ function VisitTracker() {
     } else {
       setSelectedRegion({ id: regionId, name: regionName });
     }
-    setShouldOpenVisitManager(false);
-    setVisitManagerKey(prev => prev + 1);
   };
 
   const handleOpenManager = () => {
-    setIsPasswordDialogOpen(true);
-    setPassword('');
-    setPasswordError('');
-  };
-
-  const handleVerifyPassword = () => {
-    if (password === 'tobi7758258') {
-      setIsPasswordDialogOpen(false);
-      setIsManagerOpen(true);
-      setSelectedRegion(null);
-      setShouldOpenVisitManager(true);
-      setVisitManagerKey(prev => prev + 1);
-      setPassword('');
-      setPasswordError('');
-    } else {
-      setPasswordError('密码错误，请重试');
-    }
-  };
-
-  const handleCloseManager = () => {
-    setIsManagerOpen(false);
-    setSelectedRegion(null);
-  };
-
-  const handleVisitAdded = () => {
-    fetchVisitedRegions();
-    setShouldOpenVisitManager(false);
+    // 跳转到照片集页面
+    window.location.href = '/photos';
   };
 
   return (
@@ -412,66 +368,6 @@ function VisitTracker() {
         </div>
       </div>
 
-      {/* 密码验证弹窗 */}
-      <Dialog open={isPasswordDialogOpen} onOpenChange={setIsPasswordDialogOpen}>
-        <DialogContent className="bg-[#0a0a0f] border-[#CEA472]/30 text-white max-w-md" showCloseButton={false}>
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-[#CEA472]">
-              <Lock className="w-5 h-5" />
-              管理员验证
-            </DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label htmlFor="visit-password" className="text-[#FFFFFF]/80">
-                请输入管理密码
-              </Label>
-              <Input
-                id="visit-password"
-                type="password"
-                value={password}
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                  setPasswordError('');
-                }}
-                onKeyDown={(e) => e.key === 'Enter' && handleVerifyPassword()}
-                placeholder="输入密码..."
-                className="bg-black/40 border-[#CEA472]/30 text-white placeholder:text-white/40 focus:border-[#CEA472]"
-              />
-              {passwordError && (
-                <p className="text-red-400 text-sm">{passwordError}</p>
-              )}
-            </div>
-            <div className="flex gap-3 justify-end">
-              <Button
-                variant="outline"
-                onClick={() => setIsPasswordDialogOpen(false)}
-                className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10"
-              >
-                取消
-              </Button>
-              <Button
-                onClick={handleVerifyPassword}
-                className="bg-[#CEA472] hover:bg-[#CEA472]/80 text-[#0a0a0f]"
-              >
-                确认
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* 添加打卡记录弹窗 */}
-      {isManagerOpen && (
-        <VisitManager 
-          key={visitManagerKey}
-          defaultRegionId={selectedRegion?.id || null}
-          defaultRegionName={selectedRegion?.name || ''}
-          shouldOpen={shouldOpenVisitManager}
-          onVisitAdded={handleVisitAdded}
-          onClose={handleCloseManager}
-        />
-      )}
     </div>
   );
 }

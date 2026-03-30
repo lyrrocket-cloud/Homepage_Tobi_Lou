@@ -1,8 +1,24 @@
 'use client';
 
 import React, { useEffect, useState, useCallback } from 'react';
-import { MapPin, Calendar, ExternalLink, Plus } from 'lucide-react';
-import { Visit } from '@/app/api/visits/route';
+import { MapPin, Calendar, ExternalLink, Plus, Camera } from 'lucide-react';
+import Image from 'next/image';
+
+// 照片类型定义（从 gallery_photos 获取）
+interface PhotoVisit {
+  id: number;
+  title: string;
+  region_id: number;
+  date: string;
+  year: number;
+  image_url: string;
+  category: string;
+  region?: {
+    id: number;
+    name: string;
+    type: string;
+  };
+}
 
 interface VisitListProps {
   regionId: number | null;
@@ -12,24 +28,25 @@ interface VisitListProps {
 }
 
 export function VisitList({ regionId, regionName, onRefresh, onAddVisit }: VisitListProps) {
-  const [visits, setVisits] = useState<Visit[]>([]);
+  const [visits, setVisits] = useState<PhotoVisit[]>([]);
   const [loading, setLoading] = useState(false);
 
-  // 获取访问记录
+  // 获取访问记录（从 gallery_photos 表）
   const fetchVisits = useCallback(async () => {
     try {
       setLoading(true);
-      // 如果有regionId，只获取该地区的访问记录；否则获取所有访问记录
-      const url = regionId
-        ? `/api/visits?regionId=${regionId}&includeRegion=true`
-        : '/api/visits?includeRegion=true';
-
-      const response = await fetch(url);
+      const response = await fetch('/api/gallery/photos');
       const result = await response.json();
       
-      if (result.success) {
+      if (result.photos) {
+        // 如果有 regionId，只显示该地区的记录
+        let filteredPhotos = result.photos;
+        if (regionId) {
+          filteredPhotos = result.photos.filter((photo: PhotoVisit) => photo.region_id === regionId);
+        }
+        
         // 按日期降序排列（最新的在前）
-        const sortedVisits = result.data.sort((a: Visit, b: Visit) =>
+        const sortedVisits = filteredPhotos.sort((a: PhotoVisit, b: PhotoVisit) =>
           b.date.localeCompare(a.date)
         );
         setVisits(sortedVisits);
@@ -48,7 +65,6 @@ export function VisitList({ regionId, regionName, onRefresh, onAddVisit }: Visit
   // 暴露给父组件的刷新函数
   useEffect(() => {
     if (onRefresh) {
-      // 当 regionId 变化时通知父组件
       onRefresh();
     }
   }, [regionId, onRefresh]);
@@ -75,9 +91,9 @@ export function VisitList({ regionId, regionName, onRefresh, onAddVisit }: Visit
       {visits.length === 0 ? (
         <div className="flex items-center justify-center flex-1">
           <div className="text-center">
-            <ExternalLink className="w-12 h-12 text-[#CEA472]/50 mx-auto mb-3" />
+            <Camera className="w-12 h-12 text-[#CEA472]/50 mx-auto mb-3" />
             <p className="text-[#CEA472]/60">
-              {regionName ? '该地区暂无访问记录' : '暂无访问记录'}
+              {regionName ? '该地区暂无照片记录' : '暂无照片记录'}
             </p>
             {onAddVisit && (
               <button
@@ -85,7 +101,7 @@ export function VisitList({ regionId, regionName, onRefresh, onAddVisit }: Visit
                 className="mt-4 px-4 py-2 bg-[#CEA472]/20 hover:bg-[#CEA472]/30 text-[#CEA472] border border-[#CEA472]/30 rounded transition-colors text-sm flex items-center gap-2 mx-auto"
               >
                 <Plus className="w-4 h-4" />
-                添加到访记录
+                添加照片
               </button>
             )}
           </div>
@@ -94,7 +110,7 @@ export function VisitList({ regionId, regionName, onRefresh, onAddVisit }: Visit
         <>
           <div className="flex-1 overflow-y-auto space-y-3 pr-2">
             {visits.map((visit) => (
-              <VisitCard key={visit.id} visit={visit} showRegion={!regionId} onRefresh={onRefresh} />
+              <VisitCard key={visit.id} visit={visit} showRegion={!regionId} />
             ))}
           </div>
           
@@ -106,7 +122,7 @@ export function VisitList({ regionId, regionName, onRefresh, onAddVisit }: Visit
                 className="w-full px-4 py-2 bg-[#CEA472]/10 hover:bg-[#CEA472]/20 text-[#CEA472] border border-[#CEA472]/30 rounded transition-colors flex items-center justify-center gap-2"
               >
                 <Plus className="w-4 h-4" />
-                添加到访记录
+                添加照片
               </button>
             </div>
           )}
@@ -117,35 +133,58 @@ export function VisitList({ regionId, regionName, onRefresh, onAddVisit }: Visit
 }
 
 interface VisitCardProps {
-  visit: Visit;
+  visit: PhotoVisit;
   showRegion?: boolean;
-  onRefresh?: () => void;
 }
 
-function VisitCard({ visit, showRegion = false, onRefresh }: VisitCardProps) {
+function VisitCard({ visit, showRegion = false }: VisitCardProps) {
+  // 格式化日期显示
+  const formatDate = (dateStr: string) => {
+    const [year, month] = dateStr.split('-');
+    return `${year}年${month}月`;
+  };
+
   return (
-    <div className="bg-black/40 border border-[#CEA472]/10 hover:border-[#CEA472]/30 rounded-lg p-4 transition-all duration-300 hover:bg-black/60">
-      <div className="flex items-center justify-between mb-2">
-        <div className="flex items-center gap-3">
-          <MapPin className="w-5 h-5 text-[#CEA472]/70 flex-shrink-0" />
-          <span className="text-[#FFFFFF] text-lg font-medium">{visit.region?.name || visit.title}</span>
+    <div className="bg-black/40 border border-[#CEA472]/10 hover:border-[#CEA472]/30 rounded-lg overflow-hidden transition-all duration-300 hover:bg-black/60">
+      {/* 图片区域 */}
+      {visit.image_url && (
+        <div className="relative h-32 w-full">
+          <Image
+            src={visit.image_url}
+            alt={visit.title}
+            fill
+            className="object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
         </div>
-      </div>
-      <div className="flex items-center gap-2 mb-2">
-        <Calendar className="w-4 h-4 text-[#CEA472]/70 flex-shrink-0" />
-        <p className="text-[#FFFFFF]/70 text-sm">{visit.date}</p>
-      </div>
-      {visit.image && (
-        <a
-          href={visit.image}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 text-sm text-[#CEA472] hover:text-[#CEA472]/80 transition-colors"
-        >
-          查看详情
-          <ExternalLink className="w-4 h-4" />
-        </a>
       )}
+      
+      {/* 信息区域 */}
+      <div className="p-3">
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-2">
+            <MapPin className="w-4 h-4 text-[#CEA472]/70 flex-shrink-0" />
+            <span className="text-[#FFFFFF] text-base font-medium">
+              {showRegion && visit.region?.name ? visit.region.name : visit.title}
+            </span>
+          </div>
+        </div>
+        <div className="flex items-center gap-2 mb-2">
+          <Calendar className="w-3 h-3 text-[#CEA472]/70 flex-shrink-0" />
+          <p className="text-[#FFFFFF]/70 text-xs">{formatDate(visit.date)}</p>
+        </div>
+        {visit.image_url && (
+          <a
+            href={visit.image_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1 text-xs text-[#CEA472] hover:text-[#CEA472]/80 transition-colors"
+          >
+            查看大图
+            <ExternalLink className="w-3 h-3" />
+          </a>
+        )}
+      </div>
     </div>
   );
 }
