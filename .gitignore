@@ -77,9 +77,11 @@ ehthumbs.db
 Thumbs.db
 Desktop.ini
 
-# Backup files
-.backups/
+# Backup files (but allow production backup for sync)
+.backups/*
+!.backups/.gitkeep
 backup-*.json
+!scripts/production-backup.json
 
 # Temporary files
 *.tmp
