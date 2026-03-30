@@ -535,7 +535,7 @@ export default function Home() {
       {/* 右上角同步图标 - 固定在页面顶端，滚动后消失 */}
       <a
         href="/admin/sync"
-        className="absolute top-4 right-4 z-[100] p-2 bg-black/40 backdrop-blur-md border border-[#CEA472]/30 hover:border-[#CEA472]/50 hover:bg-[#CEA472]/20 transition-all duration-300"
+        className="absolute top-4 right-4 z-[100] p-2 rounded-md bg-black/40 backdrop-blur-md border border-[#CEA472]/30 hover:border-[#CEA472]/50 hover:bg-[#CEA472]/20 transition-all duration-300"
         title="数据同步"
       >
         <RefreshCw className="w-4 h-4 text-[#CEA472]" />
@@ -649,7 +649,7 @@ export default function Home() {
               />
               <button
                 onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                className="p-2 bg-black/40 border border-[#CEA472]/30 hover:border-[#CEA472]/50 hover:bg-[#CEA472]/20 transition-all"
+                className="p-2 rounded-md bg-black/40 border border-[#CEA472]/30 hover:border-[#CEA472]/50 hover:bg-[#CEA472]/20 transition-all"
                 title="回到顶端"
               >
                 <ArrowUp className="w-4 h-4 text-[#CEA472]" />
@@ -732,7 +732,7 @@ export default function Home() {
               />
               <button
                 onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                className="p-2 bg-black/40 border border-[#CEA472]/30 hover:border-[#CEA472]/50 hover:bg-[#CEA472]/20 transition-all"
+                className="p-2 rounded-md bg-black/40 border border-[#CEA472]/30 hover:border-[#CEA472]/50 hover:bg-[#CEA472]/20 transition-all"
                 title="回到顶端"
               >
                 <ArrowUp className="w-4 h-4 text-[#CEA472]" />
@@ -824,7 +824,7 @@ export default function Home() {
               />
               <button
                 onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                className="p-2 bg-black/40 border border-[#CEA472]/30 hover:border-[#CEA472]/50 hover:bg-[#CEA472]/20 transition-all"
+                className="p-2 rounded-md bg-black/40 border border-[#CEA472]/30 hover:border-[#CEA472]/50 hover:bg-[#CEA472]/20 transition-all"
                 title="回到顶端"
               >
                 <ArrowUp className="w-4 h-4 text-[#CEA472]" />
