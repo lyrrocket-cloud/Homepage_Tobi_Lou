@@ -45,7 +45,10 @@ export async function POST(request: NextRequest) {
     const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
     const results: Record<string, { status: string; count?: number; error?: string }> = {};
-    const tables = ['regions', 'photos', 'videos', 'tools', 'visits'];
+    
+    // 同步顺序：先同步基础表（regions），再同步依赖表
+    // 使用 upsert 避免外键约束问题
+    const tables = ['regions', 'photos', 'videos', 'tools', 'gallery_photos'];
 
     for (const table of tables) {
       const tableData = backup.tables[table];
@@ -55,7 +58,21 @@ export async function POST(request: NextRequest) {
       }
 
       try {
-        // 清空表
+        // 对于 regions 表，使用 upsert 避免外键约束问题
+        if (table === 'regions') {
+          const { error: upsertError } = await supabase
+            .from(table)
+            .upsert(tableData.data, { onConflict: 'id' });
+
+          if (upsertError) {
+            results[table] = { status: 'error', error: upsertError.message };
+          } else {
+            results[table] = { status: 'success', count: tableData.data.length };
+          }
+          continue;
+        }
+
+        // 其他表：先清空再插入
         const { error: deleteError } = await supabase
           .from(table)
           .delete()

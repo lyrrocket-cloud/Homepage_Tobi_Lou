@@ -97,7 +97,7 @@ async function main() {
   };
 
   // 备份表数据
-  const tables = ['regions', 'visits', 'photos', 'videos', 'tools'];
+  const tables = ['regions', 'gallery_photos', 'photos', 'videos', 'tools'];
 
   for (const table of tables) {
     try {

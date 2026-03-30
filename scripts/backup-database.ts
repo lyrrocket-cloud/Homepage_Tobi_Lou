@@ -68,7 +68,7 @@ async function main() {
   const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
   // 定义需要备份的表
-  const tables = ['regions', 'visits', 'photos', 'videos', 'tools'];
+  const tables = ['regions', 'gallery_photos', 'photos', 'videos', 'tools'];
 
   // 创建备份目录
   const backupDir = join(process.cwd(), '.backups');
