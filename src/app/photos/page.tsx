@@ -459,7 +459,7 @@ export default function PhotoGallery() {
                 {/* 返回主页按钮 */}
                 <button
                   onClick={() => window.location.href = '/'}
-                  className="p-1.5 rounded-md text-[#CEA472] hover:bg-white/5 transition-colors"
+                  className="p-1.5 rounded-md text-[#CEA472] hover:bg-[#CEA472]/20 transition-colors"
                   title="返回主页"
                 >
                   <Home className="w-5 h-5" />
@@ -470,14 +470,14 @@ export default function PhotoGallery() {
                   <h1 className="text-2xl font-bold text-white tracking-wide">照片集</h1>
                 </div>
               </div>
-              <Button
+              {/* 管理按钮 */}
+              <button
                 onClick={handleOpenManage}
-                variant="outline"
-                className="gap-2 border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10 hover:text-[#CEA472]"
+                className="p-1.5 rounded-md text-[#CEA472] hover:bg-[#CEA472]/20 transition-colors"
+                title="管理照片"
               >
-                <Settings className="w-4 h-4" />
-                管理
-              </Button>
+                <Settings className="w-5 h-5" />
+              </button>
             </div>
           </div>
         </header>
