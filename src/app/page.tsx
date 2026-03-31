@@ -30,6 +30,7 @@ import {
   ArrowUp,
 } from 'lucide-react';
 import { PhotoManager } from '@/components/photo-manager';
+import { WorldPhotoManager } from '@/components/world-photo-manager';
 import { VideoManager } from '@/components/video-manager';
 import { ToolManager } from '@/components/tool-manager';
 import { OptimizedImage } from '@/components/OptimizedImage';
@@ -722,6 +723,7 @@ export default function Home() {
                 photos={photos} 
                 onPhotosUpdate={(updatedPhotos) => setPhotos(updatedPhotos)} 
               />
+              <WorldPhotoManager />
               <button
                 onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
                 className="p-2 rounded-md bg-black/40 border border-[#CEA472]/30 hover:border-[#CEA472]/50 hover:bg-[#CEA472]/20 transition-all"

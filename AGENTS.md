@@ -33,14 +33,15 @@ src/
 │   ├── page.tsx          # 主页
 │   └── layout.tsx        # 布局
 ├── components/
-│   ├── china-map.tsx     # 中国地图组件
-│   ├── world-map.tsx     # 世界地图组件
-│   ├── visit-list.tsx    # 打卡记录列表
-│   ├── visit-manager.tsx # 打卡管理弹窗
-│   ├── photo-manager.tsx # 照片管理
-│   ├── video-manager.tsx # 视频管理
-│   ├── tool-manager.tsx  # 工具管理
-│   └── ui/               # shadcn/ui 组件
+│   ├── china-map.tsx         # 中国地图组件
+│   ├── world-map.tsx         # 世界地图组件
+│   ├── visit-list.tsx        # 打卡记录列表
+│   ├── visit-manager.tsx     # 打卡管理弹窗
+│   ├── photo-manager.tsx     # 照片管理
+│   ├── world-photo-manager.tsx # 世界地图照片管理
+│   ├── video-manager.tsx     # 视频管理
+│   ├── tool-manager.tsx      # 工具管理
+│   └── ui/                   # shadcn/ui 组件
 ├── storage/
 │   └── database/
 │       └── supabase-client.ts  # Supabase 客户端
