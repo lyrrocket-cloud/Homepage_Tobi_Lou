@@ -4,8 +4,11 @@
 /* 引入庞门正道粗书体 */
 @font-face {
   font-family: 'PangMenZhengDao';
-  src: url('https://cdn.jsdelivr.net/gh/AquaCamel/pangmen@master/PangMenZhengDao-Cu.woff2') format('woff2'),
-       url('https://cdn.jsdelivr.net/gh/AquaCamel/pangmen@master/PangMenZhengDao-Cu.woff') format('woff');
+  src: local('PangMenZhengDao'),
+       url('https://cdn.jsdelivr.net/gh/AquaCamel/pangmen@master/PangMenZhengDao-Cu.woff2') format('woff2'),
+       url('https://cdn.jsdelivr.net/gh/AquaCamel/pangmen@master/PangMenZhengDao-Cu.woff') format('woff'),
+       url('https://raw.githubusercontent.com/AquaCamel/pangmen/master/PangMenZhengDao-Cu.woff2') format('woff2'),
+       url('https://raw.githubusercontent.com/AquaCamel/pangmen/master/PangMenZhengDao-Cu.woff') format('woff');
   font-weight: normal;
   font-style: normal;
   font-display: swap;
