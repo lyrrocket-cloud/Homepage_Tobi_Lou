@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -61,7 +61,30 @@ const categories = [
 // 管理密码
 const ADMIN_PASSWORD = 'tobi7758258';
 
-export default function PhotoGallery() {
+// 加载中组件
+function PhotoGalleryLoading() {
+  return (
+    <div className="min-h-screen bg-[#0a0a0f] relative overflow-hidden">
+      <div className="fixed inset-0 z-0">
+        <Image
+          src="/assets/background.jpg"
+          alt="背景"
+          fill
+          className="object-cover"
+          priority
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0a0a0f] via-[#0a0a0f]/95 to-[#0a0a0f]/80" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0f]/60 via-transparent to-[#0a0a0f]" />
+      </div>
+      <div className="relative z-10 flex items-center justify-center min-h-screen">
+        <Loader2 className="w-8 h-8 text-[#CEA472] animate-spin" />
+      </div>
+    </div>
+  );
+}
+
+// 主画廊组件（使用 useSearchParams）
+function PhotoGalleryContent() {
   // 从 URL 读取分类参数
   const searchParams = useSearchParams();
   const categoryParam = searchParams.get('category');
@@ -1055,5 +1078,14 @@ export default function PhotoGallery() {
         </DialogContent>
       </Dialog>
     </div>
+  );
+}
+
+// 默认导出：用 Suspense 包裹主组件
+export default function PhotoGallery() {
+  return (
+    <Suspense fallback={<PhotoGalleryLoading />}>
+      <PhotoGalleryContent />
+    </Suspense>
   );
 }
