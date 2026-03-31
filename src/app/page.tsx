@@ -321,46 +321,23 @@ function WorldTracker() {
   };
 
   return (
-    <div className="space-y-6">
-      {/* 标题区域 */}
-      <div className="flex items-center gap-3">
-        <Globe className="w-8 h-8 text-[#CEA472]" />
-        <h3 className="text-4xl font-bold text-[#CEA472]">
-          世界地图
-        </h3>
+    <div className="flex flex-col md:flex-row gap-6 items-stretch">
+      {/* 左侧：世界地图 */}
+      <div className="flex-1 w-full">
+        <WorldMap
+          selectedRegion={selectedRegion}
+          visitedRegions={visitedRegions}
+          onRegionClick={handleRegionClick}
+        />
       </div>
 
-      {/* 图例 */}
-      <div className="flex items-center gap-6 text-sm">
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 bg-[#CEA472] rounded"></div>
-          <span className="text-[#FFFFFF]/70">已访问</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 bg-black/30 border border-[#CEA472]/10 rounded"></div>
-          <span className="text-[#FFFFFF]/70">未访问</span>
-        </div>
-      </div>
-
-      {/* 左右分栏布局 - 桌面和平板保持地图在左、打卡记录在右 */}
-      <div className="flex flex-col md:flex-row gap-6 items-stretch">
-        {/* 左侧：世界地图 */}
-        <div className="flex-1 w-full">
-          <WorldMap
-            selectedRegion={selectedRegion}
-            visitedRegions={visitedRegions}
-            onRegionClick={handleRegionClick}
-          />
-        </div>
-
-        {/* 右侧：打卡记录列表 - 固定宽度，与地图等高 */}
-        <div className="w-full md:w-[320px] flex-shrink-0 h-[300px] md:h-[400px] overflow-y-auto">
-          <WorldVisitList
-            regionId={selectedRegion?.id || null}
-            regionName={selectedRegion?.name || ''}
-            onRefresh={fetchVisitedRegions}
-          />
-        </div>
+      {/* 右侧：打卡记录列表 - 固定宽度，与地图等高 */}
+      <div className="w-full md:w-[320px] flex-shrink-0 h-[300px] md:h-[400px] overflow-y-auto">
+        <WorldVisitList
+          regionId={selectedRegion?.id || null}
+          regionName={selectedRegion?.name || ''}
+          onRefresh={fetchVisitedRegions}
+        />
       </div>
     </div>
   );
@@ -494,17 +471,6 @@ function WorldVisitList({ regionId, regionName, onRefresh }: { regionId: number 
 function VisitTracker() {
   const [selectedRegion, setSelectedRegion] = useState<{ id: number; name: string } | null>(null);
   const [visitedRegions, setVisitedRegions] = useState<Set<number>>(new Set());
-  const [isMobile, setIsMobile] = useState(false);
-
-  // 检测移动端
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 1024);
-    };
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
 
   // 获取已访问的地区（从 gallery_photos 获取）
   const fetchVisitedRegions = async () => {
@@ -536,48 +502,24 @@ function VisitTracker() {
   };
 
   return (
-    <div className="space-y-6">
-      {/* 标题区域 */}
-      <div className="flex items-center gap-3">
-        <Globe className="w-8 h-8 text-[#CEA472]" />
-        <h3 className="text-4xl font-bold text-[#CEA472]">
-          旅行打卡
-        </h3>
+    <div className="flex flex-col md:flex-row gap-6 items-stretch">
+      {/* 左侧：中国地图 */}
+      <div className="flex-1 w-full">
+        <ChinaMap
+          selectedRegion={selectedRegion}
+          visitedRegions={visitedRegions}
+          onRegionClick={handleRegionClick}
+        />
       </div>
 
-      {/* 图例 */}
-      <div className="flex items-center gap-6 text-sm">
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 bg-[#CEA472] rounded"></div>
-          <span className="text-[#FFFFFF]/70">已访问</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-4 h-4 bg-black/30 border border-[#CEA472]/10 rounded"></div>
-          <span className="text-[#FFFFFF]/70">未访问</span>
-        </div>
+      {/* 右侧：打卡记录列表 - 固定宽度，与地图等高 */}
+      <div className="w-full md:w-[320px] flex-shrink-0 h-[300px] md:h-[480px] overflow-y-auto">
+        <VisitList
+          regionId={selectedRegion?.id || null}
+          regionName={selectedRegion?.name || ''}
+          onRefresh={fetchVisitedRegions}
+        />
       </div>
-
-      {/* 左右分栏布局 - 桌面和平板保持地图在左、打卡记录在右 */}
-      <div className="flex flex-col md:flex-row gap-6 items-stretch">
-        {/* 左侧：响应式地图 */}
-        <div className="flex-1 w-full">
-          <ChinaMap
-            selectedRegion={selectedRegion}
-            visitedRegions={visitedRegions}
-            onRegionClick={handleRegionClick}
-          />
-        </div>
-
-        {/* 右侧：打卡记录列表 - 固定宽度，与地图等高 */}
-        <div className="w-full md:w-[320px] flex-shrink-0 h-[300px] md:h-[480px] overflow-y-auto">
-          <VisitList
-            regionId={selectedRegion?.id || null}
-            regionName={selectedRegion?.name || ''}
-            onRefresh={fetchVisitedRegions}
-          />
-        </div>
-      </div>
-
     </div>
   );
 }
@@ -733,7 +675,27 @@ export default function Home() {
 
       {/* 旅行打卡区域 */}
       <section id="visits" className="relative py-20 px-4">
-        <div className="max-w-7xl mx-auto space-y-12">
+        <div className="max-w-7xl mx-auto space-y-8">
+          {/* 标题区域 */}
+          <div className="flex items-center gap-3">
+            <Globe className="w-8 h-8 text-[#CEA472]" />
+            <h3 className="text-4xl font-bold text-[#CEA472]">
+              旅行打卡
+            </h3>
+          </div>
+
+          {/* 图例 - 两幅地图共用 */}
+          <div className="flex items-center gap-6 text-sm">
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 bg-[#CEA472] rounded"></div>
+              <span className="text-[#FFFFFF]/70">已访问</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 bg-black/30 border border-[#CEA472]/10 rounded"></div>
+              <span className="text-[#FFFFFF]/70">未访问</span>
+            </div>
+          </div>
+
           {/* 世界地图 */}
           <WorldTracker />
           

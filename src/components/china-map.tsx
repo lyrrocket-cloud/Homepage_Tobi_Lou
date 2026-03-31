@@ -236,6 +236,10 @@ export function ChinaMap({ onRegionClick, selectedRegion, visitedRegions = new S
 
   return (
     <div className={`relative w-full h-[300px] md:h-[480px] bg-black/40 backdrop-blur-md rounded-lg border border-[#CEA472]/20 overflow-hidden select-none ${className}`}>
+      {/* 地图标签 */}
+      <div className="absolute top-3 left-3 z-10 px-3 py-1 bg-black/60 backdrop-blur-sm rounded-full border border-[#CEA472]/30">
+        <span className="text-xs text-[#CEA472] font-medium">🗺️ 中国地图</span>
+      </div>
       <ComposableMap
         projection="geoMercator"
         projectionConfig={{
