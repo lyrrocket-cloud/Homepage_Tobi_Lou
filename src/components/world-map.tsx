@@ -10,9 +10,8 @@ interface WorldMapProps {
   className?: string;
 }
 
-// 世界地图数据源 - 优先本地，网络作为备用
-const WORLD_MAP_LOCAL = '/data/world.json';
-const WORLD_MAP_BACKUP = 'https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json';
+// 世界地图数据源
+const WORLD_MAP_URL = 'https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson';
 
 // 国家英文名称到中文名称的映射
 const englishToChinese: Record<string, string> = {
@@ -289,27 +288,14 @@ export function WorldMap({ onRegionClick, selectedRegion, visitedRegions = new S
     setLoading(true);
     setError(null);
     try {
-      // 优先从本地加载
-      const response = await fetch(WORLD_MAP_LOCAL);
-      if (!response.ok) throw new Error('Local source failed');
+      const response = await fetch(WORLD_MAP_URL);
+      if (!response.ok) throw new Error('Failed to fetch map data');
       const data = await response.json();
-      console.log('[WorldMap] 本地数据加载成功, features:', data.features?.length);
       setMapData(data);
       setLoading(false);
     } catch (err) {
-      console.warn('[WorldMap] 本地加载失败，尝试网络备用源:', err);
-      try {
-        const backupResponse = await fetch(WORLD_MAP_BACKUP);
-        if (!backupResponse.ok) throw new Error('Backup source failed');
-        const data = await backupResponse.json();
-        console.log('[WorldMap] 网络数据加载成功, features:', data.features?.length);
-        setMapData(data);
-        setLoading(false);
-      } catch (backupErr) {
-        console.error('[WorldMap] 所有数据源加载失败:', backupErr);
-        setError('无法加载地图数据');
-        setLoading(false);
-      }
+      setError('无法加载地图数据');
+      setLoading(false);
     }
   };
 
@@ -396,8 +382,8 @@ export function WorldMap({ onRegionClick, selectedRegion, visitedRegions = new S
       <ComposableMap
         projection="geoMercator"
         projectionConfig={{
-          scale: 120,
-          center: [0, 20],
+          scale: 200,
+          center: [0, 0],
         }}
         className="w-full h-full"
       >

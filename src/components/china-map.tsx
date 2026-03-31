@@ -10,8 +10,8 @@ interface ChinaMapProps {
   className?: string;
 }
 
-// 地图数据源 - 优先本地，网络作为备用
-const CHINA_MAP_LOCAL = '/data/china.json';
+// 地图数据源
+const CHINA_MAP_URL = 'https://raw.githubusercontent.com/waylau/svg-china-map/master/china-map/china.geo.json';
 const CHINA_MAP_BACKUP = 'https://geo.datav.aliyun.com/areas_v3/bound/100000_full.json';
 
 // 省份代码到数据库 ID 的映射（备份数据源格式）
@@ -133,30 +133,19 @@ export function ChinaMap({ onRegionClick, selectedRegion, visitedRegions = new S
     setLoading(true);
     setError(null);
     try {
-      // 优先从本地加载
-      const response = await fetch(CHINA_MAP_LOCAL);
-      if (!response.ok) throw new Error('Local source failed');
+      const response = await fetch(CHINA_MAP_URL);
+      if (!response.ok) throw new Error('Primary source failed');
       const data = await response.json();
-      console.log('[ChinaMap] 本地数据加载成功, type:', data.type, 'features:', data.features?.length);
-      // 验证数据格式
-      if (data.type === 'FeatureCollection' && Array.isArray(data.features)) {
-        console.log('[ChinaMap] 第一个省份:', data.features[0]?.properties?.name);
-        setMapData(data);
-      } else {
-        throw new Error('Invalid GeoJSON format');
-      }
+      setMapData(data);
       setLoading(false);
     } catch (err) {
-      console.warn('[ChinaMap] 本地加载失败，尝试网络备用源:', err);
       try {
         const backupResponse = await fetch(CHINA_MAP_BACKUP);
         if (!backupResponse.ok) throw new Error('Backup source failed');
         const data = await backupResponse.json();
-        console.log('[ChinaMap] 网络数据加载成功, type:', data.type, 'features:', data.features?.length);
         setMapData(data);
         setLoading(false);
       } catch (backupErr) {
-        console.error('[ChinaMap] 所有数据源加载失败:', backupErr);
         setError('无法加载地图数据');
         setLoading(false);
       }
@@ -252,26 +241,19 @@ export function ChinaMap({ onRegionClick, selectedRegion, visitedRegions = new S
       <ComposableMap
         projection="geoMercator"
         projectionConfig={{
-          center: [105, 38],
-          scale: 100,
+          center: [104, 37.5],
+          scale: 600,
         }}
         className="w-full h-full"
       >
         <Geographies geography={mapData}>
             {({ geographies }) =>
-              geographies
-                .filter((geo) => {
-                  // 过滤掉九段线等特殊区域（name 为空或 adcode 包含非数字）
-                  const name = geo.properties?.name;
-                  const adcode = geo.properties?.adcode?.toString() || '';
-                  return name && adcode && !adcode.includes('_');
-                })
-                .map((geo) => {
-                  const regionId = getRegionId(geo);
-                  const isChecked = visitedRegions.has(regionId);
-                  const isSelected = selectedRegion?.id === regionId;
-                  // 上海(108)和江苏(109)使用特殊颜色（住在）
-                  const isHome = regionId === 108 || regionId === 109;
+              geographies.map((geo) => {
+                const regionId = getRegionId(geo);
+                const isChecked = visitedRegions.has(regionId);
+                const isSelected = selectedRegion?.id === regionId;
+                // 上海(108)和江苏(109)使用特殊颜色（住在）
+                const isHome = regionId === 108 || regionId === 109;
 
                 // 根据状态确定填充颜色
                 const getFillColor = () => {
