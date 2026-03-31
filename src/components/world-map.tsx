@@ -11,9 +11,8 @@ interface WorldMapProps {
 }
 
 // 世界地图数据源 - 优先本地，网络作为备用
-// 使用 TopoJSON 格式（更小更快）
-const WORLD_MAP_LOCAL = '/data/world-50m.json';
-const WORLD_MAP_BACKUP = 'https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json';
+const WORLD_MAP_LOCAL = '/data/world.json';
+const WORLD_MAP_BACKUP = 'https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json';
 
 // 国家英文名称到中文名称的映射
 const englishToChinese: Record<string, string> = {
@@ -402,7 +401,7 @@ export function WorldMap({ onRegionClick, selectedRegion, visitedRegions = new S
         }}
         className="w-full h-full"
       >
-        <Geographies geography={{ geography: mapData, object: 'countries' }}>
+        <Geographies geography={mapData}>
             {({ geographies }) =>
               geographies.map((geo) => {
                 const regionId = getRegionId(geo);
