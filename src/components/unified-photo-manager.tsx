@@ -519,7 +519,7 @@ export function UnifiedPhotoManager({ onPhotoAdded }: UnifiedPhotoManagerProps) 
 
       {/* 管理弹窗 */}
       <Dialog open={isManageOpen} onOpenChange={setIsManageOpen}>
-        <DialogContent className="min-w-[900px] w-[92vw] max-w-[1400px] max-h-[90vh] overflow-y-auto bg-[#0a0a0f] border-[#CEA472]/20">
+        <DialogContent className="min-w-[1000px] w-[92vw] max-w-[1400px] max-h-[90vh] overflow-y-auto bg-[#0a0a0f] border-[#CEA472]/20">
           <DialogHeader>
             <DialogTitle className="text-white flex items-center justify-between">
               <div className="flex items-center gap-4">
@@ -537,38 +537,38 @@ export function UnifiedPhotoManager({ onPhotoAdded }: UnifiedPhotoManagerProps) 
           </DialogHeader>
 
           <div className="space-y-6">
-            {/* 标签切换 */}
-            <div className="flex items-center gap-2 border-b border-[#CEA472]/20 pb-4">
-              <button
-                onClick={() => setActiveTab('china')}
-                className={`px-6 py-2 rounded-lg text-sm font-medium transition-all ${
-                  activeTab === 'china'
-                    ? 'bg-[#CEA472] text-[#0a0a0f]'
-                    : 'bg-black/40 text-gray-400 hover:text-white hover:bg-black/60'
-                }`}
+            {/* 标签切换和添加按钮 */}
+            <div className="flex items-center justify-between border-b border-[#CEA472]/20 pb-4">
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setActiveTab('china')}
+                  className={`px-6 py-2 rounded-lg text-sm font-medium transition-all ${
+                    activeTab === 'china'
+                      ? 'bg-[#CEA472] text-[#0a0a0f]'
+                      : 'bg-black/40 text-gray-400 hover:text-white hover:bg-black/60'
+                  }`}
+                >
+                  中国
+                </button>
+                <button
+                  onClick={() => setActiveTab('world')}
+                  className={`px-6 py-2 rounded-lg text-sm font-medium transition-all ${
+                    activeTab === 'world'
+                      ? 'bg-[#CEA472] text-[#0a0a0f]'
+                      : 'bg-black/40 text-gray-400 hover:text-white hover:bg-black/60'
+                  }`}
+                >
+                  世界
+                </button>
+              </div>
+              <Button
+                onClick={() => { setIsAddPhotoOpen(true); resetForm(); }}
+                className="bg-[#CEA472] hover:bg-[#CEA472]/80 text-[#0a0a0f]"
               >
-                中国
-              </button>
-              <button
-                onClick={() => setActiveTab('world')}
-                className={`px-6 py-2 rounded-lg text-sm font-medium transition-all ${
-                  activeTab === 'world'
-                    ? 'bg-[#CEA472] text-[#0a0a0f]'
-                    : 'bg-black/40 text-gray-400 hover:text-white hover:bg-black/60'
-                }`}
-              >
-                世界
-              </button>
+                <Plus className="w-4 h-4 mr-2" />
+                添加照片
+              </Button>
             </div>
-
-            {/* 添加照片按钮 */}
-            <Button
-              onClick={() => { setIsAddPhotoOpen(true); resetForm(); }}
-              className="bg-[#CEA472] hover:bg-[#CEA472]/80 text-[#0a0a0f]"
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              添加照片
-            </Button>
 
             {/* 照片列表 - 一行两组 */}
             {loading ? (
