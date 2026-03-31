@@ -284,22 +284,20 @@ export function WorldMap({ onRegionClick, selectedRegion, visitedRegions = new S
     y: 0,
   });
 
-  const fetchMapData = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await fetch(WORLD_MAP_URL);
-      if (!response.ok) throw new Error('Failed to fetch map data');
-      const data = await response.json();
-      setMapData(data);
-      setLoading(false);
-    } catch (err) {
-      setError('无法加载地图数据');
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const fetchMapData = async () => {
+      try {
+        const response = await fetch(WORLD_MAP_URL);
+        if (!response.ok) throw new Error('Failed to fetch map data');
+        const data = await response.json();
+        setMapData(data);
+        setLoading(false);
+      } catch (err) {
+        setError('无法加载地图数据');
+        setLoading(false);
+      }
+    };
+
     fetchMapData();
   }, []);
 
@@ -367,7 +365,7 @@ export function WorldMap({ onRegionClick, selectedRegion, visitedRegions = new S
         <div className="text-center">
           <p className="text-white/60 mb-4">{error || '地图数据加载失败'}</p>
           <button
-            onClick={fetchMapData}
+            onClick={() => window.location.reload()}
             className="px-6 py-2 bg-[#CEA472] hover:bg-[#CEA472]/80 text-[#0a0a0f] rounded-lg font-semibold"
           >
             重新加载
