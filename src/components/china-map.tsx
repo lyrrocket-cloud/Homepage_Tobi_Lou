@@ -246,8 +246,8 @@ export function ChinaMap({ onRegionClick, selectedRegion, visitedRegions = new S
       <ComposableMap
         projection="geoMercator"
         projectionConfig={{
-          center: [105, 35],
-          scale: 500,
+          center: [105, 36],
+          scale: 850,
         }}
         className="w-full h-full"
       >
