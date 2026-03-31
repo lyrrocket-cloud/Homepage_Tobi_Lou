@@ -78,10 +78,16 @@ async function main() {
   const tables = ['regions', 'visits', 'gallery_photos', 'photos', 'videos', 'tools'];
   const exportedData: Record<string, any[]> = {};
 
+  // 特殊 API 路径映射
+  const apiPathMap: Record<string, string> = {
+    'gallery_photos': 'gallery/photos',
+  };
+
   for (const table of tables) {
     try {
       console.log(`  导出 ${table}...`);
-      const response = await fetch(`${PRODUCTION_URL}/api/${table}`, {
+      const apiPath = apiPathMap[table] || table;
+      const response = await fetch(`${PRODUCTION_URL}/api/${apiPath}`, {
         headers: {
           'Authorization': `Bearer ${PASSWORD}`,
         },
@@ -94,6 +100,7 @@ async function main() {
       }
 
       const result = await response.json();
+      // gallery_photos 返回的是 result.photos
       const data = result.data || result.photos || result.videos || result.tools || [];
       exportedData[table] = data;
       console.log(`    ✓ ${table}: ${data.length} 条记录`);
@@ -120,7 +127,7 @@ async function main() {
   const results: Record<string, { status: string; count?: number; error?: string }> = {};
 
   // 需要排除的计算字段（API 动态生成，不应存储到数据库）
-  const computedFields = ['imageUrl', 'thumbnailUrl', 'videoUrl', 'children', 'hasVisited'];
+  const computedFields = ['imageUrl', 'thumbnailUrl', 'videoUrl', 'children', 'hasVisited', 'image_url', 'region'];
 
   // 字段名映射：驼峰 -> 下划线
   function convertToDbFormat(data: any[], table: string): any[] {
