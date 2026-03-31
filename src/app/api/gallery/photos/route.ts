@@ -71,23 +71,9 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { title, regionId, date, year, imageKey, imageUrl, url, category } = body;
 
-    console.log('[POST /api/gallery/photos] Request body:', {
-      title,
-      regionId,
-      date,
-      year,
-      imageKey,
-      imageUrl,
-      category,
-    });
-
-    if (!title || !regionId || !date || !year || !imageKey || !imageUrl) {
-      console.error('[POST /api/gallery/photos] Missing required fields');
+    if (!title || !regionId || !date || !year || !imageKey || !imageUrl || !category) {
       return NextResponse.json({ error: '缺少必要字段' }, { status: 400 });
     }
-
-    // 如果没有分类，默认为空字符串
-    const finalCategory = category || '';
 
     const client = getSupabaseClient();
 
@@ -101,7 +87,7 @@ export async function POST(request: NextRequest) {
         image_key: imageKey,
         image_url: imageUrl,
         url: url || null,
-        category: finalCategory,
+        category,
       })
       .select('*, region:regions(id, name, type)')
       .single();
@@ -130,7 +116,7 @@ export async function POST(request: NextRequest) {
             image_key: imageKey,
             image_url: imageUrl,
             url: url || null,
-            category: finalCategory,
+            category,
           })
           .select('*, region:regions(id, name, type)')
           .single();
@@ -209,12 +195,9 @@ export async function PUT(request: NextRequest) {
     const body = await request.json();
     const { id, title, regionId, date, year, imageKey, imageUrl, url, category } = body;
 
-    if (!id || !title || !regionId || !date || !year || !imageKey || !imageUrl) {
+    if (!id || !title || !regionId || !date || !year || !imageKey || !imageUrl || !category) {
       return NextResponse.json({ error: '缺少必要字段' }, { status: 400 });
     }
-
-    // 如果没有分类，默认为空字符串
-    const finalCategory = category || '';
 
     const client = getSupabaseClient();
 
@@ -241,7 +224,7 @@ export async function PUT(request: NextRequest) {
         image_key: imageKey,
         image_url: imageUrl,
         url: url || null,
-        category: finalCategory,
+        category,
         updated_at: new Date().toISOString(),
       })
       .eq('id', id)
