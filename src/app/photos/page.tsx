@@ -60,14 +60,19 @@ const categories = [
 // 管理密码
 const ADMIN_PASSWORD = 'tobi7758258';
 
-export default function PhotoGallery() {
+// 照片画廊组件的 props
+interface PhotoGalleryProps {
+  initialCategory?: string; // 初始分类 ID
+}
+
+export default function PhotoGallery({ initialCategory }: PhotoGalleryProps) {
   // 照片数据
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [regions, setRegions] = useState<Region[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const [selectedYear, setSelectedYear] = useState<number | 'all' | string>('all');
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>(initialCategory ? [initialCategory] : []);
   const [isTimelineVisible, setIsTimelineVisible] = useState(true);
   const [isManageOpen, setIsManageOpen] = useState(false);
   const [isPasswordOpen, setIsPasswordOpen] = useState(false);
