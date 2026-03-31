@@ -172,15 +172,36 @@ export default function SyncAdminPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f] text-white p-8">
-      <div className="max-w-2xl mx-auto">
+    <div 
+      className="min-h-screen text-[#FFFFFF]"
+      style={{
+        backgroundColor: '#0a0a0f',
+        backgroundImage: `linear-gradient(rgba(10, 10, 15, 0.85), rgba(10, 10, 15, 0.85)), url('/europe-mountain.jpg')`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
+      }}
+    >
+      <div className="container mx-auto px-4 py-8 max-w-2xl">
+        {/* 标题区域 */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-[#CEA472] mb-2">数据同步管理</h1>
-          <p className="text-[#FFFFFF]/60">在开发环境和生产环境之间同步数据和照片</p>
+          <div className="flex flex-col items-center justify-center gap-4 mb-4">
+            <div 
+              className="w-20 h-20 flex items-center justify-center rounded-2xl"
+              style={{
+                backgroundColor: '#CEA472',
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3), 0 2px 4px rgba(0, 0, 0, 0.2)'
+              }}
+            >
+              <RefreshCw className="w-10 h-10" style={{ color: '#0a0a0f' }} />
+            </div>
+            <h1 className="text-5xl font-bold text-[#FFFFFF] drop-shadow-lg">数据同步</h1>
+          </div>
+          <p className="text-[#FFFFFF] font-normal">在开发环境和生产环境之间同步数据和照片</p>
         </div>
 
-        {/* 环境说明 */}
-        <Card className="bg-black/40 border-[#CEA472]/20 mb-6">
+        {/* 环境信息卡片 */}
+        <Card className="border-[#CEA472]/10 bg-black/40 backdrop-blur-sm hover:border-[#CEA472]/50 hover:bg-black/60 transition-all duration-500 mb-6">
           <CardHeader>
             <CardTitle className="text-[#CEA472] flex items-center gap-2">
               <Database className="w-5 h-5" />
@@ -189,87 +210,90 @@ export default function SyncAdminPage() {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 gap-4">
-              <div className="bg-blue-500/10 rounded-lg p-4">
+              <div className="bg-blue-500/10 rounded-lg p-4 border border-blue-500/20">
                 <p className="text-blue-400 font-semibold mb-1">开发环境</p>
                 <p className="text-[#FFFFFF]/60 text-sm">当前预览环境</p>
-                <p className="text-[#FFFFFF]/40 text-xs mt-1">测试和开发使用</p>
+                <p className="text-[#FFFFFF]/50 text-xs mt-1">测试和开发使用</p>
               </div>
-              <div className="bg-green-500/10 rounded-lg p-4">
+              <div className="bg-green-500/10 rounded-lg p-4 border border-green-500/20">
                 <p className="text-green-400 font-semibold mb-1">生产环境</p>
                 <p className="text-[#FFFFFF]/60 text-sm">tobilou.top 线上</p>
-                <p className="text-[#FFFFFF]/40 text-xs mt-1">正式对外服务</p>
+                <p className="text-[#FFFFFF]/50 text-xs mt-1">正式对外服务</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* 密码输入 */}
-        <Card className="bg-black/40 border-[#CEA472]/20 mb-6">
+        {/* 密码输入卡片 */}
+        <Card className="border-[#CEA472]/10 bg-black/40 backdrop-blur-sm hover:border-[#CEA472]/50 hover:bg-black/60 transition-all duration-500 mb-6">
           <CardContent className="pt-6">
-            <Label htmlFor="password" className="text-[#FFFFFF]/80 text-sm mb-1 block">
-              管理密码
-            </Label>
-            <Input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="输入管理密码"
-              className="bg-black/40 border-[#CEA472]/30 text-white placeholder:text-white/40"
-            />
+            <div className="space-y-2">
+              <Label className="text-[#CEA472]">管理密码</Label>
+              <Input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="输入管理密码"
+                className="bg-black/40 backdrop-blur-sm border-[#CEA472]/30 text-[#FFFFFF] placeholder:text-[#FFFFFF]/50 focus:border-[#CEA472]/50 focus:ring-0"
+              />
+            </div>
           </CardContent>
         </Card>
 
-        {/* 数据库同步 */}
-        <Card className="bg-black/40 border-[#CEA472]/20 mb-6">
+        {/* 数据库同步卡片 */}
+        <Card className="border-[#CEA472]/10 bg-black/40 backdrop-blur-sm hover:border-[#CEA472]/50 hover:bg-black/60 transition-all duration-500 mb-6">
           <CardHeader>
             <CardTitle className="text-[#CEA472] flex items-center gap-2">
-              <RefreshCw className="w-5 h-5" />
+              <Database className="w-5 h-5" />
               数据库同步
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-4">
             {/* 同步方向选择 */}
-            <div className="mb-4">
-              <Label className="text-[#FFFFFF]/80 text-sm mb-2 block">同步方向</Label>
+            <div>
+              <Label className="text-[#CEA472] text-sm mb-3 block">同步方向</Label>
               <RadioGroup value={direction} onValueChange={(v) => setDirection(v as SyncDirection)}>
                 <div className="space-y-3">
                   <Label 
                     htmlFor="import-db" 
-                    className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all ${
+                    className={`flex items-center gap-3 p-4 rounded-lg border cursor-pointer transition-all duration-300 ${
                       direction === 'import' 
-                        ? 'border-blue-500 bg-blue-500/10' 
-                        : 'border-[#CEA472]/20 hover:border-[#CEA472]/40'
+                        ? 'border-[#CEA472] bg-[#CEA472]/10' 
+                        : 'border-[#CEA472]/20 bg-black/40 hover:border-[#CEA472]/50'
                     }`}
                   >
-                    <RadioGroupItem value="import" id="import-db" />
-                    <ArrowDownToLine className="w-4 h-4 text-blue-400" />
-                    <span className="text-[#FFFFFF] text-sm">从生产环境导入</span>
-                    <span className="text-green-400 text-xs ml-auto">安全</span>
+                    <RadioGroupItem value="import" id="import-db" className="border-[#CEA472]/60 text-[#CEA472]" />
+                    <ArrowDownToLine className="w-5 h-5 text-[#CEA472]" />
+                    <div className="flex-1">
+                      <span className="text-[#FFFFFF]">从生产环境导入</span>
+                      <span className="text-green-400 text-xs ml-2">安全</span>
+                    </div>
                   </Label>
                   <Label 
                     htmlFor="export-db" 
-                    className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all ${
+                    className={`flex items-center gap-3 p-4 rounded-lg border cursor-pointer transition-all duration-300 ${
                       direction === 'export' 
                         ? 'border-orange-500 bg-orange-500/10' 
-                        : 'border-[#CEA472]/20 hover:border-[#CEA472]/40'
+                        : 'border-[#CEA472]/20 bg-black/40 hover:border-[#CEA472]/50'
                     }`}
                   >
-                    <RadioGroupItem value="export" id="export-db" />
-                    <ArrowUpFromLine className="w-4 h-4 text-orange-400" />
-                    <span className="text-[#FFFFFF] text-sm">导出到生产环境</span>
-                    <span className="text-orange-400 text-xs ml-auto">危险</span>
+                    <RadioGroupItem value="export" id="export-db" className="border-orange-500/60 text-orange-400" />
+                    <ArrowUpFromLine className="w-5 h-5 text-orange-400" />
+                    <div className="flex-1">
+                      <span className="text-[#FFFFFF]">导出到生产环境</span>
+                      <span className="text-orange-400 text-xs ml-2">危险</span>
+                    </div>
                   </Label>
                 </div>
               </RadioGroup>
             </div>
 
             {/* 同步数据表 */}
-            <div className="bg-black/40 rounded-lg p-3 mb-4">
+            <div className="bg-black/40 rounded-lg p-3 border border-[#CEA472]/10">
               <p className="text-[#FFFFFF]/60 text-xs mb-2">同步数据表：</p>
-              <div className="flex flex-wrap gap-1">
+              <div className="flex flex-wrap gap-2">
                 {['regions', 'gallery_photos', 'photos', 'videos', 'tools'].map((table) => (
-                  <span key={table} className="px-2 py-0.5 bg-[#CEA472]/10 text-[#CEA472] text-xs rounded">
+                  <span key={table} className="px-2 py-1 bg-[#CEA472]/10 text-[#CEA472] text-xs rounded border border-[#CEA472]/20">
                     {table}
                   </span>
                 ))}
@@ -280,10 +304,10 @@ export default function SyncAdminPage() {
             <Button
               onClick={handleSync}
               disabled={loading}
-              className={`w-full font-semibold ${
+              className={`w-full font-semibold shadow-lg transition-all duration-300 ${
                 direction === 'export' 
-                  ? 'bg-orange-500 hover:bg-orange-500/80 text-white'
-                  : 'bg-[#CEA472] hover:bg-[#CEA472]/80 text-[#0a0a0f]'
+                  ? 'bg-orange-600 hover:bg-orange-700 text-white border border-orange-700/20'
+                  : 'bg-[#CEA472] hover:bg-[#CEA472]/80 text-[#0a0a0f] border border-[#CEA472]/20'
               }`}
             >
               {loading ? (
@@ -306,7 +330,7 @@ export default function SyncAdminPage() {
 
             {/* 错误提示 */}
             {error && (
-              <div className="flex items-center gap-2 text-red-400 bg-red-400/10 p-3 rounded-lg mt-4">
+              <div className="flex items-center gap-2 text-red-400 bg-red-400/10 p-3 rounded-lg border border-red-400/20">
                 <XCircle className="w-4 h-4" />
                 <span className="text-sm">{error}</span>
               </div>
@@ -314,14 +338,14 @@ export default function SyncAdminPage() {
 
             {/* 同步结果 */}
             {result && (
-              <div className="mt-4 space-y-3">
-                <div className="flex items-center gap-2 text-green-400 bg-green-400/10 p-3 rounded-lg">
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 text-green-400 bg-green-400/10 p-3 rounded-lg border border-green-400/20">
                   <CheckCircle className="w-4 h-4" />
                   <span className="text-sm">{result.message}</span>
                 </div>
-                <div className="bg-black/40 rounded-lg p-3 text-sm">
+                <div className="bg-black/40 rounded-lg p-3 border border-[#CEA472]/10 text-sm">
                   {Object.entries(result.results).map(([table, data]) => (
-                    <div key={table} className="flex justify-between py-1 border-b border-[#CEA472]/10 last:border-0">
+                    <div key={table} className="flex justify-between py-2 border-b border-[#CEA472]/10 last:border-0">
                       <span className="text-[#FFFFFF]/60">{table}</span>
                       <span className={
                         data.status === 'success' ? 'text-green-400' : 
@@ -338,63 +362,64 @@ export default function SyncAdminPage() {
           </CardContent>
         </Card>
 
-        {/* 照片文件同步 */}
-        <Card className="bg-black/40 border-[#CEA472]/20 mb-6">
+        {/* 照片文件同步卡片 */}
+        <Card className="border-[#CEA472]/10 bg-black/40 backdrop-blur-sm hover:border-[#CEA472]/50 hover:bg-black/60 transition-all duration-500 mb-6">
           <CardHeader>
             <CardTitle className="text-[#CEA472] flex items-center gap-2">
               <Image className="w-5 h-5" />
               照片文件同步
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="bg-yellow-400/10 text-yellow-400 text-sm p-3 rounded-lg mb-4">
+          <CardContent className="space-y-4">
+            {/* 提示信息 */}
+            <div className="bg-yellow-400/10 text-yellow-400 text-sm p-3 rounded-lg border border-yellow-400/20">
               <p className="font-medium mb-1">注意</p>
-              <p>预览环境和生产环境使用独立的存储桶，照片文件需要单独同步。</p>
+              <p className="text-[#FFFFFF]/80">预览环境和生产环境使用独立的存储桶，照片文件需要单独同步。</p>
             </div>
 
-            <div className="bg-black/40 rounded-lg p-3 mb-4">
+            {/* 同步内容说明 */}
+            <div className="bg-black/40 rounded-lg p-3 border border-[#CEA472]/10">
               <p className="text-[#FFFFFF]/60 text-xs mb-1">同步内容：</p>
               <p className="text-[#FFFFFF]/80 text-sm">gallery_photos 表中的照片文件（80 张）</p>
             </div>
 
             {/* 一键下载 / 一键上传 按钮 */}
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-4">
               <Button
                 onClick={() => handlePhotoSync('import')}
                 disabled={photoLoading || !password}
-                className="bg-blue-500 hover:bg-blue-500/80 text-white font-semibold"
+                className="bg-black/60 hover:bg-[#CEA472]/10 border border-[#CEA472]/60 text-[#FFFFFF] hover:text-[#CEA472] hover:border-[#CEA472] font-semibold shadow-lg transition-all duration-300"
               >
                 {photoLoading ? (
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                 ) : (
-                  <ArrowDownToLine className="w-4 h-4 mr-2" />
+                  <ArrowDownToLine className="w-4 h-4 mr-2 text-[#CEA472]" />
                 )}
                 一键下载
               </Button>
               <Button
                 onClick={() => handlePhotoSync('export')}
                 disabled={photoLoading || !password}
-                variant="outline"
-                className="border-orange-500 text-orange-400 hover:bg-orange-500/10 font-semibold"
+                className="bg-black/60 hover:bg-orange-500/10 border border-orange-500/60 text-[#FFFFFF] hover:text-orange-400 hover:border-orange-500 font-semibold shadow-lg transition-all duration-300"
               >
                 {photoLoading ? (
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                 ) : (
-                  <ArrowUpFromLine className="w-4 h-4 mr-2" />
+                  <ArrowUpFromLine className="w-4 h-4 mr-2 text-orange-400" />
                 )}
                 一键上传
               </Button>
             </div>
 
-            <div className="flex items-center justify-center gap-4 mt-3 text-xs text-[#FFFFFF]/40">
+            <div className="flex items-center justify-center gap-4 text-xs text-[#FFFFFF]/50">
               <span>下载 = 生产 → 开发</span>
-              <span>|</span>
+              <span className="text-[#CEA472]/30">|</span>
               <span>上传 = 开发 → 生产</span>
             </div>
 
             {/* 错误提示 */}
             {photoError && (
-              <div className="flex items-center gap-2 text-red-400 bg-red-400/10 p-3 rounded-lg mt-4">
+              <div className="flex items-center gap-2 text-red-400 bg-red-400/10 p-3 rounded-lg border border-red-400/20">
                 <XCircle className="w-4 h-4" />
                 <span className="text-sm">{photoError}</span>
               </div>
@@ -402,29 +427,29 @@ export default function SyncAdminPage() {
 
             {/* 同步结果 */}
             {photoResult && (
-              <div className="mt-4 space-y-3">
-                <div className="flex items-center gap-2 text-green-400 bg-green-400/10 p-3 rounded-lg">
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 text-green-400 bg-green-400/10 p-3 rounded-lg border border-green-400/20">
                   <CheckCircle className="w-4 h-4" />
-                  <span className="text-sm">{photoResult.message}</span>
-                  <span className="text-[#FFFFFF]/40 text-xs ml-auto">
+                  <span className="text-sm flex-1">{photoResult.message}</span>
+                  <span className="text-[#FFFFFF]/40 text-xs">
                     {photoResult.direction === 'import' ? '下载完成' : '上传完成'}
                   </span>
                 </div>
                 
-                <div className="bg-black/40 rounded-lg p-3">
-                  <div className="flex justify-between py-1 border-b border-[#CEA472]/10">
+                <div className="bg-black/40 rounded-lg p-3 border border-[#CEA472]/10">
+                  <div className="flex justify-between py-2 border-b border-[#CEA472]/10">
                     <span className="text-[#FFFFFF]/60 text-sm">总计</span>
                     <span className="text-[#FFFFFF] text-sm">{photoResult.total} 张</span>
                   </div>
-                  <div className="flex justify-between py-1 border-b border-[#CEA472]/10">
+                  <div className="flex justify-between py-2 border-b border-[#CEA472]/10">
                     <span className="text-green-400/60 text-sm">成功</span>
                     <span className="text-green-400 text-sm">{photoResult.successCount} 张</span>
                   </div>
-                  <div className="flex justify-between py-1 border-b border-[#CEA472]/10">
+                  <div className="flex justify-between py-2 border-b border-[#CEA472]/10">
                     <span className="text-[#FFFFFF]/40 text-sm">跳过</span>
                     <span className="text-[#FFFFFF]/60 text-sm">{photoResult.skippedCount} 张</span>
                   </div>
-                  <div className="flex justify-between py-1">
+                  <div className="flex justify-between py-2">
                     <span className="text-red-400/60 text-sm">失败</span>
                     <span className="text-red-400 text-sm">{photoResult.errorCount} 张</span>
                   </div>
@@ -435,18 +460,18 @@ export default function SyncAdminPage() {
                   <div>
                     <button
                       onClick={() => setShowPhotoDetails(!showPhotoDetails)}
-                      className="flex items-center gap-1 text-[#CEA472] text-sm hover:underline"
+                      className="flex items-center gap-1 text-[#CEA472] text-sm hover:underline transition-all duration-300"
                     >
                       {showPhotoDetails ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                       查看详细结果
                     </button>
                     
                     {showPhotoDetails && (
-                      <div className="mt-2 max-h-60 overflow-y-auto bg-black/40 rounded-lg p-2 text-xs">
+                      <div className="mt-2 max-h-60 overflow-y-auto bg-black/40 rounded-lg p-3 border border-[#CEA472]/10 text-xs">
                         {photoResult.results.map((r) => (
                           <div 
                             key={r.id} 
-                            className={`py-1 border-b border-[#CEA472]/10 last:border-0 ${
+                            className={`py-2 border-b border-[#CEA472]/10 last:border-0 ${
                               r.status === 'success' ? 'text-green-400' : 
                               r.status === 'skipped' ? 'text-[#FFFFFF]/40' : 'text-red-400'
                             }`}
@@ -467,9 +492,9 @@ export default function SyncAdminPage() {
           </CardContent>
         </Card>
 
-        {/* 存储信息 */}
+        {/* 存储配置卡片 */}
         {storageInfo && (
-          <Card className="bg-black/40 border-[#CEA472]/20">
+          <Card className="border-[#CEA472]/10 bg-black/40 backdrop-blur-sm hover:border-[#CEA472]/50 hover:bg-black/60 transition-all duration-500">
             <CardHeader>
               <CardTitle className="text-[#CEA472] flex items-center gap-2">
                 <Cloud className="w-5 h-5" />
@@ -478,17 +503,17 @@ export default function SyncAdminPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between py-2 border-b border-[#CEA472]/10">
                   <span className="text-[#FFFFFF]/60 text-sm">Bucket 名称</span>
                   <span className="text-[#FFFFFF] font-mono text-sm">{storageInfo.bucketName}</span>
                 </div>
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between py-2 border-b border-[#CEA472]/10">
                   <span className="text-[#FFFFFF]/60 text-sm">存储模式</span>
-                  <span className={storageInfo.isShared ? 'text-green-400' : 'text-yellow-400'}>
+                  <span className={`${storageInfo.isShared ? 'text-green-400' : 'text-yellow-400'} font-medium`}>
                     {storageInfo.isShared ? '共享存储 ✓' : '独立存储'}
                   </span>
                 </div>
-                <p className="text-[#FFFFFF]/40 text-xs pt-2 border-t border-[#CEA472]/10">
+                <p className="text-[#FFFFFF]/50 text-xs pt-2">
                   {storageInfo.message}
                 </p>
               </div>
