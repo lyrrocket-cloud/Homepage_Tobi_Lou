@@ -7,8 +7,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Plus, MapPin, Calendar, ChevronRight, Camera, Upload, Loader2, Check, Lock, Settings, Trash2, Edit, Home, ChevronLeft, Menu, Globe } from 'lucide-react';
-import { WorldPhotoManager } from '@/components/world-photo-manager';
+import { Plus, MapPin, Calendar, ChevronRight, Camera, Upload, Loader2, Check, Lock, Settings, Trash2, Edit, Home, ChevronLeft, Menu } from 'lucide-react';
+import { UnifiedPhotoManager } from '@/components/unified-photo-manager';
 import React from 'react';
 
 // 照片类型定义
@@ -472,16 +472,7 @@ export default function PhotoGallery() {
                 </div>
               </div>
               {/* 管理按钮 */}
-              <div className="flex items-center gap-2">
-                <WorldPhotoManager onPhotoAdded={loadPhotos} />
-                <button
-                  onClick={handleOpenManage}
-                  className="p-1.5 rounded-md text-[#CEA472] hover:bg-[#CEA472]/20 transition-colors"
-                  title="管理照片"
-                >
-                  <Settings className="w-5 h-5" />
-                </button>
-              </div>
+              <UnifiedPhotoManager onPhotoAdded={loadPhotos} />
             </div>
           </div>
         </header>
