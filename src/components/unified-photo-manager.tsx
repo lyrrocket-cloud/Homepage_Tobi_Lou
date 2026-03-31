@@ -519,7 +519,7 @@ export function UnifiedPhotoManager({ onPhotoAdded }: UnifiedPhotoManagerProps) 
 
       {/* 管理弹窗 */}
       <Dialog open={isManageOpen} onOpenChange={setIsManageOpen}>
-        <DialogContent className="max-w-[1200px] w-[95vw] max-h-[90vh] overflow-y-auto bg-[#0a0a0f] border-[#CEA472]/20">
+        <DialogContent className="min-w-[800px] w-[90vw] max-w-[1400px] max-h-[90vh] overflow-y-auto bg-[#0a0a0f] border-[#CEA472]/20">
           <DialogHeader>
             <DialogTitle className="text-white flex items-center justify-between">
               <div className="flex items-center gap-4">
@@ -603,13 +603,11 @@ export function UnifiedPhotoManager({ onPhotoAdded }: UnifiedPhotoManagerProps) 
                       )}
                     </div>
                     <div className="flex items-center gap-2 flex-shrink-0">
-                      <Button variant="outline" size="sm" onClick={() => handleOpenEdit(photo)} className="border-[#CEA472]/30 text-[#CEA472] h-8 px-3">
-                        <Edit className="w-4 h-4 mr-1" />
-                        编辑
+                      <Button variant="outline" size="sm" onClick={() => handleOpenEdit(photo)} className="border-[#CEA472]/30 text-[#CEA472] h-8 w-8 p-0">
+                        <Edit className="w-4 h-4" />
                       </Button>
-                      <Button variant="outline" size="sm" onClick={() => handleDeletePhoto(photo.id)} className="border-red-500/30 text-red-500 h-8 px-3">
-                        <Trash2 className="w-4 h-4 mr-1" />
-                        删除
+                      <Button variant="outline" size="sm" onClick={() => handleDeletePhoto(photo.id)} className="border-red-500/30 text-red-500 h-8 w-8 p-0">
+                        <Trash2 className="w-4 h-4" />
                       </Button>
                     </div>
                   </div>
