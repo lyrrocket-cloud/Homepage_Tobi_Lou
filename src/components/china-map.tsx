@@ -129,28 +129,30 @@ export function ChinaMap({ onRegionClick, selectedRegion, visitedRegions = new S
     y: 0,
   });
 
-  useEffect(() => {
-    const fetchMapData = async () => {
+  const fetchMapData = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(CHINA_MAP_URL);
+      if (!response.ok) throw new Error('Primary source failed');
+      const data = await response.json();
+      setMapData(data);
+      setLoading(false);
+    } catch (err) {
       try {
-        const response = await fetch(CHINA_MAP_URL);
-        if (!response.ok) throw new Error('Primary source failed');
-        const data = await response.json();
+        const backupResponse = await fetch(CHINA_MAP_BACKUP);
+        if (!backupResponse.ok) throw new Error('Backup source failed');
+        const data = await backupResponse.json();
         setMapData(data);
         setLoading(false);
-      } catch (err) {
-        try {
-          const backupResponse = await fetch(CHINA_MAP_BACKUP);
-          if (!backupResponse.ok) throw new Error('Backup source failed');
-          const data = await backupResponse.json();
-          setMapData(data);
-          setLoading(false);
-        } catch (backupErr) {
-          setError('无法加载地图数据');
-          setLoading(false);
-        }
+      } catch (backupErr) {
+        setError('无法加载地图数据');
+        setLoading(false);
       }
-    };
+    }
+  };
 
+  useEffect(() => {
     fetchMapData();
   }, []);
 
@@ -224,7 +226,7 @@ export function ChinaMap({ onRegionClick, selectedRegion, visitedRegions = new S
         <div className="text-center">
           <p className="text-white/60 mb-4">{error || '地图数据加载失败'}</p>
           <button
-            onClick={() => window.location.reload()}
+            onClick={fetchMapData}
             className="px-6 py-2 bg-[#CEA472] hover:bg-[#CEA472]/80 text-[#0a0a0f] rounded-lg font-semibold"
           >
             重新加载
