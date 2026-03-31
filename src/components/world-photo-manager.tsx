@@ -6,7 +6,6 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -149,22 +148,21 @@ interface WorldPhotoManagerProps {
 }
 
 export function WorldPhotoManager({ onPhotoAdded }: WorldPhotoManagerProps) {
-  const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false);
   const [password, setPassword] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const [error, setError] = useState('');
-
-  // 模式：'list' | 'add' | 'edit'
-  const [mode, setMode] = useState<'list' | 'add' | 'edit'>('list');
   
   // 照片列表
   const [photos, setPhotos] = useState<GalleryPhoto[]>([]);
   
-  // 表单数据
+  // 编辑状态
   const [editingPhoto, setEditingPhoto] = useState<GalleryPhoto | null>(null);
+  const [isAddMode, setIsAddMode] = useState(false);
+  
+  // 表单数据
   const [selectedCountry, setSelectedCountry] = useState<number | null>(null);
   const [title, setTitle] = useState('');
   const [date, setDate] = useState('');
@@ -217,8 +215,8 @@ export function WorldPhotoManager({ onPhotoAdded }: WorldPhotoManagerProps) {
   // 关闭管理界面
   const handleClose = () => {
     setIsOpen(false);
-    setMode('list');
     setEditingPhoto(null);
+    setIsAddMode(false);
     resetForm();
   };
 
@@ -230,7 +228,6 @@ export function WorldPhotoManager({ onPhotoAdded }: WorldPhotoManagerProps) {
     setImageFile(null);
     setImagePreview('');
     setUrl('');
-    setError('');
   };
 
   // 处理文件选择
@@ -262,7 +259,7 @@ export function WorldPhotoManager({ onPhotoAdded }: WorldPhotoManagerProps) {
 
       const result = await response.json();
       if (result.success) {
-        return { key: result.data.key, url: result.data.path };
+        return { key: result.data.key, url: result.data.url };
       }
       return null;
     } catch (err) {
@@ -275,10 +272,8 @@ export function WorldPhotoManager({ onPhotoAdded }: WorldPhotoManagerProps) {
 
   // 添加照片
   const handleAdd = async () => {
-    setError('');
-
     if (!selectedCountry || !date || !imageFile) {
-      setError('请填写所有必填字段并上传图片');
+      alert('请填写所有必填字段并上传图片');
       return;
     }
 
@@ -288,7 +283,7 @@ export function WorldPhotoManager({ onPhotoAdded }: WorldPhotoManagerProps) {
       // 上传图片
       const uploadResult = await uploadImage(imageFile);
       if (!uploadResult) {
-        setError('图片上传失败');
+        alert('图片上传失败');
         setLoading(false);
         return;
       }
@@ -316,14 +311,16 @@ export function WorldPhotoManager({ onPhotoAdded }: WorldPhotoManagerProps) {
       const result = await response.json();
       if (result.photo) {
         fetchPhotos();
-        setMode('list');
+        setIsAddMode(false);
         resetForm();
         if (onPhotoAdded) onPhotoAdded();
+        alert('添加成功！');
       } else {
-        setError(result.error || '保存失败');
+        alert(result.error || '保存失败');
       }
     } catch (err) {
-      setError('保存失败，请稍后重试');
+      console.error('[WorldPhotoManager] Add error:', err);
+      alert('保存失败，请稍后重试');
     } finally {
       setLoading(false);
     }
@@ -337,15 +334,13 @@ export function WorldPhotoManager({ onPhotoAdded }: WorldPhotoManagerProps) {
     setDate(photo.date);
     setImagePreview(photo.image_url);
     setUrl(photo.url || '');
-    setMode('edit');
+    setIsAddMode(false);
   };
 
   // 更新照片
   const handleUpdate = async () => {
-    setError('');
-
     if (!editingPhoto || !selectedCountry || !date) {
-      setError('请填写所有必填字段');
+      alert('请填写所有必填字段');
       return;
     }
 
@@ -385,15 +380,16 @@ export function WorldPhotoManager({ onPhotoAdded }: WorldPhotoManagerProps) {
       const result = await response.json();
       if (result.photo) {
         fetchPhotos();
-        setMode('list');
-        resetForm();
         setEditingPhoto(null);
+        resetForm();
         if (onPhotoAdded) onPhotoAdded();
+        alert('更新成功！');
       } else {
-        setError(result.error || '更新失败');
+        alert(result.error || '更新失败');
       }
     } catch (err) {
-      setError('更新失败，请稍后重试');
+      console.error('[WorldPhotoManager] Update error:', err);
+      alert('更新失败，请稍后重试');
     } finally {
       setLoading(false);
     }
@@ -432,16 +428,24 @@ export function WorldPhotoManager({ onPhotoAdded }: WorldPhotoManagerProps) {
 
   return (
     <>
-      {/* 入口按钮 */}
+      {/* 管理按钮 */}
       <Button
         onClick={handleOpen}
         variant="outline"
         size="icon"
         className="bg-black/40 border-[#CEA472]/30 hover:bg-[#CEA472]/20 hover:border-[#CEA472]/50"
-        title="世界地图照片管理"
       >
         <Globe className="w-4 h-4 text-[#CEA472]" />
       </Button>
+
+      {/* 隐藏的文件输入 */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/jpeg,image/png,image/gif,image/webp"
+        className="hidden"
+        id="world-photo-upload"
+      />
 
       {/* 密码验证弹窗 */}
       <Dialog open={isPasswordDialogOpen} onOpenChange={setIsPasswordDialogOpen}>
@@ -454,11 +458,11 @@ export function WorldPhotoManager({ onPhotoAdded }: WorldPhotoManagerProps) {
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-[#FFFFFF]/80">
+              <Label htmlFor="world-password" className="text-[#FFFFFF]/80">
                 请输入管理密码
               </Label>
               <Input
-                id="password"
+                id="world-password"
                 type="password"
                 value={password}
                 onChange={(e) => {
@@ -494,20 +498,21 @@ export function WorldPhotoManager({ onPhotoAdded }: WorldPhotoManagerProps) {
 
       {/* 管理界面 */}
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="bg-[#0a0a0f] border-[#CEA472]/30 text-white max-w-4xl max-h-[90vh] overflow-hidden flex flex-col" showCloseButton={false}>
+        <DialogContent className="bg-[#0a0a0f] border-[#CEA472]/30 text-white max-w-4xl max-h-[90vh] overflow-y-auto" showCloseButton={false}>
           <DialogHeader>
             <DialogTitle className="flex items-center justify-between text-[#CEA472]">
               <span className="flex items-center gap-2">
                 <Globe className="w-5 h-5" />
-                {mode === 'list' ? '世界地图照片管理' : (mode === 'add' ? '添加照片' : '编辑照片')}
+                世界地图照片管理
               </span>
               <div className="flex gap-2">
-                {mode === 'list' && (
-                  <Button onClick={() => { setMode('add'); resetForm(); }} className="bg-[#CEA472] text-black hover:bg-[#CEA472]/80 text-sm">
-                    <Plus className="w-4 h-4 mr-2" />
-                    添加照片
-                  </Button>
-                )}
+                <Button
+                  onClick={() => { setIsAddMode(true); resetForm(); }}
+                  className="bg-[#CEA472] hover:bg-[#CEA472]/80 text-[#0a0a0f]"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  添加照片
+                </Button>
                 <Button
                   variant="outline"
                   onClick={handleClose}
@@ -517,90 +522,223 @@ export function WorldPhotoManager({ onPhotoAdded }: WorldPhotoManagerProps) {
                 </Button>
               </div>
             </DialogTitle>
-            <DialogDescription>
-              管理世界地图打卡照片
-            </DialogDescription>
           </DialogHeader>
 
-          {mode === 'list' ? (
-            <div className="flex-1 overflow-y-auto">
-              {loading && photos.length === 0 ? (
-                <div className="text-center py-8 text-[#FFFFFF]/50">加载中...</div>
-              ) : photos.length === 0 ? (
-                <div className="text-center py-8 text-[#FFFFFF]/50">暂无照片，点击"添加照片"开始录入</div>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {photos.map((photo) => (
-                    <div
-                      key={photo.id}
-                      className="bg-black/50 border border-[#CEA472]/10 rounded-lg overflow-hidden hover:border-[#CEA472]/30 transition-colors"
-                    >
-                      <div className="relative aspect-video">
-                        {photo.image_url ? (
-                          <img
-                            src={photo.image_url}
-                            alt={photo.title}
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          <div className="w-full h-full bg-black/60 flex items-center justify-center">
-                            <ImageIcon className="w-8 h-8 text-[#CEA472]/30" />
-                          </div>
-                        )}
-                      </div>
-                      <div className="p-4">
-                        <div className="flex items-center gap-2 mb-2">
-                          <MapPin className="w-4 h-4 text-[#CEA472]" />
-                          <span className="text-[#FFFFFF] font-medium">
-                            {photo.region?.name || getCountryName(photo.region_id)}
-                          </span>
+          <div className="space-y-4 py-4">
+            <p className="text-[#FFFFFF]/60 text-sm">
+              管理世界地图打卡照片，点击照片卡片编辑或删除
+            </p>
+
+            {loading && photos.length === 0 ? (
+              <div className="flex items-center justify-center h-64">
+                <Loader2 className="w-8 h-8 text-[#CEA472] animate-spin" />
+              </div>
+            ) : photos.length === 0 && !isAddMode ? (
+              <div className="flex flex-col items-center justify-center h-64 text-[#FFFFFF]/50">
+                <ImageIcon className="w-12 h-12 mb-4 opacity-50" />
+                <p>暂无照片</p>
+                <p className="text-sm mt-1">点击"添加照片"开始录入</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {photos.map((photo) => (
+                  <div
+                    key={photo.id}
+                    className="group relative bg-black/40 border border-[#CEA472]/20 rounded-lg overflow-hidden hover:border-[#CEA472]/40 transition-all"
+                  >
+                    {/* 图片预览 */}
+                    <div className="relative aspect-video">
+                      {photo.image_url ? (
+                        <img
+                          src={photo.image_url}
+                          alt={photo.title}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-black/60 flex items-center justify-center">
+                          <ImageIcon className="w-8 h-8 text-[#CEA472]/30" />
                         </div>
-                        <div className="flex items-center gap-2 mb-3">
-                          <Calendar className="w-4 h-4 text-[#CEA472]" />
-                          <span className="text-[#FFFFFF]/70 text-sm">{photo.date}</span>
-                        </div>
-                        <div className="flex gap-2">
-                          <Button
-                            onClick={() => handleEdit(photo)}
-                            variant="outline"
-                            size="sm"
-                            className="flex-1 border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10"
-                          >
-                            <Edit2 className="w-4 h-4 mr-1" />
-                            编辑
-                          </Button>
-                          <Button
-                            onClick={() => handleDelete(photo.id)}
-                            variant="outline"
-                            size="sm"
-                            className="border-red-500/30 text-red-500 hover:bg-red-500/10"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </Button>
-                        </div>
+                      )}
+                      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                        <Button
+                          onClick={() => handleEdit(photo)}
+                          variant="outline"
+                          size="sm"
+                          className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10"
+                        >
+                          <Edit2 className="w-4 h-4 mr-1" />
+                          编辑
+                        </Button>
+                        <Button
+                          onClick={() => handleDelete(photo.id)}
+                          variant="outline"
+                          size="sm"
+                          className="border-red-500/30 text-red-500 hover:bg-red-500/10"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
                       </div>
                     </div>
-                  ))}
-                </div>
-              )}
+                    
+                    {/* 信息 */}
+                    <div className="p-4">
+                      <h4 className="font-bold text-[#FFFFFF] truncate">{photo.title}</h4>
+                      <div className="flex items-center gap-3 text-xs text-[#FFFFFF]/60 mt-1">
+                        <span className="flex items-center gap-1">
+                          <MapPin className="w-3 h-3 text-[#CEA472]" />
+                          {photo.region?.name || getCountryName(photo.region_id)}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Calendar className="w-3 h-3 text-[#CEA472]" />
+                          {photo.date}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* 添加照片弹窗 */}
+      <Dialog open={isAddMode} onOpenChange={setIsAddMode}>
+        <DialogContent className="bg-[#0a0a0f] border-[#CEA472]/30 text-white max-w-md" showCloseButton={true}>
+          <DialogHeader>
+            <DialogTitle className="text-[#CEA472]">添加世界地图照片</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            {/* 图片上传 */}
+            <div className="space-y-2">
+              <Label className="text-[#FFFFFF]/80">照片 *</Label>
+              <div
+                onClick={() => fileInputRef.current?.click()}
+                className="relative w-full aspect-video rounded-lg border-2 border-dashed border-[#CEA472]/30 hover:border-[#CEA472]/50 cursor-pointer overflow-hidden transition-colors"
+              >
+                {imagePreview ? (
+                  <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full flex flex-col items-center justify-center gap-2">
+                    {uploading ? (
+                      <Loader2 className="w-8 h-8 text-[#CEA472] animate-spin" />
+                    ) : (
+                      <>
+                        <Upload className="w-8 h-8 text-[#CEA472]" />
+                        <span className="text-[#CEA472] text-sm">点击上传照片</span>
+                      </>
+                    )}
+                  </div>
+                )}
+              </div>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/jpeg,image/png,image/gif,image/webp"
+                className="hidden"
+                onChange={handleFileSelect}
+                disabled={uploading}
+              />
             </div>
-          ) : (
-            <div className="flex-1 overflow-y-auto space-y-4 py-4">
+
+            {/* 国家选择 */}
+            <div className="space-y-2">
+              <Label className="text-[#FFFFFF]/80">国家 *</Label>
+              <select
+                value={selectedCountry || ''}
+                onChange={(e) => setSelectedCountry(parseInt(e.target.value))}
+                className="w-full p-2 bg-black/50 border border-[#CEA472]/20 rounded text-[#FFFFFF] focus:border-[#CEA472] outline-none"
+              >
+                <option value="">请选择国家</option>
+                {countryGroups.map((group) => (
+                  <optgroup key={group.continent} label={group.continent}>
+                    {group.countries.map((country) => (
+                      <option key={country.id} value={country.id}>
+                        {country.name}
+                      </option>
+                    ))}
+                  </optgroup>
+                ))}
+              </select>
+            </div>
+
+            {/* 标题 */}
+            <div className="space-y-2">
+              <Label className="text-[#FFFFFF]/80">标题（可选）</Label>
+              <Input
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="留空则使用国家名称"
+                className="bg-black/40 border-[#CEA472]/30 text-white placeholder:text-white/40 focus:border-[#CEA472]"
+              />
+            </div>
+
+            {/* 日期 */}
+            <div className="space-y-2">
+              <Label className="text-[#FFFFFF]/80">日期 *</Label>
+              <Input
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                placeholder="例如：2025-01"
+                className="bg-black/40 border-[#CEA472]/30 text-white placeholder:text-white/40 focus:border-[#CEA472]"
+              />
+            </div>
+
+            {/* 外部链接 */}
+            <div className="space-y-2">
+              <Label className="text-[#FFFFFF]/80">外部链接（可选）</Label>
+              <Input
+                value={url}
+                onChange={(e) => setUrl(e.target.value)}
+                placeholder="https://..."
+                className="bg-black/40 border-[#CEA472]/30 text-white placeholder:text-white/40 focus:border-[#CEA472]"
+              />
+            </div>
+
+            <div className="flex gap-3 pt-4">
+              <Button
+                onClick={handleAdd}
+                disabled={loading || uploading}
+                className="flex-1 bg-[#CEA472] hover:bg-[#CEA472]/80 text-[#0a0a0f]"
+              >
+                {loading || uploading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    保存中...
+                  </>
+                ) : (
+                  '确认添加'
+                )}
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => { setIsAddMode(false); resetForm(); }}
+                className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10"
+              >
+                取消
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* 编辑照片弹窗 */}
+      <Dialog open={!!editingPhoto} onOpenChange={() => { setEditingPhoto(null); resetForm(); }}>
+        <DialogContent className="bg-[#0a0a0f] border-[#CEA472]/30 text-white max-w-md" showCloseButton={true}>
+          <DialogHeader>
+            <DialogTitle className="text-[#CEA472]">编辑世界地图照片</DialogTitle>
+          </DialogHeader>
+          {editingPhoto && (
+            <div className="space-y-4 py-4">
               {/* 图片上传 */}
               <div className="space-y-2">
-                <Label className="text-[#FFFFFF]/80">
-                  照片 <span className="text-red-500">*</span>
-                </Label>
+                <Label className="text-[#FFFFFF]/80">照片</Label>
                 <div
                   onClick={() => fileInputRef.current?.click()}
                   className="relative w-full aspect-video rounded-lg border-2 border-dashed border-[#CEA472]/30 hover:border-[#CEA472]/50 cursor-pointer overflow-hidden transition-colors"
                 >
                   {imagePreview ? (
-                    <img
-                      src={imagePreview}
-                      alt="Preview"
-                      className="w-full h-full object-cover"
-                    />
+                    <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
                   ) : (
                     <div className="w-full h-full flex flex-col items-center justify-center gap-2">
                       {uploading ? (
@@ -608,7 +746,7 @@ export function WorldPhotoManager({ onPhotoAdded }: WorldPhotoManagerProps) {
                       ) : (
                         <>
                           <Upload className="w-8 h-8 text-[#CEA472]" />
-                          <span className="text-[#CEA472] text-sm">点击上传照片</span>
+                          <span className="text-[#CEA472] text-sm">点击更换照片</span>
                         </>
                       )}
                     </div>
@@ -626,9 +764,7 @@ export function WorldPhotoManager({ onPhotoAdded }: WorldPhotoManagerProps) {
 
               {/* 国家选择 */}
               <div className="space-y-2">
-                <Label className="text-[#FFFFFF]/80">
-                  国家 <span className="text-red-500">*</span>
-                </Label>
+                <Label className="text-[#FFFFFF]/80">国家</Label>
                 <select
                   value={selectedCountry || ''}
                   onChange={(e) => setSelectedCountry(parseInt(e.target.value))}
@@ -649,7 +785,7 @@ export function WorldPhotoManager({ onPhotoAdded }: WorldPhotoManagerProps) {
 
               {/* 标题 */}
               <div className="space-y-2">
-                <Label className="text-[#FFFFFF]/80">标题（可选）</Label>
+                <Label className="text-[#FFFFFF]/80">标题</Label>
                 <Input
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
@@ -660,9 +796,7 @@ export function WorldPhotoManager({ onPhotoAdded }: WorldPhotoManagerProps) {
 
               {/* 日期 */}
               <div className="space-y-2">
-                <Label className="text-[#FFFFFF]/80">
-                  日期 <span className="text-red-500">*</span>
-                </Label>
+                <Label className="text-[#FFFFFF]/80">日期</Label>
                 <Input
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
@@ -673,7 +807,7 @@ export function WorldPhotoManager({ onPhotoAdded }: WorldPhotoManagerProps) {
 
               {/* 外部链接 */}
               <div className="space-y-2">
-                <Label className="text-[#FFFFFF]/80">外部链接（可选）</Label>
+                <Label className="text-[#FFFFFF]/80">外部链接</Label>
                 <Input
                   value={url}
                   onChange={(e) => setUrl(e.target.value)}
@@ -682,11 +816,9 @@ export function WorldPhotoManager({ onPhotoAdded }: WorldPhotoManagerProps) {
                 />
               </div>
 
-              {error && <p className="text-red-400 text-sm">{error}</p>}
-
               <div className="flex gap-3 pt-4">
                 <Button
-                  onClick={mode === 'add' ? handleAdd : handleUpdate}
+                  onClick={handleUpdate}
                   disabled={loading || uploading}
                   className="flex-1 bg-[#CEA472] hover:bg-[#CEA472]/80 text-[#0a0a0f]"
                 >
@@ -696,12 +828,12 @@ export function WorldPhotoManager({ onPhotoAdded }: WorldPhotoManagerProps) {
                       保存中...
                     </>
                   ) : (
-                    mode === 'add' ? '确认添加' : '确认修改'
+                    '确认修改'
                   )}
                 </Button>
                 <Button
                   variant="outline"
-                  onClick={() => { setMode('list'); resetForm(); setEditingPhoto(null); }}
+                  onClick={() => { setEditingPhoto(null); resetForm(); }}
                   className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10"
                 >
                   取消
