@@ -10,8 +10,74 @@ interface WorldMapProps {
   className?: string;
 }
 
-// 世界地图数据源
-const WORLD_MAP_URL = 'https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson';
+// 世界地图数据源 - 使用 TopoJSON 格式（更小，加载更快）
+// 需要使用 topojson-client 转换
+import { feature } from 'topojson-client';
+
+const WORLD_MAP_URL = 'https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json';
+
+// ISO 3166-1 数值代码到国家名称的映射
+const isoToCountry: Record<string, string> = {
+  '004': 'Afghanistan', '008': 'Albania', '012': 'Algeria', '020': 'Andorra',
+  '024': 'Angola', '028': 'Antigua and Barbuda', '031': 'Azerbaijan', '032': 'Argentina',
+  '036': 'Australia', '040': 'Austria', '044': 'Bahamas', '048': 'Bahrain',
+  '050': 'Bangladesh', '051': 'Armenia', '052': 'Barbados', '056': 'Belgium',
+  '060': 'Bermuda', '064': 'Bhutan', '068': 'Bolivia', '070': 'Bosnia and Herz.',
+  '072': 'Botswana', '076': 'Brazil', '084': 'Belize', '090': 'Solomon Is.',
+  '092': 'Virgin Islands', '096': 'Brunei', '100': 'Bulgaria', '104': 'Myanmar',
+  '108': 'Burundi', '112': 'Belarus', '116': 'Cambodia', '120': 'Cameroon',
+  '124': 'Canada', '132': 'Cape Verde', '136': 'Cayman Islands', '140': 'Central African Rep.',
+  '144': 'Sri Lanka', '148': 'Chad', '152': 'Chile', '156': 'China',
+  '158': 'Taiwan', '170': 'Colombia', '174': 'Comoros', '178': 'Congo',
+  '180': 'Dem. Rep. Congo', '184': 'Cook Islands', '188': 'Costa Rica', '191': 'Croatia',
+  '192': 'Cuba', '196': 'Cyprus', '203': 'Czech Rep.', '204': 'Benin',
+  '208': 'Denmark', '212': 'Dominica', '214': 'Dominican Rep.', '218': 'Ecuador',
+  '222': 'El Salvador', '226': 'Eq. Guinea', '231': 'Ethiopia', '232': 'Eritrea',
+  '233': 'Estonia', '234': 'Faroe Islands', '238': 'Falkland Is.', '239': 'S. Geo. and S. Sandw. Is.',
+  '242': 'Fiji', '246': 'Finland', '250': 'France', '254': 'French Guiana',
+  '258': 'French Polynesia', '262': 'Djibouti', '266': 'Gabon', '268': 'Georgia',
+  '270': 'Gambia', '275': 'Palestine', '276': 'Germany', '288': 'Ghana',
+  '296': 'Kiribati', '300': 'Greece', '304': 'Greenland', '308': 'Grenada',
+  '312': 'Guadeloupe', '316': 'Guam', '320': 'Guatemala', '324': 'Guinea',
+  '328': 'Guyana', '332': 'Haiti', '336': 'Vatican', '340': 'Honduras',
+  '344': 'Hong Kong', '348': 'Hungary', '352': 'Iceland', '356': 'India',
+  '360': 'Indonesia', '364': 'Iran', '368': 'Iraq', '372': 'Ireland',
+  '376': 'Israel', '380': 'Italy', '384': "Côte d'Ivoire", '388': 'Jamaica',
+  '392': 'Japan', '398': 'Kazakhstan', '400': 'Jordan', '404': 'Kenya',
+  '408': 'North Korea', '410': 'South Korea', '414': 'Kuwait', '417': 'Kyrgyzstan',
+  '418': 'Laos', '422': 'Lebanon', '426': 'Lesotho', '428': 'Latvia',
+  '430': 'Liberia', '434': 'Libya', '438': 'Liechtenstein', '440': 'Lithuania',
+  '442': 'Luxembourg', '446': 'Macao', '450': 'Madagascar', '454': 'Malawi',
+  '458': 'Malaysia', '462': 'Maldives', '466': 'Mali', '470': 'Malta',
+  '474': 'Martinique', '478': 'Mauritania', '480': 'Mauritius', '484': 'Mexico',
+  '492': 'Monaco', '496': 'Mongolia', '498': 'Moldova', '499': 'Montenegro',
+  '500': 'Montserrat', '504': 'Morocco', '508': 'Mozambique', '512': 'Oman',
+  '516': 'Namibia', '520': 'Nauru', '524': 'Nepal', '528': 'Netherlands',
+  '531': 'Curaçao', '533': 'Aruba', '540': 'New Caledonia', '548': 'Vanuatu',
+  '554': 'New Zealand', '558': 'Nicaragua', '562': 'Niger', '566': 'Nigeria',
+  '570': 'Niue', '574': 'Norfolk Island', '578': 'Norway', '580': 'Northern Mariana Is.',
+  '583': 'Micronesia', '584': 'Marshall Islands', '585': 'Palau', '586': 'Pakistan',
+  '591': 'Panama', '598': 'Papua New Guinea', '600': 'Paraguay', '604': 'Peru',
+  '608': 'Philippines', '612': 'Pitcairn Is.', '616': 'Poland', '620': 'Portugal',
+  '624': 'Guinea-Bissau', '626': 'Timor-Leste', '630': 'Puerto Rico', '634': 'Qatar',
+  '638': 'Réunion', '642': 'Romania', '643': 'Russia', '646': 'Rwanda',
+  '652': 'St. Barthelemy', '654': 'Saint Helena', '659': 'St. Kitts and Nevis', '660': 'Anguilla',
+  '662': 'Saint Lucia', '663': 'French St. Martin', '666': 'St. Pierre and Miquelon', '670': 'St. Vin. and Gren.',
+  '674': 'San Marino', '678': 'Sao Tome and Principe', '682': 'Saudi Arabia', '686': 'Senegal',
+  '688': 'Serbia', '690': 'Seychelles', '694': 'Sierra Leone', '702': 'Singapore',
+  '703': 'Slovakia', '704': 'Vietnam', '705': 'Slovenia', '706': 'Somalia',
+  '710': 'South Africa', '716': 'Zimbabwe', '724': 'Spain', '728': 'South Sudan',
+  '729': 'Sudan', '732': 'W. Sahara', '740': 'Suriname', '744': 'Svalbard and Jan Mayen',
+  '748': 'Swaziland', '752': 'Sweden', '756': 'Switzerland', '760': 'Syria',
+  '762': 'Tajikistan', '764': 'Thailand', '768': 'Togo', '772': 'Tokelau',
+  '776': 'Tonga', '780': 'Trinidad and Tobago', '784': 'United Arab Emirates', '788': 'Tunisia',
+  '792': 'Turkey', '795': 'Turkmenistan', '796': 'Turks and Caicos Is.', '798': 'Tuvalu',
+  '800': 'Uganda', '804': 'Ukraine', '807': 'Macedonia', '818': 'Egypt',
+  '826': 'United Kingdom', '831': 'Guernsey', '832': 'Jersey', '833': 'Isle of Man',
+  '834': 'Tanzania', '840': 'United States', '850': 'Virgin Islands', '854': 'Burkina Faso',
+  '858': 'Uruguay', '860': 'Uzbekistan', '862': 'Venezuela', '876': 'Wallis and Futuna',
+  '882': 'Samoa', '887': 'Yemen', '894': 'Zambia',
+};
 
 // 国家英文名称到中文名称的映射
 const englishToChinese: Record<string, string> = {
@@ -289,10 +355,13 @@ export function WorldMap({ onRegionClick, selectedRegion, visitedRegions = new S
       try {
         const response = await fetch(WORLD_MAP_URL);
         if (!response.ok) throw new Error('Failed to fetch map data');
-        const data = await response.json();
-        setMapData(data);
+        const topology = await response.json();
+        // 将 TopoJSON 转换为 GeoJSON
+        const geoData = feature(topology, topology.objects.countries);
+        setMapData(geoData);
         setLoading(false);
       } catch (err) {
+        console.error('[WorldMap] Failed to load map:', err);
         setError('无法加载地图数据');
         setLoading(false);
       }
@@ -302,11 +371,9 @@ export function WorldMap({ onRegionClick, selectedRegion, visitedRegions = new S
   }, []);
 
   const getCountryName = (geo: any): string => {
-    return geo.properties?.ADMIN ||
-           geo.properties?.name ||
-           geo.properties?.NAME ||
-           geo.properties?.country ||
-           '';
+    // TopoJSON 转换后使用 id 作为 ISO 代码
+    const isoCode = String(geo.id).padStart(3, '0');
+    return isoToCountry[isoCode] || geo.properties?.name || '';
   };
 
   // 获取国家中文名称
