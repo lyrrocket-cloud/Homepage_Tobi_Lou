@@ -75,7 +75,7 @@ async function main() {
   // 步骤1: 从生产环境导出数据
   console.log('步骤1: 从生产环境导出数据...\n');
 
-  const tables = ['regions', 'visits', 'gallery_photos', 'photos', 'videos', 'tools'];
+  const tables = ['regions', 'gallery_photos', 'photos', 'videos', 'tools'];
   const exportedData: Record<string, any[]> = {};
 
   // 特殊 API 路径映射

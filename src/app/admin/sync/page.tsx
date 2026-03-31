@@ -208,7 +208,7 @@ export default function SyncAdminPage() {
             <div className="bg-black/40 rounded-lg p-4 mb-4">
               <p className="text-[#FFFFFF]/60 text-sm mb-2">将同步以下数据表：</p>
               <div className="flex flex-wrap gap-2">
-                {['regions', 'visits', 'gallery_photos', 'photos', 'videos', 'tools'].map((table) => (
+                {['regions', 'gallery_photos', 'photos', 'videos', 'tools'].map((table) => (
                   <span 
                     key={table} 
                     className="px-2 py-1 bg-[#CEA472]/10 text-[#CEA472] text-xs rounded"

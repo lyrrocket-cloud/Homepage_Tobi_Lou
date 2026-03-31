@@ -12,7 +12,7 @@ const COMPUTED_FIELDS = ['imageUrl', 'thumbnailUrl', 'videoUrl', 'children', 'ha
 const PRODUCTION_URL = 'https://727sr6g8sv.coze.site';
 
 // 同步的数据表列表
-const SYNC_TABLES = ['regions', 'visits', 'gallery_photos', 'photos', 'videos', 'tools'];
+const SYNC_TABLES = ['regions', 'gallery_photos', 'photos', 'videos', 'tools'];
 
 // API 路径映射
 const API_PATH_MAP: Record<string, string> = {
