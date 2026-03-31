@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { ComposableMap, Geographies, Geography, ZoomableGroup } from 'react-simple-maps';
+import { ComposableMap, Geographies, Geography } from 'react-simple-maps';
 
 interface WorldMapProps {
   onRegionClick: (regionId: number, regionName: string) => void;
@@ -302,10 +302,6 @@ export function WorldMap({ onRegionClick, selectedRegion, visitedRegions = new S
 
   return (
     <div className={`relative w-full h-[300px] md:h-[400px] bg-black/40 backdrop-blur-md rounded-lg border border-[#CEA472]/20 overflow-hidden select-none ${className}`}>
-      {/* 地图标签 */}
-      <div className="absolute top-3 left-3 z-10 px-3 py-1 bg-black/60 backdrop-blur-sm rounded-full border border-[#CEA472]/30">
-        <span className="text-xs text-[#CEA472] font-medium">🌍 世界地图</span>
-      </div>
       <ComposableMap
         projection="geoNaturalEarth1"
         projectionConfig={{
@@ -314,8 +310,7 @@ export function WorldMap({ onRegionClick, selectedRegion, visitedRegions = new S
         }}
         className="w-full h-full"
       >
-        <ZoomableGroup maxZoom={4} minZoom={1}>
-          <Geographies geography={mapData}>
+        <Geographies geography={mapData}>
             {({ geographies }) =>
               geographies.map((geo) => {
                 const regionId = getRegionId(geo);
@@ -361,7 +356,6 @@ export function WorldMap({ onRegionClick, selectedRegion, visitedRegions = new S
               })
             }
           </Geographies>
-        </ZoomableGroup>
       </ComposableMap>
 
       {/* Tooltip */}
