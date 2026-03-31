@@ -383,10 +383,7 @@ export function WorldMap({ onRegionClick, selectedRegion, visitedRegions = new S
           scale: 200,
           center: [0, 0],
         }}
-        width={800}
-        height={480}
-        className="w-full h-full transition-none"
-        style={{ width: '100%', height: '100%' }}
+        className="w-full h-full"
       >
         <Geographies geography={mapData}>
             {({ geographies }) =>
