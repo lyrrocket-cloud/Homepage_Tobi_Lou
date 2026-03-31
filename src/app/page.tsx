@@ -437,7 +437,7 @@ function WorldVisitList({ regionId, regionName, onRefresh }: { regionId: number 
                 <div className="flex items-center gap-2 mb-2">
                   <MapPin className="w-4 h-4 text-[#CEA472]/70 flex-shrink-0" />
                   <span className="text-[#FFFFFF] text-base font-medium truncate">
-                    {visit.region?.name || visit.title}
+                    {!regionId && visit.region?.name ? visit.region.name : visit.title}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
