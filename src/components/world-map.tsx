@@ -405,8 +405,8 @@ export function WorldMap({ onRegionClick, selectedRegion, visitedRegions = new S
                 };
 
                 const getFillOpacity = () => {
-                  if (isHome) return 1;
-                  if (isVisited) return 0.9;
+                  if (isHome) return 0.5;
+                  if (isVisited) return 0.5;
                   if (isSelected) return 0.8;
                   return 0.3;
                 };
