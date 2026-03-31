@@ -327,7 +327,7 @@ export function UnifiedPhotoManager({ onPhotoAdded }: UnifiedPhotoManagerProps) 
 
     try {
       const year = parseInt(newPhoto.yearMonth.split('-')[0]);
-      const categoryString = activeTab === 'world' ? 'world' : newPhoto.categories.join(',');
+      const categoryString = newPhoto.categories.length > 0 ? newPhoto.categories.join(',') : (activeTab === 'world' ? 'world' : '');
 
       const response = await fetch('/api/gallery/photos', {
         method: 'POST',
