@@ -13,6 +13,74 @@ interface WorldMapProps {
 // 世界地图数据源
 const WORLD_MAP_URL = 'https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson';
 
+// 国家英文名称到中文名称的映射
+const englishToChinese: Record<string, string> = {
+  // 欧洲
+  'Germany': '德国', 'France': '法国', 'Italy': '意大利', 'Switzerland': '瑞士',
+  'Austria': '奥地利', 'United Kingdom': '英国', 'UK': '英国', 'England': '英格兰',
+  'Scotland': '苏格兰', 'Spain': '西班牙', 'Portugal': '葡萄牙', 'Netherlands': '荷兰',
+  'Belgium': '比利时', 'Greece': '希腊', 'Sweden': '瑞典', 'Norway': '挪威',
+  'Denmark': '丹麦', 'Finland': '芬兰', 'Ireland': '爱尔兰', 'Poland': '波兰',
+  'Czech Republic': '捷克', 'Czechia': '捷克', 'Hungary': '匈牙利', 'Iceland': '冰岛',
+  'Russia': '俄罗斯', 'Turkey': '土耳其', 'Ukraine': '乌克兰', 'Croatia': '克罗地亚',
+  'Romania': '罗马尼亚', 'Bulgaria': '保加利亚', 'Serbia': '塞尔维亚', 'Slovakia': '斯洛伐克',
+  'Slovenia': '斯洛文尼亚', 'Luxembourg': '卢森堡', 'Malta': '马耳他', 'Cyprus': '塞浦路斯',
+  'Estonia': '爱沙尼亚', 'Latvia': '拉脱维亚', 'Lithuania': '立陶宛', 'Monaco': '摩纳哥',
+  'Vatican': '梵蒂冈', 'Vatican City': '梵蒂冈', 'San Marino': '圣马力诺', 'Liechtenstein': '列支敦士登',
+  'Andorra': '安道尔', 'North Macedonia': '北马其顿', 'Albania': '阿尔巴尼亚', 'Montenegro': '黑山',
+  'Bosnia and Herz.': '波黑', 'Bosnia and Herzegovina': '波黑', 'Moldova': '摩尔多瓦',
+  'Belarus': '白俄罗斯', 'Georgia': '格鲁吉亚', 'Armenia': '亚美尼亚', 'Azerbaijan': '阿塞拜疆',
+  'Kazakhstan': '哈萨克斯坦',
+
+  // 亚洲
+  'Japan': '日本', 'South Korea': '韩国', 'Korea': '韩国', 'Republic of Korea': '韩国',
+  'North Korea': '朝鲜', 'Thailand': '泰国', 'Singapore': '新加坡', 'Malaysia': '马来西亚',
+  'Indonesia': '印度尼西亚', 'Philippines': '菲律宾', 'Vietnam': '越南', 'Cambodia': '柬埔寨',
+  'Myanmar': '缅甸', 'Laos': '老挝', 'India': '印度', 'Nepal': '尼泊尔', 'Bhutan': '不丹',
+  'Sri Lanka': '斯里兰卡', 'Bangladesh': '孟加拉国', 'Pakistan': '巴基斯坦', 'Afghanistan': '阿富汗',
+  'Iran': '伊朗', 'Iraq': '伊拉克', 'Syria': '叙利亚', 'Jordan': '约旦', 'Lebanon': '黎巴嫩',
+  'Israel': '以色列', 'Palestine': '巴勒斯坦', 'Saudi Arabia': '沙特阿拉伯',
+  'United Arab Emirates': '阿联酋', 'UAE': '阿联酋', 'Qatar': '卡塔尔', 'Kuwait': '科威特',
+  'Bahrain': '巴林', 'Oman': '阿曼', 'Yemen': '也门', 'Mongolia': '蒙古', 'Brunei': '文莱',
+  'Timor-Leste': '东帝汶', 'Maldives': '马尔代夫', 'Uzbekistan': '乌兹别克斯坦',
+  'Turkmenistan': '土库曼斯坦', 'Tajikistan': '塔吉克斯坦', 'Kyrgyzstan': '吉尔吉斯斯坦',
+  'China': '中国',
+
+  // 北美洲
+  'United States': '美国', 'USA': '美国', 'United States of America': '美国',
+  'Canada': '加拿大', 'Mexico': '墨西哥', 'Cuba': '古巴', 'Jamaica': '牙买加',
+  'Bahamas': '巴哈马', 'Dominican Rep.': '多米尼加', 'Dominican Republic': '多米尼加',
+  'Haiti': '海地', 'Puerto Rico': '波多黎各', 'Guatemala': '危地马拉', 'Belize': '伯利兹',
+  'Honduras': '洪都拉斯', 'El Salvador': '萨尔瓦多', 'Nicaragua': '尼加拉瓜',
+  'Costa Rica': '哥斯达黎加', 'Panama': '巴拿马', 'Trinidad and Tobago': '特立尼达和多巴哥',
+  'Barbados': '巴巴多斯', 'Greenland': '格陵兰',
+
+  // 大洋洲
+  'Australia': '澳大利亚', 'New Zealand': '新西兰', 'Fiji': '斐济',
+  'Papua New Guinea': '巴布亚新几内亚', 'Solomon Is.': '所罗门群岛', 'Solomon Islands': '所罗门群岛',
+  'Vanuatu': '瓦努阿图', 'Samoa': '萨摩亚', 'Tonga': '汤加', 'Micronesia': '密克罗尼西亚',
+  'Kiribati': '基里巴斯', 'Marshall Islands': '马绍尔群岛', 'Palau': '帕劳', 'Nauru': '瑙鲁',
+  'Tuvalu': '图瓦卢',
+
+  // 南美洲
+  'Brazil': '巴西', 'Argentina': '阿根廷', 'Chile': '智利', 'Colombia': '哥伦比亚',
+  'Peru': '秘鲁', 'Venezuela': '委内瑞拉', 'Ecuador': '厄瓜多尔', 'Bolivia': '玻利维亚',
+  'Paraguay': '巴拉圭', 'Uruguay': '乌拉圭', 'Guyana': '圭亚那', 'Suriname': '苏里南',
+  'French Guiana': '法属圭亚那',
+
+  // 非洲
+  'South Africa': '南非', 'Egypt': '埃及', 'Morocco': '摩洛哥', 'Kenya': '肯尼亚',
+  'Tanzania': '坦桑尼亚', 'Ethiopia': '埃塞俄比亚', 'Nigeria': '尼日利亚', 'Ghana': '加纳',
+  'Senegal': '塞内加尔', 'Tunisia': '突尼斯', 'Algeria': '阿尔及利亚', 'Libya': '利比亚',
+  'Sudan': '苏丹', 'Uganda': '乌干达', 'Rwanda': '卢旺达', 'Zimbabwe': '津巴布韦',
+  'Zambia': '赞比亚', 'Botswana': '博茨瓦纳', 'Namibia': '纳米比亚', 'Mozambique': '莫桑比克',
+  'Madagascar': '马达加斯加', 'Mauritius': '毛里求斯', 'Seychelles': '塞舌尔',
+  'Cameroon': '喀麦隆', 'Côte d\'Ivoire': '科特迪瓦', 'Ivory Coast': '科特迪瓦',
+  'Congo': '刚果', 'Dem. Rep. Congo': '刚果民主共和国', 'Democratic Republic of the Congo': '刚果民主共和国',
+  'Angola': '安哥拉', 'Mali': '马里', 'Niger': '尼日尔', 'Chad': '乍得', 'Somalia': '索马里',
+  'Eritrea': '厄立特里亚', 'Djibouti': '吉布提',
+};
+
 // 国家名称到数据库 ID 的映射
 // 数据库中世界地图区域的ID规则：
 // - 大洲: 8-11 (欧洲、亚洲、北美洲、大洋洲等)
@@ -241,20 +309,26 @@ export function WorldMap({ onRegionClick, selectedRegion, visitedRegions = new S
            '';
   };
 
+  // 获取国家中文名称
+  const getCountryChineseName = (englishName: string): string => {
+    return englishToChinese[englishName] || englishName;
+  };
+
   const getRegionId = (geo: any): number => {
     const name = getCountryName(geo);
     return countryNameToId[name] || 0;
   };
 
   const handleMouseEnter = (geo: any, event: React.MouseEvent) => {
-    const name = getCountryName(geo);
+    const englishName = getCountryName(geo);
     const regionId = getRegionId(geo);
     const isVisited = visitedRegions.has(regionId);
+    const chineseName = getCountryChineseName(englishName);
 
-    if (name) {
+    if (englishName) {
       setTooltip({
         show: true,
-        content: `${name}${isVisited ? ' ✓' : ''}`,
+        content: `${chineseName}${isVisited ? ' ✓' : ''}`,
         x: event.clientX,
         y: event.clientY,
       });
@@ -266,10 +340,11 @@ export function WorldMap({ onRegionClick, selectedRegion, visitedRegions = new S
   };
 
   const handleClick = (geo: any) => {
-    const name = getCountryName(geo);
+    const englishName = getCountryName(geo);
     const regionId = getRegionId(geo);
-    if (regionId > 0 && name) {
-      onRegionClick(regionId, name);
+    const chineseName = getCountryChineseName(englishName);
+    if (regionId > 0 && chineseName) {
+      onRegionClick(regionId, chineseName);
     }
   };
 
@@ -305,7 +380,7 @@ export function WorldMap({ onRegionClick, selectedRegion, visitedRegions = new S
       <ComposableMap
         projection="geoNaturalEarth1"
         projectionConfig={{
-          scale: 220,
+          scale: 200,
           center: [0, 0],
         }}
         className="w-full h-full"
