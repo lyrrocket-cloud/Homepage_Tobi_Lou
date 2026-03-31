@@ -154,3 +154,74 @@ body {
   font-family: 'PangMenZhengDao', 'PingFang SC', 'Hiragino Sans GB',
     'Microsoft YaHei', sans-serif;
 }
+
+/* 自定义滚动条样式 */
+/* Webkit 浏览器 (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(206, 164, 114, 0.3);
+  border-radius: 4px;
+  transition: background 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(206, 164, 114, 0.5);
+}
+
+::-webkit-scrollbar-thumb:active {
+  background: rgba(206, 164, 114, 0.7);
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(206, 164, 114, 0.3) rgba(0, 0, 0, 0.2);
+}
+
+/* 弹窗内的滚动条 */
+[role="dialog"] ::-webkit-scrollbar,
+[data-state="open"] ::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+[role="dialog"] ::-webkit-scrollbar-track,
+[data-state="open"] ::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+[role="dialog"] ::-webkit-scrollbar-thumb,
+[data-state="open"] ::-webkit-scrollbar-thumb {
+  background: rgba(206, 164, 114, 0.4);
+}
+
+/* 隐藏横向滚动条但保留滚动功能 */
+.hide-scrollbar-x {
+  overflow-x: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.hide-scrollbar-x::-webkit-scrollbar {
+  display: none;
+}
+
+/* 隐藏纵向滚动条但保留滚动功能 */
+.hide-scrollbar-y {
+  overflow-y: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.hide-scrollbar-y::-webkit-scrollbar {
+  display: none;
+}
