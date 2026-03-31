@@ -519,7 +519,7 @@ export function UnifiedPhotoManager({ onPhotoAdded }: UnifiedPhotoManagerProps) 
 
       {/* 管理弹窗 */}
       <Dialog open={isManageOpen} onOpenChange={setIsManageOpen}>
-        <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto bg-[#0a0a0f] border-[#CEA472]/20">
+        <DialogContent className="max-w-[1200px] w-[95vw] max-h-[90vh] overflow-y-auto bg-[#0a0a0f] border-[#CEA472]/20">
           <DialogHeader>
             <DialogTitle className="text-white flex items-center justify-between">
               <div className="flex items-center gap-4">
@@ -585,7 +585,7 @@ export function UnifiedPhotoManager({ onPhotoAdded }: UnifiedPhotoManagerProps) 
               <div className="grid grid-cols-2 gap-6">
                 {currentPhotos.map((photo) => (
                   <div key={photo.id} className="flex gap-4 p-4 bg-black/40 rounded-lg border border-[#CEA472]/10 hover:border-[#CEA472]/30 transition-all">
-                    <div className="w-24 h-24 relative rounded overflow-hidden flex-shrink-0">
+                    <div className="w-20 h-20 relative rounded overflow-hidden flex-shrink-0">
                       <Image src={photo.image_url} alt={photo.title} fill className="object-cover" />
                     </div>
                     <div className="flex-1 min-w-0 flex flex-col justify-center">
@@ -602,12 +602,14 @@ export function UnifiedPhotoManager({ onPhotoAdded }: UnifiedPhotoManagerProps) 
                         </div>
                       )}
                     </div>
-                    <div className="flex flex-col gap-2 justify-center flex-shrink-0">
-                      <Button variant="outline" size="sm" onClick={() => handleOpenEdit(photo)} className="border-[#CEA472]/30 text-[#CEA472] w-8 h-8 p-0">
-                        <Edit className="w-4 h-4" />
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      <Button variant="outline" size="sm" onClick={() => handleOpenEdit(photo)} className="border-[#CEA472]/30 text-[#CEA472] h-8 px-3">
+                        <Edit className="w-4 h-4 mr-1" />
+                        编辑
                       </Button>
-                      <Button variant="outline" size="sm" onClick={() => handleDeletePhoto(photo.id)} className="border-red-500/30 text-red-500 w-8 h-8 p-0">
-                        <Trash2 className="w-4 h-4" />
+                      <Button variant="outline" size="sm" onClick={() => handleDeletePhoto(photo.id)} className="border-red-500/30 text-red-500 h-8 px-3">
+                        <Trash2 className="w-4 h-4 mr-1" />
+                        删除
                       </Button>
                     </div>
                   </div>
