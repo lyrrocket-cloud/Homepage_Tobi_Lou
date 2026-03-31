@@ -137,6 +137,7 @@ export function ChinaMap({ onRegionClick, selectedRegion, visitedRegions = new S
       const response = await fetch(CHINA_MAP_LOCAL);
       if (!response.ok) throw new Error('Local source failed');
       const data = await response.json();
+      console.log('[ChinaMap] 本地数据加载成功, features:', data.features?.length);
       setMapData(data);
       setLoading(false);
     } catch (err) {
@@ -145,6 +146,7 @@ export function ChinaMap({ onRegionClick, selectedRegion, visitedRegions = new S
         const backupResponse = await fetch(CHINA_MAP_BACKUP);
         if (!backupResponse.ok) throw new Error('Backup source failed');
         const data = await backupResponse.json();
+        console.log('[ChinaMap] 网络数据加载成功, features:', data.features?.length);
         setMapData(data);
         setLoading(false);
       } catch (backupErr) {
@@ -244,8 +246,8 @@ export function ChinaMap({ onRegionClick, selectedRegion, visitedRegions = new S
       <ComposableMap
         projection="geoMercator"
         projectionConfig={{
-          center: [104, 37.5],
-          scale: 600,
+          center: [105, 35],
+          scale: 500,
         }}
         className="w-full h-full"
       >

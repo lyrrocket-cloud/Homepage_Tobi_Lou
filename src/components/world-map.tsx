@@ -11,8 +11,9 @@ interface WorldMapProps {
 }
 
 // 世界地图数据源 - 优先本地，网络作为备用
-const WORLD_MAP_LOCAL = '/data/world.json';
-const WORLD_MAP_BACKUP = 'https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson';
+// 使用 TopoJSON 格式（更小更快）
+const WORLD_MAP_LOCAL = '/data/world-50m.json';
+const WORLD_MAP_BACKUP = 'https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json';
 
 // 国家英文名称到中文名称的映射
 const englishToChinese: Record<string, string> = {
@@ -293,6 +294,7 @@ export function WorldMap({ onRegionClick, selectedRegion, visitedRegions = new S
       const response = await fetch(WORLD_MAP_LOCAL);
       if (!response.ok) throw new Error('Local source failed');
       const data = await response.json();
+      console.log('[WorldMap] 本地数据加载成功, features:', data.features?.length);
       setMapData(data);
       setLoading(false);
     } catch (err) {
@@ -301,6 +303,7 @@ export function WorldMap({ onRegionClick, selectedRegion, visitedRegions = new S
         const backupResponse = await fetch(WORLD_MAP_BACKUP);
         if (!backupResponse.ok) throw new Error('Backup source failed');
         const data = await backupResponse.json();
+        console.log('[WorldMap] 网络数据加载成功, features:', data.features?.length);
         setMapData(data);
         setLoading(false);
       } catch (backupErr) {
@@ -394,12 +397,12 @@ export function WorldMap({ onRegionClick, selectedRegion, visitedRegions = new S
       <ComposableMap
         projection="geoMercator"
         projectionConfig={{
-          scale: 200,
-          center: [0, 0],
+          scale: 120,
+          center: [0, 20],
         }}
         className="w-full h-full"
       >
-        <Geographies geography={mapData}>
+        <Geographies geography={{ geography: mapData, object: 'countries' }}>
             {({ geographies }) =>
               geographies.map((geo) => {
                 const regionId = getRegionId(geo);
