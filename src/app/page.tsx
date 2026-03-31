@@ -691,7 +691,7 @@ export default function Home() {
               <span className="text-[#FFFFFF]/70">住在</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-[#8B6914] rounded"></div>
+              <div className="w-4 h-4 bg-[#CEA472] rounded"></div>
               <span className="text-[#FFFFFF]/70">已访问</span>
             </div>
             <div className="flex items-center gap-2">
