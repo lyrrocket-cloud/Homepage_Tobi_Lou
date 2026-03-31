@@ -551,13 +551,12 @@ export function UnifiedPhotoManager({ onPhotoAdded }: UnifiedPhotoManagerProps) 
               </button>
               <button
                 onClick={() => setActiveTab('world')}
-                className={`px-6 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${
+                className={`px-6 py-2 rounded-lg text-sm font-medium transition-all ${
                   activeTab === 'world'
                     ? 'bg-[#CEA472] text-[#0a0a0f]'
                     : 'bg-black/40 text-gray-400 hover:text-white hover:bg-black/60'
                 }`}
               >
-                <Globe className="w-4 h-4" />
                 世界
               </button>
             </div>
@@ -585,19 +584,17 @@ export function UnifiedPhotoManager({ onPhotoAdded }: UnifiedPhotoManagerProps) 
             ) : (
               <div className="grid grid-cols-2 gap-6">
                 {currentPhotos.map((photo) => (
-                  <div key={photo.id} className="flex items-center gap-4 p-4 bg-black/40 rounded-lg border border-[#CEA472]/10 hover:border-[#CEA472]/30 transition-all">
-                    <div className="w-28 h-28 relative rounded overflow-hidden flex-shrink-0">
+                  <div key={photo.id} className="flex gap-4 p-4 bg-black/40 rounded-lg border border-[#CEA472]/10 hover:border-[#CEA472]/30 transition-all">
+                    <div className="w-24 h-24 relative rounded overflow-hidden flex-shrink-0">
                       <Image src={photo.image_url} alt={photo.title} fill className="object-cover" />
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <h4 className="text-white font-medium truncate text-lg">{photo.title}</h4>
-                      <p className="text-gray-400 text-sm mt-1 flex items-center gap-2">
-                        <span>{getRegionName(photo)}</span>
-                        <span className="text-[#CEA472]/50">·</span>
-                        <span>{formatDate(photo.date)}</span>
+                    <div className="flex-1 min-w-0 flex flex-col justify-center">
+                      <h4 className="text-white font-medium truncate">{photo.title}</h4>
+                      <p className="text-gray-400 text-sm mt-1 truncate">
+                        {getRegionName(photo)} · {formatDate(photo.date)}
                       </p>
                       {photo.category && photo.category !== 'world' && (
-                        <div className="flex gap-1 mt-1 flex-wrap">
+                        <div className="flex gap-1 mt-2 flex-wrap">
                           {photo.category.split(',').map(catId => {
                             const cat = categories.find(c => c.id === catId);
                             return cat ? <span key={catId} className="text-xs text-[#CEA472] px-2 py-0.5 bg-[#CEA472]/10 rounded-full">{cat.name}</span> : null;
@@ -605,11 +602,11 @@ export function UnifiedPhotoManager({ onPhotoAdded }: UnifiedPhotoManagerProps) 
                         </div>
                       )}
                     </div>
-                    <div className="flex gap-2 flex-shrink-0">
-                      <Button variant="outline" size="sm" onClick={() => handleOpenEdit(photo)} className="border-[#CEA472]/30 text-[#CEA472]">
+                    <div className="flex flex-col gap-2 justify-center flex-shrink-0">
+                      <Button variant="outline" size="sm" onClick={() => handleOpenEdit(photo)} className="border-[#CEA472]/30 text-[#CEA472] w-8 h-8 p-0">
                         <Edit className="w-4 h-4" />
                       </Button>
-                      <Button variant="outline" size="sm" onClick={() => handleDeletePhoto(photo.id)} className="border-red-500/30 text-red-500">
+                      <Button variant="outline" size="sm" onClick={() => handleDeletePhoto(photo.id)} className="border-red-500/30 text-red-500 w-8 h-8 p-0">
                         <Trash2 className="w-4 h-4" />
                       </Button>
                     </div>
