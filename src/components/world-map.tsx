@@ -275,7 +275,7 @@ export function WorldMap({ onRegionClick, selectedRegion, visitedRegions = new S
 
   if (loading) {
     return (
-      <div className={`w-full h-[300px] md:h-[400px] bg-black/40 backdrop-blur-md rounded-lg border border-[#CEA472]/20 flex items-center justify-center ${className}`}>
+      <div className={`w-full h-[300px] md:h-[480px] bg-black/40 backdrop-blur-md rounded-lg border border-[#CEA472]/20 flex items-center justify-center ${className}`}>
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-2 border-[#CEA472] border-t-transparent mx-auto mb-4"></div>
           <p className="text-white/60">加载世界地图中...</p>
@@ -286,7 +286,7 @@ export function WorldMap({ onRegionClick, selectedRegion, visitedRegions = new S
 
   if (error || !mapData) {
     return (
-      <div className={`w-full h-[300px] md:h-[400px] bg-black/40 backdrop-blur-md rounded-lg border border-[#CEA472]/20 flex items-center justify-center ${className}`}>
+      <div className={`w-full h-[300px] md:h-[480px] bg-black/40 backdrop-blur-md rounded-lg border border-[#CEA472]/20 flex items-center justify-center ${className}`}>
         <div className="text-center">
           <p className="text-white/60 mb-4">{error || '地图数据加载失败'}</p>
           <button
@@ -301,11 +301,11 @@ export function WorldMap({ onRegionClick, selectedRegion, visitedRegions = new S
   }
 
   return (
-    <div className={`relative w-full h-[300px] md:h-[400px] bg-black/40 backdrop-blur-md rounded-lg border border-[#CEA472]/20 overflow-hidden select-none ${className}`}>
+    <div className={`relative w-full h-[300px] md:h-[480px] bg-black/40 backdrop-blur-md rounded-lg border border-[#CEA472]/20 overflow-hidden select-none ${className}`}>
       <ComposableMap
         projection="geoNaturalEarth1"
         projectionConfig={{
-          scale: 170,
+          scale: 220,
           center: [0, 0],
         }}
         className="w-full h-full"
