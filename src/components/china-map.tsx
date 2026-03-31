@@ -137,8 +137,14 @@ export function ChinaMap({ onRegionClick, selectedRegion, visitedRegions = new S
       const response = await fetch(CHINA_MAP_LOCAL);
       if (!response.ok) throw new Error('Local source failed');
       const data = await response.json();
-      console.log('[ChinaMap] 本地数据加载成功, features:', data.features?.length);
-      setMapData(data);
+      console.log('[ChinaMap] 本地数据加载成功, type:', data.type, 'features:', data.features?.length);
+      // 验证数据格式
+      if (data.type === 'FeatureCollection' && Array.isArray(data.features)) {
+        console.log('[ChinaMap] 第一个省份:', data.features[0]?.properties?.name);
+        setMapData(data);
+      } else {
+        throw new Error('Invalid GeoJSON format');
+      }
       setLoading(false);
     } catch (err) {
       console.warn('[ChinaMap] 本地加载失败，尝试网络备用源:', err);
@@ -146,7 +152,7 @@ export function ChinaMap({ onRegionClick, selectedRegion, visitedRegions = new S
         const backupResponse = await fetch(CHINA_MAP_BACKUP);
         if (!backupResponse.ok) throw new Error('Backup source failed');
         const data = await backupResponse.json();
-        console.log('[ChinaMap] 网络数据加载成功, features:', data.features?.length);
+        console.log('[ChinaMap] 网络数据加载成功, type:', data.type, 'features:', data.features?.length);
         setMapData(data);
         setLoading(false);
       } catch (backupErr) {
@@ -246,19 +252,26 @@ export function ChinaMap({ onRegionClick, selectedRegion, visitedRegions = new S
       <ComposableMap
         projection="geoMercator"
         projectionConfig={{
-          center: [105, 36],
-          scale: 600,
+          center: [105, 38],
+          scale: 550,
         }}
         className="w-full h-full"
       >
         <Geographies geography={mapData}>
             {({ geographies }) =>
-              geographies.map((geo) => {
-                const regionId = getRegionId(geo);
-                const isChecked = visitedRegions.has(regionId);
-                const isSelected = selectedRegion?.id === regionId;
-                // 上海(108)和江苏(109)使用特殊颜色（住在）
-                const isHome = regionId === 108 || regionId === 109;
+              geographies
+                .filter((geo) => {
+                  // 过滤掉九段线等特殊区域（name 为空或 adcode 包含非数字）
+                  const name = geo.properties?.name;
+                  const adcode = geo.properties?.adcode?.toString() || '';
+                  return name && adcode && !adcode.includes('_');
+                })
+                .map((geo) => {
+                  const regionId = getRegionId(geo);
+                  const isChecked = visitedRegions.has(regionId);
+                  const isSelected = selectedRegion?.id === regionId;
+                  // 上海(108)和江苏(109)使用特殊颜色（住在）
+                  const isHome = regionId === 108 || regionId === 109;
 
                 // 根据状态确定填充颜色
                 const getFillColor = () => {
