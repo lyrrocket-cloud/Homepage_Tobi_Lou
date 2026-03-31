@@ -10,9 +10,8 @@ interface ChinaMapProps {
   className?: string;
 }
 
-// 地图数据源
-const CHINA_MAP_URL = 'https://raw.githubusercontent.com/waylau/svg-china-map/master/china-map/china.geo.json';
-const CHINA_MAP_BACKUP = 'https://geo.datav.aliyun.com/areas_v3/bound/100000_full.json';
+// 地图数据源（本地化）
+const CHINA_MAP_URL = '/data/china.geo.json';
 
 // 省份代码到数据库 ID 的映射（备份数据源格式）
 const provinceCodeToId: Record<string, number> = {
@@ -133,21 +132,14 @@ export function ChinaMap({ onRegionClick, selectedRegion, visitedRegions = new S
     const fetchMapData = async () => {
       try {
         const response = await fetch(CHINA_MAP_URL);
-        if (!response.ok) throw new Error('Primary source failed');
+        if (!response.ok) throw new Error('Failed to fetch map data');
         const data = await response.json();
         setMapData(data);
         setLoading(false);
       } catch (err) {
-        try {
-          const backupResponse = await fetch(CHINA_MAP_BACKUP);
-          if (!backupResponse.ok) throw new Error('Backup source failed');
-          const data = await backupResponse.json();
-          setMapData(data);
-          setLoading(false);
-        } catch (backupErr) {
-          setError('无法加载地图数据');
-          setLoading(false);
-        }
+        console.error('中国地图加载失败:', err);
+        setError('无法加载地图数据');
+        setLoading(false);
       }
     };
 
