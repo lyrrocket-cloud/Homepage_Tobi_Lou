@@ -382,7 +382,7 @@ export function WorldMap({ onRegionClick, selectedRegion, visitedRegions = new S
         projection="geoNaturalEarth1"
         projectionConfig={{
           scale: 200,
-          center: [-100, 0],
+          center: [25, 0],
         }}
         className="w-full h-full"
       >
