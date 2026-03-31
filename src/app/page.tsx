@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -321,11 +321,11 @@ function WorldTracker() {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       {/* 标题区域 */}
       <div className="flex items-center gap-3">
-        <Globe className="w-6 h-6 text-[#CEA472]" />
-        <h3 className="text-2xl font-bold text-[#CEA472]">
+        <Globe className="w-8 h-8 text-[#CEA472]" />
+        <h3 className="text-4xl font-bold text-[#CEA472]">
           世界地图
         </h3>
       </div>
@@ -333,23 +333,159 @@ function WorldTracker() {
       {/* 图例 */}
       <div className="flex items-center gap-6 text-sm">
         <div className="flex items-center gap-2">
-          <div className="w-3 h-3 bg-[#CEA472] rounded"></div>
+          <div className="w-4 h-4 bg-[#CEA472] rounded"></div>
           <span className="text-[#FFFFFF]/70">已访问</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-3 h-3 bg-black/30 border border-[#CEA472]/10 rounded"></div>
+          <div className="w-4 h-4 bg-black/30 border border-[#CEA472]/10 rounded"></div>
           <span className="text-[#FFFFFF]/70">未访问</span>
         </div>
       </div>
 
-      {/* 世界地图 */}
-      <div className="w-full">
-        <WorldMap
-          selectedRegion={selectedRegion}
-          visitedRegions={visitedRegions}
-          onRegionClick={handleRegionClick}
-        />
+      {/* 左右分栏布局 - 桌面和平板保持地图在左、打卡记录在右 */}
+      <div className="flex flex-col md:flex-row gap-6 items-stretch">
+        {/* 左侧：世界地图 */}
+        <div className="flex-1 w-full">
+          <WorldMap
+            selectedRegion={selectedRegion}
+            visitedRegions={visitedRegions}
+            onRegionClick={handleRegionClick}
+          />
+        </div>
+
+        {/* 右侧：打卡记录列表 - 固定宽度，与地图等高 */}
+        <div className="w-full md:w-[320px] flex-shrink-0 h-[300px] md:h-[400px] overflow-y-auto">
+          <WorldVisitList
+            regionId={selectedRegion?.id || null}
+            regionName={selectedRegion?.name || ''}
+            onRefresh={fetchVisitedRegions}
+          />
+        </div>
       </div>
+    </div>
+  );
+}
+
+// 世界地图到访记录列表组件
+function WorldVisitList({ regionId, regionName, onRefresh }: { regionId: number | null; regionName: string; onRefresh?: () => void }) {
+  const [visits, setVisits] = useState<Array<{
+    id: number;
+    title: string;
+    region_id: number;
+    date: string;
+    year: number;
+    image_url: string;
+    url?: string;
+    category: string;
+    region?: { id: number; name: string; type: string };
+  }>>([]);
+  const [loading, setLoading] = useState(false);
+
+  const fetchVisits = useCallback(async () => {
+    try {
+      setLoading(true);
+      const response = await fetch('/api/gallery/photos');
+      const result = await response.json();
+      
+      if (result.photos) {
+        // 只获取世界地图类型的照片
+        let worldPhotos = result.photos.filter(
+          (photo: { region?: { type: string } }) => photo.region?.type === 'world'
+        );
+        
+        // 如果有 regionId，只显示该地区的记录
+        if (regionId) {
+          worldPhotos = worldPhotos.filter(
+            (photo: { region_id: number }) => photo.region_id === regionId
+          );
+        }
+        
+        // 按日期降序排列
+        const sortedVisits = worldPhotos.sort(
+          (a: { date: string }, b: { date: string }) => b.date.localeCompare(a.date)
+        );
+        setVisits(sortedVisits);
+      }
+    } catch (error) {
+      console.error('[WorldVisitList] Failed to fetch visits:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, [regionId]);
+
+  useEffect(() => {
+    fetchVisits();
+  }, [fetchVisits]);
+
+  useEffect(() => {
+    if (onRefresh) {
+      onRefresh();
+    }
+  }, [regionId, onRefresh]);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px] bg-gradient-to-br from-[#CEA472]/5 to-black/40 rounded-lg border border-[#CEA472]/10 p-4">
+        <div className="text-[#CEA472]">加载中...</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-[400px] bg-gradient-to-br from-[#CEA472]/5 to-black/40 rounded-lg border border-[#CEA472]/10 p-4 flex flex-col">
+      <div className="flex items-center justify-between mb-4 flex-shrink-0">
+        <h3 className="text-2xl font-bold text-[#CEA472]">
+          {regionName ? regionName : '全部访问记录'}
+        </h3>
+        <span className="text-sm text-[#CEA472]/60">
+          共 {visits.length} 条记录
+        </span>
+      </div>
+      
+      {visits.length === 0 ? (
+        <div className="flex items-center justify-center flex-1">
+          <div className="text-center">
+            <MapPin className="w-12 h-12 text-[#CEA472]/50 mx-auto mb-3" />
+            <p className="text-[#CEA472]/60">
+              {regionName ? '该国家暂无照片记录' : '暂无世界地图照片记录'}
+            </p>
+          </div>
+        </div>
+      ) : (
+        <div className="flex-1 overflow-y-auto space-y-3 pr-2">
+          {visits.map((visit) => (
+            <div key={visit.id} className="bg-black/40 border border-[#CEA472]/10 hover:border-[#CEA472]/30 rounded-lg overflow-hidden transition-all duration-300 hover:bg-black/60 flex">
+              {/* 左侧：文字信息 */}
+              <div className="flex-1 p-3 flex flex-col justify-center">
+                <div className="flex items-center gap-2 mb-2">
+                  <MapPin className="w-4 h-4 text-[#CEA472]/70 flex-shrink-0" />
+                  <span className="text-[#FFFFFF] text-base font-medium truncate">
+                    {visit.region?.name || visit.title}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Calendar className="w-3 h-3 text-[#CEA472]/70 flex-shrink-0" />
+                  <p className="text-[#FFFFFF]/70 text-xs">
+                    {visit.date.split('-')[0]}年{visit.date.split('-')[1]}月
+                  </p>
+                </div>
+              </div>
+              
+              {/* 右侧：图片 */}
+              {visit.image_url && (
+                <div className="relative w-20 h-20 flex-shrink-0">
+                  <Image
+                    src={visit.image_url}
+                    alt={visit.title}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
