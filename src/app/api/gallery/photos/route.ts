@@ -77,6 +77,7 @@ export async function POST(request: NextRequest) {
 
     const client = getSupabaseClient();
 
+    // 不指定 ID，让数据库自动生成
     const { data, error } = await client
       .from('gallery_photos')
       .insert({
@@ -94,40 +95,6 @@ export async function POST(request: NextRequest) {
 
     if (error) {
       console.error('添加照片失败:', error);
-      // 检查是否是主键冲突，尝试重新插入
-      if (error.code === '23505') {
-        // 获取当前最大 ID
-        const { data: maxIdResult } = await client
-          .from('gallery_photos')
-          .select('id')
-          .order('id', { ascending: false })
-          .limit(1);
-        
-        const newId = (maxIdResult?.[0]?.id || 0) + 1;
-        
-        const { data: retryData, error: retryError } = await client
-          .from('gallery_photos')
-          .insert({
-            id: newId,
-            title,
-            region_id: regionId,
-            date,
-            year,
-            image_key: imageKey,
-            image_url: imageUrl,
-            url: url || null,
-            category,
-          })
-          .select('*, region:regions(id, name, type)')
-          .single();
-        
-        if (retryError) {
-          console.error('重试添加照片失败:', retryError);
-          return NextResponse.json({ error: '添加照片失败', details: retryError.message }, { status: 500 });
-        }
-        
-        return NextResponse.json({ photo: retryData });
-      }
       return NextResponse.json({ error: '添加照片失败', details: error.message, code: error.code }, { status: 500 });
     }
 
