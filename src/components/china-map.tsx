@@ -255,13 +255,14 @@ export function ChinaMap({ onRegionClick, selectedRegion, visitedRegions = new S
 
                 // 根据状态确定填充颜色
                 const getFillColor = () => {
-                  if (isHome) return '#4ade80'; // 绿色表示"住在"
+                  if (isHome) return '#002D28'; // 深绿色表示"住在"
                   if (isChecked) return '#CEA472'; // 金色表示"已访问"
                   return 'rgba(255, 255, 255, 0.1)';
                 };
 
                 const getFillOpacity = () => {
-                  if (isHome || isChecked) return 0.9;
+                  if (isHome) return 1;
+                  if (isChecked) return 0.9;
                   return 0.4;
                 };
 
@@ -276,24 +277,24 @@ export function ChinaMap({ onRegionClick, selectedRegion, visitedRegions = new S
                       default: {
                         fill: getFillColor(),
                         fillOpacity: getFillOpacity(),
-                        stroke: isHome ? '#22c55e' : '#CEA472',
+                        stroke: isHome ? '#004d44' : '#CEA472',
                         strokeWidth: 0.5,
                         outline: 'none',
                         transition: 'all 0.3s ease',
                         cursor: 'pointer',
                       },
                       hover: {
-                        fill: isHome ? '#4ade80' : '#CEA472',
-                        fillOpacity: 0.9,
-                        stroke: isHome ? '#22c55e' : '#CEA472',
+                        fill: isHome ? '#003d36' : '#CEA472',
+                        fillOpacity: 1,
+                        stroke: isHome ? '#004d44' : '#CEA472',
                         strokeWidth: 1,
                         outline: 'none',
                         cursor: 'pointer',
                       },
                       pressed: {
-                        fill: isHome ? '#22c55e' : '#CEA472',
+                        fill: isHome ? '#001f1c' : '#CEA472',
                         fillOpacity: 1,
-                        stroke: isHome ? '#22c55e' : '#CEA472',
+                        stroke: isHome ? '#004d44' : '#CEA472',
                         strokeWidth: 1.5,
                         outline: 'none',
                         cursor: 'pointer',
