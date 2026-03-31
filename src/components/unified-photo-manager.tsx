@@ -519,7 +519,7 @@ export function UnifiedPhotoManager({ onPhotoAdded }: UnifiedPhotoManagerProps) 
 
       {/* 管理弹窗 */}
       <Dialog open={isManageOpen} onOpenChange={setIsManageOpen}>
-        <DialogContent className="min-w-[800px] w-[90vw] max-w-[1400px] max-h-[90vh] overflow-y-auto bg-[#0a0a0f] border-[#CEA472]/20">
+        <DialogContent className="min-w-[900px] w-[92vw] max-w-[1400px] max-h-[90vh] overflow-y-auto bg-[#0a0a0f] border-[#CEA472]/20">
           <DialogHeader>
             <DialogTitle className="text-white flex items-center justify-between">
               <div className="flex items-center gap-4">
@@ -585,7 +585,7 @@ export function UnifiedPhotoManager({ onPhotoAdded }: UnifiedPhotoManagerProps) 
               <div className="grid grid-cols-2 gap-6">
                 {currentPhotos.map((photo) => (
                   <div key={photo.id} className="flex gap-4 p-4 bg-black/40 rounded-lg border border-[#CEA472]/10 hover:border-[#CEA472]/30 transition-all">
-                    <div className="w-20 h-20 relative rounded overflow-hidden flex-shrink-0">
+                    <div className="w-[120px] h-[80px] relative rounded overflow-hidden flex-shrink-0">
                       <Image src={photo.image_url} alt={photo.title} fill className="object-cover" />
                     </div>
                     <div className="flex-1 min-w-0 flex flex-col justify-center">
