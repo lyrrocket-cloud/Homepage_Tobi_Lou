@@ -237,7 +237,7 @@ export function ChinaMap({ onRegionClick, selectedRegion, visitedRegions = new S
   return (
     <div className={`relative w-full h-[300px] md:h-[480px] bg-black/40 backdrop-blur-md rounded-lg border border-[#CEA472]/20 overflow-hidden select-none ${className}`}>
       <ComposableMap
-        projection="geoNaturalEarth1"
+        projection="geoMercator"
         projectionConfig={{
           center: [104, 37.5],
           scale: 600,
