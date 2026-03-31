@@ -105,10 +105,15 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // 确定源环境 URL
-    const sourceUrl = direction === 'import' ? PRODUCTION_URL : `http://localhost:5000`;
+    // 确定源环境和目标环境
+    const currentDomain = process.env.COZE_PROJECT_DOMAIN_DEFAULT || 'http://localhost:5000';
+    const sourceUrl = direction === 'import' ? PRODUCTION_URL : currentDomain;
+    const targetUrl = direction === 'import' ? currentDomain : PRODUCTION_URL;
     
-    console.log(`[Sync Photos] Found ${photos.length} photos to sync from ${sourceUrl}`);
+    console.log(`[Sync Photos] Found ${photos.length} photos`);
+    console.log(`[Sync Photos] Direction: ${direction}`);
+    console.log(`[Sync Photos] Source: ${sourceUrl}`);
+    console.log(`[Sync Photos] Target: ${targetUrl}`);
 
     const results: SyncResult[] = [];
     let successCount = 0;
@@ -174,23 +179,64 @@ export async function POST(request: NextRequest) {
 
         const imageBuffer = Buffer.from(await imageResponse.arrayBuffer());
 
-        // 3. 上传到当前环境
-        const newKey = await storage.uploadFile({
-          fileContent: imageBuffer,
-          fileName: photo.image_key,
-          contentType: 'image/jpeg',
-        });
+        // 3. 上传到目标环境
+        // 如果是导出到生产环境，需要调用生产环境的上传接口
+        if (direction === 'export') {
+          // 创建 FormData 并上传到生产环境
+          const formData = new FormData();
+          const blob = new Blob([imageBuffer], { type: 'image/jpeg' });
+          formData.append('file', blob, photo.image_key.split('/').pop() || 'photo.jpg');
 
-        results.push({
-          id: photo.id,
-          title: photo.title,
-          sourceKey: photo.image_key,
-          targetKey: newKey,
-          status: 'success',
-        });
-        successCount++;
+          const uploadResponse = await fetch(`${PRODUCTION_URL}/api/gallery/upload`, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${expectedAuth}`,
+            },
+            body: formData,
+          });
 
-        console.log(`[Sync Photos] Synced: ${photo.title} -> ${newKey}`);
+          if (!uploadResponse.ok) {
+            const errorData = await uploadResponse.json().catch(() => ({}));
+            results.push({
+              id: photo.id,
+              title: photo.title,
+              sourceKey: photo.image_key,
+              targetKey: '',
+              status: 'error',
+              error: `上传到生产环境失败: ${errorData.error || uploadResponse.status}`,
+            });
+            errorCount++;
+            continue;
+          }
+
+          const uploadResult = await uploadResponse.json();
+          results.push({
+            id: photo.id,
+            title: photo.title,
+            sourceKey: photo.image_key,
+            targetKey: uploadResult.key || '',
+            status: 'success',
+          });
+          successCount++;
+        } else {
+          // 导入：上传到当前环境
+          const newKey = await storage.uploadFile({
+            fileContent: imageBuffer,
+            fileName: photo.image_key,
+            contentType: 'image/jpeg',
+          });
+
+          results.push({
+            id: photo.id,
+            title: photo.title,
+            sourceKey: photo.image_key,
+            targetKey: newKey,
+            status: 'success',
+          });
+          successCount++;
+        }
+
+        console.log(`[Sync Photos] Synced: ${photo.title}`);
 
       } catch (error) {
         console.error(`[Sync Photos] Error syncing ${photo.title}:`, error);

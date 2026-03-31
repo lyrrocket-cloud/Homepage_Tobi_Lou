@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { 
   RefreshCw, CheckCircle, XCircle, Loader2, Database, Cloud, 
-  ArrowDownToLine, ArrowUpFromLine, AlertTriangle, Image, ChevronDown, ChevronUp
+  ArrowDownToLine, ArrowUpFromLine, Image, ChevronDown, ChevronUp
 } from 'lucide-react';
 
 interface SyncResult {
@@ -128,10 +128,19 @@ export default function SyncAdminPage() {
   };
 
   // 照片文件同步
-  const handlePhotoSync = async () => {
+  const handlePhotoSync = async (syncDirection: 'import' | 'export') => {
     if (!password) {
       setPhotoError('请输入管理密码');
       return;
+    }
+
+    if (syncDirection === 'export') {
+      const confirmed = confirm(
+        '⚠️ 警告：上传操作将覆盖生产环境的照片文件！\n\n' +
+        '此操作不可逆，请确认要继续。\n\n' +
+        '确定继续吗？'
+      );
+      if (!confirmed) return;
     }
 
     setPhotoLoading(true);
@@ -145,7 +154,7 @@ export default function SyncAdminPage() {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${password}`,
         },
-        body: JSON.stringify({ direction: 'import', table: 'gallery_photos' }),
+        body: JSON.stringify({ direction: syncDirection, table: 'gallery_photos' }),
       });
 
       const data = await response.json();
@@ -194,6 +203,23 @@ export default function SyncAdminPage() {
           </CardContent>
         </Card>
 
+        {/* 密码输入 */}
+        <Card className="bg-black/40 border-[#CEA472]/20 mb-6">
+          <CardContent className="pt-6">
+            <Label htmlFor="password" className="text-[#FFFFFF]/80 text-sm mb-1 block">
+              管理密码
+            </Label>
+            <Input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="输入管理密码"
+              className="bg-black/40 border-[#CEA472]/30 text-white placeholder:text-white/40"
+            />
+          </CardContent>
+        </Card>
+
         {/* 数据库同步 */}
         <Card className="bg-black/40 border-[#CEA472]/20 mb-6">
           <CardHeader>
@@ -209,27 +235,27 @@ export default function SyncAdminPage() {
               <RadioGroup value={direction} onValueChange={(v) => setDirection(v as SyncDirection)}>
                 <div className="space-y-3">
                   <Label 
-                    htmlFor="import" 
+                    htmlFor="import-db" 
                     className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all ${
                       direction === 'import' 
                         ? 'border-blue-500 bg-blue-500/10' 
                         : 'border-[#CEA472]/20 hover:border-[#CEA472]/40'
                     }`}
                   >
-                    <RadioGroupItem value="import" id="import" />
+                    <RadioGroupItem value="import" id="import-db" />
                     <ArrowDownToLine className="w-4 h-4 text-blue-400" />
                     <span className="text-[#FFFFFF] text-sm">从生产环境导入</span>
                     <span className="text-green-400 text-xs ml-auto">安全</span>
                   </Label>
                   <Label 
-                    htmlFor="export" 
+                    htmlFor="export-db" 
                     className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all ${
                       direction === 'export' 
                         ? 'border-orange-500 bg-orange-500/10' 
                         : 'border-[#CEA472]/20 hover:border-[#CEA472]/40'
                     }`}
                   >
-                    <RadioGroupItem value="export" id="export" />
+                    <RadioGroupItem value="export" id="export-db" />
                     <ArrowUpFromLine className="w-4 h-4 text-orange-400" />
                     <span className="text-[#FFFFFF] text-sm">导出到生产环境</span>
                     <span className="text-orange-400 text-xs ml-auto">危险</span>
@@ -248,21 +274,6 @@ export default function SyncAdminPage() {
                   </span>
                 ))}
               </div>
-            </div>
-
-            {/* 密码输入 */}
-            <div className="mb-4">
-              <Label htmlFor="password" className="text-[#FFFFFF]/80 text-sm mb-1 block">
-                管理密码
-              </Label>
-              <Input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="输入管理密码"
-                className="bg-black/40 border-[#CEA472]/30 text-white placeholder:text-white/40"
-              />
             </div>
 
             {/* 同步按钮 */}
@@ -344,26 +355,42 @@ export default function SyncAdminPage() {
             <div className="bg-black/40 rounded-lg p-3 mb-4">
               <p className="text-[#FFFFFF]/60 text-xs mb-1">同步内容：</p>
               <p className="text-[#FFFFFF]/80 text-sm">gallery_photos 表中的照片文件（80 张）</p>
-              <p className="text-[#FFFFFF]/40 text-xs mt-1">从生产环境下载并上传到开发环境</p>
             </div>
 
-            <Button
-              onClick={handlePhotoSync}
-              disabled={photoLoading || !password}
-              className="w-full bg-blue-500 hover:bg-blue-500/80 text-white font-semibold"
-            >
-              {photoLoading ? (
-                <>
+            {/* 一键下载 / 一键上传 按钮 */}
+            <div className="grid grid-cols-2 gap-3">
+              <Button
+                onClick={() => handlePhotoSync('import')}
+                disabled={photoLoading || !password}
+                className="bg-blue-500 hover:bg-blue-500/80 text-white font-semibold"
+              >
+                {photoLoading ? (
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  同步中...
-                </>
-              ) : (
-                <>
+                ) : (
                   <ArrowDownToLine className="w-4 h-4 mr-2" />
-                  从生产环境同步照片
-                </>
-              )}
-            </Button>
+                )}
+                一键下载
+              </Button>
+              <Button
+                onClick={() => handlePhotoSync('export')}
+                disabled={photoLoading || !password}
+                variant="outline"
+                className="border-orange-500 text-orange-400 hover:bg-orange-500/10 font-semibold"
+              >
+                {photoLoading ? (
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                ) : (
+                  <ArrowUpFromLine className="w-4 h-4 mr-2" />
+                )}
+                一键上传
+              </Button>
+            </div>
+
+            <div className="flex items-center justify-center gap-4 mt-3 text-xs text-[#FFFFFF]/40">
+              <span>下载 = 生产 → 开发</span>
+              <span>|</span>
+              <span>上传 = 开发 → 生产</span>
+            </div>
 
             {/* 错误提示 */}
             {photoError && (
@@ -379,6 +406,9 @@ export default function SyncAdminPage() {
                 <div className="flex items-center gap-2 text-green-400 bg-green-400/10 p-3 rounded-lg">
                   <CheckCircle className="w-4 h-4" />
                   <span className="text-sm">{photoResult.message}</span>
+                  <span className="text-[#FFFFFF]/40 text-xs ml-auto">
+                    {photoResult.direction === 'import' ? '下载完成' : '上传完成'}
+                  </span>
                 </div>
                 
                 <div className="bg-black/40 rounded-lg p-3">
