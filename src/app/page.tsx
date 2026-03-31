@@ -687,6 +687,10 @@ export default function Home() {
           {/* 图例 - 两幅地图共用 */}
           <div className="flex items-center gap-6 text-sm">
             <div className="flex items-center gap-2">
+              <div className="w-4 h-4 bg-[#4ade80] rounded"></div>
+              <span className="text-[#FFFFFF]/70">住在</span>
+            </div>
+            <div className="flex items-center gap-2">
               <div className="w-4 h-4 bg-[#CEA472] rounded"></div>
               <span className="text-[#FFFFFF]/70">已访问</span>
             </div>

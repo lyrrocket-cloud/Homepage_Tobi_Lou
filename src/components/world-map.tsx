@@ -391,6 +391,23 @@ export function WorldMap({ onRegionClick, selectedRegion, visitedRegions = new S
                 const regionId = getRegionId(geo);
                 const isVisited = visitedRegions.has(regionId);
                 const isSelected = selectedRegion?.id === regionId;
+                // 中国使用特殊颜色（住在）
+                const isHome = regionId === 100;
+
+                // 根据状态确定填充颜色
+                const getFillColor = () => {
+                  if (isHome) return '#4ade80'; // 绿色表示"住在"
+                  if (isVisited) return '#CEA472'; // 金色表示"已访问"
+                  if (isSelected) return '#CEA472';
+                  return 'rgba(255, 255, 255, 0.1)';
+                };
+
+                const getFillOpacity = () => {
+                  if (isHome) return 0.9;
+                  if (isVisited) return 0.9;
+                  if (isSelected) return 0.8;
+                  return 0.3;
+                };
 
                 return (
                   <Geography
@@ -401,26 +418,26 @@ export function WorldMap({ onRegionClick, selectedRegion, visitedRegions = new S
                     onMouseLeave={handleMouseLeave}
                     style={{
                       default: {
-                        fill: isVisited ? '#CEA472' : isSelected ? '#CEA472' : 'rgba(255, 255, 255, 0.1)',
-                        fillOpacity: isVisited ? 0.9 : isSelected ? 0.8 : 0.3,
-                        stroke: '#CEA472',
+                        fill: getFillColor(),
+                        fillOpacity: getFillOpacity(),
+                        stroke: isHome ? '#22c55e' : '#CEA472',
                         strokeWidth: regionId > 0 ? 0.3 : 0.1,
                         outline: 'none',
                         transition: 'all 0.3s ease',
                         cursor: regionId > 0 ? 'pointer' : 'default',
                       },
                       hover: {
-                        fill: '#CEA472',
+                        fill: isHome ? '#4ade80' : '#CEA472',
                         fillOpacity: regionId > 0 ? 0.9 : 0.5,
-                        stroke: '#CEA472',
+                        stroke: isHome ? '#22c55e' : '#CEA472',
                         strokeWidth: regionId > 0 ? 0.8 : 0.3,
                         outline: 'none',
                         cursor: regionId > 0 ? 'pointer' : 'default',
                       },
                       pressed: {
-                        fill: '#CEA472',
+                        fill: isHome ? '#22c55e' : '#CEA472',
                         fillOpacity: 1,
-                        stroke: '#CEA472',
+                        stroke: isHome ? '#22c55e' : '#CEA472',
                         strokeWidth: 1,
                         outline: 'none',
                         cursor: regionId > 0 ? 'pointer' : 'default',
