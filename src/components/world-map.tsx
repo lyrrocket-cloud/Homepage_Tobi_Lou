@@ -45,7 +45,7 @@ const englishToChinese: Record<string, string> = {
   'Bahrain': '巴林', 'Oman': '阿曼', 'Yemen': '也门', 'Mongolia': '蒙古', 'Brunei': '文莱',
   'Timor-Leste': '东帝汶', 'Maldives': '马尔代夫', 'Uzbekistan': '乌兹别克斯坦',
   'Turkmenistan': '土库曼斯坦', 'Tajikistan': '塔吉克斯坦', 'Kyrgyzstan': '吉尔吉斯斯坦',
-  'China': '中国',
+  'China': '中国', 'Taiwan': '台湾',
 
   // 北美洲
   'United States': '美国', 'USA': '美国', 'United States of America': '美国',
@@ -390,10 +390,11 @@ export function WorldMap({ onRegionClick, selectedRegion, visitedRegions = new S
             {({ geographies }) =>
               geographies.map((geo) => {
                 const regionId = getRegionId(geo);
+                const englishName = getCountryName(geo);
                 const isVisited = visitedRegions.has(regionId);
                 const isSelected = selectedRegion?.id === regionId;
-                // 中国使用特殊颜色（住在）
-                const isHome = regionId === 100;
+                // 中国和台湾使用特殊颜色（住在）
+                const isHome = regionId === 100 || englishName === 'Taiwan';
 
                 // 根据状态确定填充颜色
                 const getFillColor = () => {
