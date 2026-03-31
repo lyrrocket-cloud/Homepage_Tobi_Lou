@@ -3,12 +3,12 @@ import { S3Storage } from 'coze-coding-dev-sdk';
 /**
  * 统一存储配置
  * 
- * 预览环境和生产环境使用同一个共享 bucket
- * 确保两边的数据完全同步
+ * 注意：SDK 使用平台分配的 bucket
+ * - 预览环境: coze_storage_7622866075486584870
+ * - 生产环境: coze_storage_7622868643713613851
+ * 
+ * 两个环境的存储是独立的，照片文件不会自动同步
  */
-
-// 共享的 bucket 名称（预览环境和生产环境共用）
-const SHARED_BUCKET_NAME = 'bucket_1774837406196';
 
 // 存储配置类型
 interface StorageConfig {
@@ -20,10 +20,7 @@ interface StorageConfig {
 // 获取存储配置
 function getStorageConfig(): StorageConfig {
   const endpointUrl = process.env.COZE_BUCKET_ENDPOINT_URL || '';
-  
-  // 始终使用共享 bucket
-  const bucketName = SHARED_BUCKET_NAME;
-  
+  const bucketName = process.env.COZE_BUCKET_NAME || '';
   const region = 'cn-beijing';
   
   return {
@@ -62,10 +59,8 @@ export function getStorageInfo(): {
   bucketName: string;
   isShared: boolean;
 } {
-  const config = getStorageConfig();
-  
   return {
-    bucketName: config.bucketName,
-    isShared: true, // 始终是共享模式
+    bucketName: process.env.COZE_BUCKET_NAME || 'unknown',
+    isShared: false, // 两个环境使用独立的存储
   };
 }
