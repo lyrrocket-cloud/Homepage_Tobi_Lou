@@ -1,19 +1,6 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 
-/* 引入庞门正道粗书体 */
-@font-face {
-  font-family: 'PangMenZhengDao';
-  src: local('PangMenZhengDao'),
-       url('https://cdn.jsdelivr.net/gh/AquaCamel/pangmen@master/PangMenZhengDao-Cu.woff2') format('woff2'),
-       url('https://cdn.jsdelivr.net/gh/AquaCamel/pangmen@master/PangMenZhengDao-Cu.woff') format('woff'),
-       url('https://raw.githubusercontent.com/AquaCamel/pangmen/master/PangMenZhengDao-Cu.woff2') format('woff2'),
-       url('https://raw.githubusercontent.com/AquaCamel/pangmen/master/PangMenZhengDao-Cu.woff') format('woff');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
-
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
@@ -56,7 +43,7 @@
   --radius-3xl: calc(var(--radius) + 12px);
   --radius-4xl: calc(var(--radius) + 16px);
   --font-sans:
-    'PangMenZhengDao', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei',
+    'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei',
     ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
     Roboto, 'Helvetica Neue', Arial, sans-serif;
   --font-mono:
@@ -150,12 +137,6 @@
 
 body {
   @apply font-sans;
-}
-
-/* 中文字体样式 */
-.font-chinese {
-  font-family: 'PangMenZhengDao', 'PingFang SC', 'Hiragino Sans GB',
-    'Microsoft YaHei', sans-serif;
 }
 
 /* 自定义滚动条样式 */
