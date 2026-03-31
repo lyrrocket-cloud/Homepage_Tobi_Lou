@@ -256,13 +256,13 @@ export function ChinaMap({ onRegionClick, selectedRegion, visitedRegions = new S
                 // 根据状态确定填充颜色
                 const getFillColor = () => {
                   if (isHome) return '#002D28'; // 深绿色表示"住在"
-                  if (isChecked) return '#CEA472'; // 金色表示"已访问"
+                  if (isChecked) return '#8B6914'; // 暗金色表示"已访问"
                   return 'rgba(255, 255, 255, 0.1)';
                 };
 
                 const getFillOpacity = () => {
                   if (isHome) return 1;
-                  if (isChecked) return 0.9;
+                  if (isChecked) return 0.85;
                   return 0.4;
                 };
 
@@ -277,7 +277,7 @@ export function ChinaMap({ onRegionClick, selectedRegion, visitedRegions = new S
                       default: {
                         fill: getFillColor(),
                         fillOpacity: getFillOpacity(),
-                        stroke: isHome ? '#004d44' : '#CEA472',
+                        stroke: isHome ? '#004d44' : '#6B5210',
                         strokeWidth: 0.5,
                         outline: 'none',
                         transition: 'all 0.3s ease',
