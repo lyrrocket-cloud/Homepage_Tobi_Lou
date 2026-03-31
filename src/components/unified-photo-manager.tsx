@@ -519,7 +519,7 @@ export function UnifiedPhotoManager({ onPhotoAdded }: UnifiedPhotoManagerProps) 
 
       {/* 管理弹窗 */}
       <Dialog open={isManageOpen} onOpenChange={setIsManageOpen}>
-        <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto bg-[#0a0a0f] border-[#CEA472]/20">
+        <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto bg-[#0a0a0f] border-[#CEA472]/20">
           <DialogHeader>
             <DialogTitle className="text-white flex items-center justify-between">
               <div className="flex items-center gap-4">
@@ -583,22 +583,24 @@ export function UnifiedPhotoManager({ onPhotoAdded }: UnifiedPhotoManagerProps) 
                 <p className="text-sm mt-1">点击"添加照片"开始录入</p>
               </div>
             ) : (
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-6">
                 {currentPhotos.map((photo) => (
                   <div key={photo.id} className="flex items-center gap-4 p-4 bg-black/40 rounded-lg border border-[#CEA472]/10 hover:border-[#CEA472]/30 transition-all">
-                    <div className="w-24 h-24 relative rounded overflow-hidden flex-shrink-0">
+                    <div className="w-28 h-28 relative rounded overflow-hidden flex-shrink-0">
                       <Image src={photo.image_url} alt={photo.title} fill className="object-cover" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <h4 className="text-white font-medium truncate text-lg">{photo.title}</h4>
-                      <p className="text-gray-400 text-sm mt-1">
-                        {getRegionName(photo)} · {formatDate(photo.date)}
+                      <p className="text-gray-400 text-sm mt-1 flex items-center gap-2">
+                        <span>{getRegionName(photo)}</span>
+                        <span className="text-[#CEA472]/50">·</span>
+                        <span>{formatDate(photo.date)}</span>
                       </p>
-                      {activeTab === 'china' && photo.category && (
-                        <div className="flex gap-1 mt-1">
+                      {photo.category && photo.category !== 'world' && (
+                        <div className="flex gap-1 mt-1 flex-wrap">
                           {photo.category.split(',').map(catId => {
                             const cat = categories.find(c => c.id === catId);
-                            return cat ? <span key={catId} className="text-xs text-[#CEA472]">{cat.name}</span> : null;
+                            return cat ? <span key={catId} className="text-xs text-[#CEA472] px-2 py-0.5 bg-[#CEA472]/10 rounded-full">{cat.name}</span> : null;
                           })}
                         </div>
                       )}
@@ -681,26 +683,24 @@ export function UnifiedPhotoManager({ onPhotoAdded }: UnifiedPhotoManagerProps) 
               />
             </div>
 
-            {activeTab === 'china' && (
-              <div>
-                <Label className="text-gray-400">分类</Label>
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {categories.map((cat) => (
-                    <button
-                      key={cat.id}
-                      onClick={() => togglePhotoCategory(cat.id)}
-                      className={`px-3 py-1 rounded-full text-sm transition-all ${
-                        newPhoto.categories.includes(cat.id)
-                          ? 'bg-[#CEA472] text-[#0a0a0f]'
-                          : 'bg-white/5 text-gray-400 hover:bg-white/10'
-                      }`}
-                    >
-                      {cat.name}
-                    </button>
-                  ))}
-                </div>
+            <div>
+              <Label className="text-gray-400">分类</Label>
+              <div className="flex flex-wrap gap-2 mt-2">
+                {categories.map((cat) => (
+                  <button
+                    key={cat.id}
+                    onClick={() => togglePhotoCategory(cat.id)}
+                    className={`px-3 py-1 rounded-full text-sm transition-all ${
+                      newPhoto.categories.includes(cat.id)
+                        ? 'bg-[#CEA472] text-[#0a0a0f]'
+                        : 'bg-white/5 text-gray-400 hover:bg-white/10'
+                    }`}
+                  >
+                    {cat.name}
+                  </button>
+                ))}
               </div>
-            )}
+            </div>
 
             <div>
               <Label className="text-gray-400">照片</Label>
@@ -753,7 +753,7 @@ export function UnifiedPhotoManager({ onPhotoAdded }: UnifiedPhotoManagerProps) 
               </Button>
               <Button
                 onClick={handleAddPhoto}
-                disabled={saving || !newPhoto.title || !newPhoto.regionId || !newPhoto.yearMonth || !newPhoto.image || (activeTab === 'china' && newPhoto.categories.length === 0)}
+                disabled={saving || !newPhoto.title || !newPhoto.regionId || !newPhoto.yearMonth || !newPhoto.image}
                 className="bg-[#CEA472] hover:bg-[#CEA472]/80 text-[#0a0a0f]"
               >
                 {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : '添加'}
@@ -825,34 +825,32 @@ export function UnifiedPhotoManager({ onPhotoAdded }: UnifiedPhotoManagerProps) 
                 />
               </div>
 
-              {editingPhoto.region?.type === 'china' && (
-                <div>
-                  <Label className="text-gray-400">分类</Label>
-                  <div className="flex flex-wrap gap-2 mt-2">
-                    {categories.map((cat) => {
-                      const selectedCategories = editingPhoto.category?.split(',') || [];
-                      return (
-                        <button
-                          key={cat.id}
-                          onClick={() => {
-                            const newCategories = selectedCategories.includes(cat.id)
-                              ? selectedCategories.filter(c => c !== cat.id)
-                              : [...selectedCategories, cat.id];
-                            setEditingPhoto({ ...editingPhoto, category: newCategories.join(',') });
-                          }}
-                          className={`px-3 py-1 rounded-full text-sm transition-all ${
-                            selectedCategories.includes(cat.id)
-                              ? 'bg-[#CEA472] text-[#0a0a0f]'
-                              : 'bg-white/5 text-gray-400 hover:bg-white/10'
-                          }`}
-                        >
-                          {cat.name}
-                        </button>
-                      );
-                    })}
-                  </div>
+              <div>
+                <Label className="text-gray-400">分类</Label>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {categories.map((cat) => {
+                    const selectedCategories = editingPhoto.category?.split(',') || [];
+                    return (
+                      <button
+                        key={cat.id}
+                        onClick={() => {
+                          const newCategories = selectedCategories.includes(cat.id)
+                            ? selectedCategories.filter(c => c !== cat.id)
+                            : [...selectedCategories, cat.id];
+                          setEditingPhoto({ ...editingPhoto, category: newCategories.join(',') });
+                        }}
+                        className={`px-3 py-1 rounded-full text-sm transition-all ${
+                          selectedCategories.includes(cat.id)
+                            ? 'bg-[#CEA472] text-[#0a0a0f]'
+                            : 'bg-white/5 text-gray-400 hover:bg-white/10'
+                        }`}
+                      >
+                        {cat.name}
+                      </button>
+                    );
+                  })}
                 </div>
-              )}
+              </div>
 
               <div>
                 <Label className="text-gray-400">照片</Label>
