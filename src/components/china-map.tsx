@@ -247,7 +247,7 @@ export function ChinaMap({ onRegionClick, selectedRegion, visitedRegions = new S
         projection="geoMercator"
         projectionConfig={{
           center: [105, 36],
-          scale: 50,
+          scale: 600,
         }}
         className="w-full h-full"
       >
