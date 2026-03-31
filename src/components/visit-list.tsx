@@ -39,14 +39,18 @@ export function VisitList({ regionId, regionName, onRefresh }: VisitListProps) {
       const result = await response.json();
       
       if (result.photos) {
+        // 只获取中国地图类型的照片
+        let chinaPhotos = result.photos.filter(
+          (photo: PhotoVisit) => photo.region?.type === 'china'
+        );
+        
         // 如果有 regionId，只显示该地区的记录
-        let filteredPhotos = result.photos;
         if (regionId) {
-          filteredPhotos = result.photos.filter((photo: PhotoVisit) => photo.region_id === regionId);
+          chinaPhotos = chinaPhotos.filter((photo: PhotoVisit) => photo.region_id === regionId);
         }
         
         // 按日期降序排列（最新的在前）
-        const sortedVisits = filteredPhotos.sort((a: PhotoVisit, b: PhotoVisit) =>
+        const sortedVisits = chinaPhotos.sort((a: PhotoVisit, b: PhotoVisit) =>
           b.date.localeCompare(a.date)
         );
         setVisits(sortedVisits);
