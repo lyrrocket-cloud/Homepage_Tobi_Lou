@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { 
-  RefreshCw, CheckCircle, XCircle, Loader2, Database, 
+  RefreshCw, CheckCircle, XCircle, Loader2, 
   ArrowDownToLine, ArrowUpFromLine
 } from 'lucide-react';
 
@@ -108,30 +108,6 @@ export default function SyncAdminPage() {
           </div>
           <p className="text-[#FFFFFF] font-normal">在开发环境和生产环境之间同步数据</p>
         </div>
-
-        {/* 环境信息卡片 */}
-        <Card className="border-[#CEA472]/10 bg-black/40 backdrop-blur-sm hover:border-[#CEA472]/50 hover:bg-black/60 transition-all duration-500 mb-6">
-          <CardHeader>
-            <CardTitle className="text-[#CEA472] flex items-center gap-2">
-              <Database className="w-5 h-5" />
-              环境信息
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-blue-500/10 rounded-lg p-4 border border-blue-500/20">
-                <p className="text-blue-400 font-semibold mb-1">开发环境</p>
-                <p className="text-[#FFFFFF]/60 text-sm">当前预览环境</p>
-                <p className="text-[#FFFFFF]/50 text-xs mt-1">测试和开发使用</p>
-              </div>
-              <div className="bg-green-500/10 rounded-lg p-4 border border-green-500/20">
-                <p className="text-green-400 font-semibold mb-1">生产环境</p>
-                <p className="text-[#FFFFFF]/60 text-sm">tobilou.top 线上</p>
-                <p className="text-[#FFFFFF]/50 text-xs mt-1">正式对外服务</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
 
         {/* 数据库同步卡片 */}
         <Card className="border-[#CEA472]/10 bg-black/40 backdrop-blur-sm hover:border-[#CEA472]/50 hover:bg-black/60 transition-all duration-500">
