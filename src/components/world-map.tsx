@@ -141,9 +141,9 @@ const countryNameToId: Record<string, number> = {
   // 亚洲 (大洲ID: 9)
   'Japan': 900, '日本': 900,
   'South Korea': 901, '韩国': 901, 'Korea': 901, 'Republic of Korea': 901,
-  'North Korea': 902, '朝鲜': 902,
-  'Thailand': 903, '泰国': 903,
-  'Singapore': 904, '新加坡': 904,
+  'North Korea': 941, '朝鲜': 941, // 数据库中暂无，预留ID
+  'Thailand': 902, '泰国': 902,
+  'Singapore': 903, '新加坡': 903,
   'Malaysia': 905, '马来西亚': 905,
   'Indonesia': 906, '印度尼西亚': 906,
   'Philippines': 907, '菲律宾': 907,
