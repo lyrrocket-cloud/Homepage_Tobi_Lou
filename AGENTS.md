@@ -2,7 +2,7 @@
 
 ## 项目概览
 
-Tobi Lou 的个人旅行主页，展示旅行照片与视频，提供工具箱入口和基于中国地图的旅行打卡功能。
+Tobi Lou 的个人旅行主页，展示旅行照片与视频，提供工具箱入口和基于地图的旅行打卡功能（支持中国地图和世界地图）。
 
 ### 技术栈
 
@@ -34,6 +34,7 @@ src/
 │   └── layout.tsx        # 布局
 ├── components/
 │   ├── china-map.tsx     # 中国地图组件
+│   ├── world-map.tsx     # 世界地图组件
 │   ├── visit-list.tsx    # 打卡记录列表
 │   ├── visit-manager.tsx # 打卡管理弹窗
 │   ├── photo-manager.tsx # 照片管理
@@ -100,17 +101,23 @@ pnpm add -D <package>
 
 ### 1. 旅行打卡
 
-**组件**: `VisitTracker`
+**组件**: `WorldTracker` (世界地图) + `VisitTracker` (中国地图)
 
 **功能**:
-- 显示中国地图（固定尺寸 640×480px）
-- 已打卡省份显示金色
-- 点击省份自动打开打卡弹窗
-- 手动添加打卡按钮
+- 显示世界地图和中国地图
+- 已打卡地区显示金色
+- 点击地区自动打开打卡弹窗
+- 世界地图支持国家名称映射到数据库 ID
 
 **API**:
 - `GET /api/visits` - 获取打卡记录
 - `POST /api/visits` - 添加打卡记录
+- `GET /api/regions?type=world` - 获取世界地区数据
+- `GET /api/regions?type=china` - 获取中国地区数据
+
+**世界地图数据源**:
+- GeoJSON: https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson
+- 国家 ID 映射: 欧洲(800-849), 亚洲(900-940), 北美洲(1000-1018), 大洋洲(1100-1113), 南美洲(1200-1212), 非洲(1300-1333)
 
 ### 2. 照片管理
 
@@ -371,6 +378,14 @@ npx tsc --noEmit
 ```
 
 ## 更新日志
+
+### 2026-03-29
+
+- 添加世界地图打卡模块
+- 创建 WorldMap 组件，使用 react-simple-maps 和自然地球投影
+- 支持国家名称到数据库 ID 的映射
+- 在首页旅行打卡区域添加世界地图（在中国地图上方）
+- 更新 AGENTS.md 文档
 
 ### 2026-03-28
 

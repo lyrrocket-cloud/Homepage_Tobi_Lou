@@ -49,6 +49,15 @@ const ChinaMap = dynamic(() => import('@/components/china-map').then(mod => ({ d
   )
 });
 
+const WorldMap = dynamic(() => import('@/components/world-map').then(mod => ({ default: mod.WorldMap })), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-[300px] md:h-[400px] bg-black/40 backdrop-blur-md rounded-lg border border-[#CEA472]/20 flex items-center justify-center">
+      <div className="animate-spin rounded-full h-12 w-12 border-2 border-[#CEA472] border-t-transparent"></div>
+    </div>
+  )
+});
+
 // 动态导入打卡列表组件
 const VisitList = dynamic(() => import('@/components/visit-list').then(mod => ({ default: mod.VisitList })), {
   ssr: false
@@ -274,7 +283,78 @@ const defaultTools: Tool[] = [
   },
 ];
 
-// 旅行打卡追踪器组件
+// 世界地图打卡组件
+function WorldTracker() {
+  const [selectedRegion, setSelectedRegion] = useState<{ id: number; name: string } | null>(null);
+  const [visitedRegions, setVisitedRegions] = useState<Set<number>>(new Set());
+
+  // 获取已访问的国家（从 gallery_photos 获取，type='world' 的记录）
+  const fetchVisitedRegions = async () => {
+    try {
+      const response = await fetch('/api/gallery/photos');
+      const result = await response.json();
+      if (result.photos) {
+        // 只获取世界地图类型的 region_id
+        const visitedIds = new Set<number>(
+          result.photos
+            .filter((photo: { region?: { type: string }; region_id: number }) => photo.region?.type === 'world')
+            .map((photo: { region_id: number }) => photo.region_id)
+        );
+        setVisitedRegions(visitedIds);
+      }
+    } catch (error) {
+      console.error('[WorldTracker] Failed to fetch visited regions:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchVisitedRegions();
+  }, []);
+
+  const handleRegionClick = (regionId: number, regionName: string) => {
+    // 如果点击已选中的地区，则取消选中（显示全部记录）
+    if (selectedRegion?.id === regionId) {
+      setSelectedRegion(null);
+    } else {
+      setSelectedRegion({ id: regionId, name: regionName });
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      {/* 标题区域 */}
+      <div className="flex items-center gap-3">
+        <Globe className="w-6 h-6 text-[#CEA472]" />
+        <h3 className="text-2xl font-bold text-[#CEA472]">
+          世界地图
+        </h3>
+      </div>
+
+      {/* 图例 */}
+      <div className="flex items-center gap-6 text-sm">
+        <div className="flex items-center gap-2">
+          <div className="w-3 h-3 bg-[#CEA472] rounded"></div>
+          <span className="text-[#FFFFFF]/70">已访问</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="w-3 h-3 bg-black/30 border border-[#CEA472]/10 rounded"></div>
+          <span className="text-[#FFFFFF]/70">未访问</span>
+        </div>
+      </div>
+
+      {/* 世界地图 */}
+      <div className="w-full">
+        <WorldMap
+          selectedRegion={selectedRegion}
+          visitedRegions={visitedRegions}
+          onRegionClick={handleRegionClick}
+        />
+      </div>
+    </div>
+  );
+}
+
+// 旅行打卡追踪器组件（中国地图）
 function VisitTracker() {
   const [selectedRegion, setSelectedRegion] = useState<{ id: number; name: string } | null>(null);
   const [visitedRegions, setVisitedRegions] = useState<Set<number>>(new Set());
@@ -517,7 +597,10 @@ export default function Home() {
 
       {/* 旅行打卡区域 */}
       <section id="visits" className="relative py-20 px-4">
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-7xl mx-auto space-y-12">
+          {/* 世界地图 */}
+          <WorldTracker />
+          
           {/* 中国地图 */}
           <VisitTracker />
         </div>
