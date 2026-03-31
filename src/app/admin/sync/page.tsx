@@ -1,14 +1,14 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { 
-  RefreshCw, CheckCircle, XCircle, Loader2, Database, Cloud, 
-  ArrowDownToLine, ArrowUpFromLine, Image, ChevronDown, ChevronUp
+  RefreshCw, CheckCircle, XCircle, Loader2, Database, 
+  ArrowDownToLine, ArrowUpFromLine
 } from 'lucide-react';
 
 interface SyncResult {
@@ -25,34 +25,6 @@ interface SyncResponse {
   direction?: string;
 }
 
-interface PhotoSyncResult {
-  id: number;
-  title: string;
-  sourceKey: string;
-  targetKey: string;
-  status: 'success' | 'skipped' | 'error';
-  error?: string;
-}
-
-interface PhotoSyncResponse {
-  success: boolean;
-  message: string;
-  results: PhotoSyncResult[];
-  total: number;
-  successCount: number;
-  skippedCount: number;
-  errorCount: number;
-  direction?: string;
-  table?: string;
-  timestamp: string;
-}
-
-interface StorageInfo {
-  bucketName: string;
-  isShared: boolean;
-  message: string;
-}
-
 type SyncDirection = 'import' | 'export';
 
 export default function SyncAdminPage() {
@@ -61,25 +33,6 @@ export default function SyncAdminPage() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<SyncResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [storageInfo, setStorageInfo] = useState<StorageInfo | null>(null);
-
-  // 照片同步状态
-  const [photoLoading, setPhotoLoading] = useState(false);
-  const [photoResult, setPhotoResult] = useState<PhotoSyncResponse | null>(null);
-  const [photoError, setPhotoError] = useState<string | null>(null);
-  const [showPhotoDetails, setShowPhotoDetails] = useState(false);
-
-  // 获取存储信息
-  useEffect(() => {
-    fetch('/api/storage/info')
-      .then(res => res.json())
-      .then(data => {
-        if (data.success) {
-          setStorageInfo(data.data);
-        }
-      })
-      .catch(console.error);
-  }, []);
 
   // 数据库同步
   const handleSync = async () => {
@@ -127,50 +80,6 @@ export default function SyncAdminPage() {
     }
   };
 
-  // 照片文件同步
-  const handlePhotoSync = async (syncDirection: 'import' | 'export') => {
-    if (!password) {
-      setPhotoError('请输入管理密码');
-      return;
-    }
-
-    if (syncDirection === 'export') {
-      const confirmed = confirm(
-        '⚠️ 警告：上传操作将覆盖生产环境的照片文件！\n\n' +
-        '此操作不可逆，请确认要继续。\n\n' +
-        '确定继续吗？'
-      );
-      if (!confirmed) return;
-    }
-
-    setPhotoLoading(true);
-    setPhotoError(null);
-    setPhotoResult(null);
-
-    try {
-      const response = await fetch('/api/sync-photos', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${password}`,
-        },
-        body: JSON.stringify({ direction: syncDirection, table: 'gallery_photos' }),
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        setPhotoResult(data);
-      } else {
-        setPhotoError(data.error || '同步失败');
-      }
-    } catch (err) {
-      setPhotoError('网络错误，请重试');
-    } finally {
-      setPhotoLoading(false);
-    }
-  };
-
   return (
     <div 
       className="min-h-screen text-[#FFFFFF]"
@@ -197,7 +106,7 @@ export default function SyncAdminPage() {
             </div>
             <h1 className="text-5xl font-bold text-[#FFFFFF] drop-shadow-lg">数据同步</h1>
           </div>
-          <p className="text-[#FFFFFF] font-normal">在开发环境和生产环境之间同步数据和照片</p>
+          <p className="text-[#FFFFFF] font-normal">在开发环境和生产环境之间同步数据</p>
         </div>
 
         {/* 环境信息卡片 */}
@@ -224,9 +133,16 @@ export default function SyncAdminPage() {
           </CardContent>
         </Card>
 
-        {/* 密码输入卡片 */}
-        <Card className="border-[#CEA472]/10 bg-black/40 backdrop-blur-sm hover:border-[#CEA472]/50 hover:bg-black/60 transition-all duration-500 mb-6">
-          <CardContent className="pt-6">
+        {/* 数据库同步卡片 */}
+        <Card className="border-[#CEA472]/10 bg-black/40 backdrop-blur-sm hover:border-[#CEA472]/50 hover:bg-black/60 transition-all duration-500">
+          <CardHeader>
+            <CardTitle className="text-[#CEA472] flex items-center gap-2">
+              <RefreshCw className="w-5 h-5" />
+              数据库同步
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {/* 密码输入 */}
             <div className="space-y-2">
               <Label className="text-[#CEA472]">管理密码</Label>
               <Input
@@ -237,18 +153,7 @@ export default function SyncAdminPage() {
                 className="bg-black/40 backdrop-blur-sm border-[#CEA472]/30 text-[#FFFFFF] placeholder:text-[#FFFFFF]/50 focus:border-[#CEA472]/50 focus:ring-0"
               />
             </div>
-          </CardContent>
-        </Card>
 
-        {/* 数据库同步卡片 */}
-        <Card className="border-[#CEA472]/10 bg-black/40 backdrop-blur-sm hover:border-[#CEA472]/50 hover:bg-black/60 transition-all duration-500 mb-6">
-          <CardHeader>
-            <CardTitle className="text-[#CEA472] flex items-center gap-2">
-              <Database className="w-5 h-5" />
-              数据库同步
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
             {/* 同步方向选择 */}
             <div>
               <Label className="text-[#CEA472] text-sm mb-3 block">同步方向</Label>
@@ -361,165 +266,6 @@ export default function SyncAdminPage() {
             )}
           </CardContent>
         </Card>
-
-        {/* 照片文件同步卡片 */}
-        <Card className="border-[#CEA472]/10 bg-black/40 backdrop-blur-sm hover:border-[#CEA472]/50 hover:bg-black/60 transition-all duration-500 mb-6">
-          <CardHeader>
-            <CardTitle className="text-[#CEA472] flex items-center gap-2">
-              <Image className="w-5 h-5" />
-              照片文件同步
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {/* 提示信息 */}
-            <div className="bg-yellow-400/10 text-yellow-400 text-sm p-3 rounded-lg border border-yellow-400/20">
-              <p className="font-medium mb-1">注意</p>
-              <p className="text-[#FFFFFF]/80">预览环境和生产环境使用独立的存储桶，照片文件需要单独同步。</p>
-            </div>
-
-            {/* 同步内容说明 */}
-            <div className="bg-black/40 rounded-lg p-3 border border-[#CEA472]/10">
-              <p className="text-[#FFFFFF]/60 text-xs mb-1">同步内容：</p>
-              <p className="text-[#FFFFFF]/80 text-sm">gallery_photos 表中的照片文件（80 张）</p>
-            </div>
-
-            {/* 一键下载 / 一键上传 按钮 */}
-            <div className="grid grid-cols-2 gap-4">
-              <Button
-                onClick={() => handlePhotoSync('import')}
-                disabled={photoLoading || !password}
-                className="bg-black/60 hover:bg-[#CEA472]/10 border border-[#CEA472]/60 text-[#FFFFFF] hover:text-[#CEA472] hover:border-[#CEA472] font-semibold shadow-lg transition-all duration-300"
-              >
-                {photoLoading ? (
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                ) : (
-                  <ArrowDownToLine className="w-4 h-4 mr-2 text-[#CEA472]" />
-                )}
-                一键下载
-              </Button>
-              <Button
-                onClick={() => handlePhotoSync('export')}
-                disabled={photoLoading || !password}
-                className="bg-black/60 hover:bg-orange-500/10 border border-orange-500/60 text-[#FFFFFF] hover:text-orange-400 hover:border-orange-500 font-semibold shadow-lg transition-all duration-300"
-              >
-                {photoLoading ? (
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                ) : (
-                  <ArrowUpFromLine className="w-4 h-4 mr-2 text-orange-400" />
-                )}
-                一键上传
-              </Button>
-            </div>
-
-            <div className="flex items-center justify-center gap-4 text-xs text-[#FFFFFF]/50">
-              <span>下载 = 生产 → 开发</span>
-              <span className="text-[#CEA472]/30">|</span>
-              <span>上传 = 开发 → 生产</span>
-            </div>
-
-            {/* 错误提示 */}
-            {photoError && (
-              <div className="flex items-center gap-2 text-red-400 bg-red-400/10 p-3 rounded-lg border border-red-400/20">
-                <XCircle className="w-4 h-4" />
-                <span className="text-sm">{photoError}</span>
-              </div>
-            )}
-
-            {/* 同步结果 */}
-            {photoResult && (
-              <div className="space-y-3">
-                <div className="flex items-center gap-2 text-green-400 bg-green-400/10 p-3 rounded-lg border border-green-400/20">
-                  <CheckCircle className="w-4 h-4" />
-                  <span className="text-sm flex-1">{photoResult.message}</span>
-                  <span className="text-[#FFFFFF]/40 text-xs">
-                    {photoResult.direction === 'import' ? '下载完成' : '上传完成'}
-                  </span>
-                </div>
-                
-                <div className="bg-black/40 rounded-lg p-3 border border-[#CEA472]/10">
-                  <div className="flex justify-between py-2 border-b border-[#CEA472]/10">
-                    <span className="text-[#FFFFFF]/60 text-sm">总计</span>
-                    <span className="text-[#FFFFFF] text-sm">{photoResult.total} 张</span>
-                  </div>
-                  <div className="flex justify-between py-2 border-b border-[#CEA472]/10">
-                    <span className="text-green-400/60 text-sm">成功</span>
-                    <span className="text-green-400 text-sm">{photoResult.successCount} 张</span>
-                  </div>
-                  <div className="flex justify-between py-2 border-b border-[#CEA472]/10">
-                    <span className="text-[#FFFFFF]/40 text-sm">跳过</span>
-                    <span className="text-[#FFFFFF]/60 text-sm">{photoResult.skippedCount} 张</span>
-                  </div>
-                  <div className="flex justify-between py-2">
-                    <span className="text-red-400/60 text-sm">失败</span>
-                    <span className="text-red-400 text-sm">{photoResult.errorCount} 张</span>
-                  </div>
-                </div>
-
-                {/* 详细结果 */}
-                {photoResult.results.length > 0 && (
-                  <div>
-                    <button
-                      onClick={() => setShowPhotoDetails(!showPhotoDetails)}
-                      className="flex items-center gap-1 text-[#CEA472] text-sm hover:underline transition-all duration-300"
-                    >
-                      {showPhotoDetails ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-                      查看详细结果
-                    </button>
-                    
-                    {showPhotoDetails && (
-                      <div className="mt-2 max-h-60 overflow-y-auto bg-black/40 rounded-lg p-3 border border-[#CEA472]/10 text-xs">
-                        {photoResult.results.map((r) => (
-                          <div 
-                            key={r.id} 
-                            className={`py-2 border-b border-[#CEA472]/10 last:border-0 ${
-                              r.status === 'success' ? 'text-green-400' : 
-                              r.status === 'skipped' ? 'text-[#FFFFFF]/40' : 'text-red-400'
-                            }`}
-                          >
-                            <span className="mr-2">
-                              {r.status === 'success' ? '✓' : r.status === 'skipped' ? '○' : '✗'}
-                            </span>
-                            {r.title}
-                            {r.error && <span className="ml-2 text-red-400/60">({r.error})</span>}
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* 存储配置卡片 */}
-        {storageInfo && (
-          <Card className="border-[#CEA472]/10 bg-black/40 backdrop-blur-sm hover:border-[#CEA472]/50 hover:bg-black/60 transition-all duration-500">
-            <CardHeader>
-              <CardTitle className="text-[#CEA472] flex items-center gap-2">
-                <Cloud className="w-5 h-5" />
-                存储配置
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                <div className="flex items-center justify-between py-2 border-b border-[#CEA472]/10">
-                  <span className="text-[#FFFFFF]/60 text-sm">Bucket 名称</span>
-                  <span className="text-[#FFFFFF] font-mono text-sm">{storageInfo.bucketName}</span>
-                </div>
-                <div className="flex items-center justify-between py-2 border-b border-[#CEA472]/10">
-                  <span className="text-[#FFFFFF]/60 text-sm">存储模式</span>
-                  <span className={`${storageInfo.isShared ? 'text-green-400' : 'text-yellow-400'} font-medium`}>
-                    {storageInfo.isShared ? '共享存储 ✓' : '独立存储'}
-                  </span>
-                </div>
-                <p className="text-[#FFFFFF]/50 text-xs pt-2">
-                  {storageInfo.message}
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        )}
       </div>
     </div>
   );
