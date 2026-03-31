@@ -261,8 +261,8 @@ export function ChinaMap({ onRegionClick, selectedRegion, visitedRegions = new S
                 };
 
                 const getFillOpacity = () => {
-                  if (isHome) return 1;
-                  if (isChecked) return 0.9;
+                  if (isHome) return 0.5;
+                  if (isChecked) return 0.5;
                   return 0.4;
                 };
 
