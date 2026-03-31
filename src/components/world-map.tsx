@@ -1,7 +1,11 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ComposableMap, Geographies, Geography } from 'react-simple-maps';
+import { feature } from 'topojson-client';
+
+// 本地地图数据路径
+const WORLD_MAP_URL = '/data/world-110m.json';
 
 interface WorldMapProps {
   onRegionClick: (regionId: number, regionName: string) => void;
@@ -10,10 +14,7 @@ interface WorldMapProps {
   className?: string;
 }
 
-// 世界地图数据源
-const WORLD_MAP_URL = 'https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson';
-
-// 国家英文名称到中文名称的映射
+// 英文国家名到中文的映射
 const englishToChinese: Record<string, string> = {
   // 欧洲
   'Germany': '德国', 'France': '法国', 'Italy': '意大利', 'Switzerland': '瑞士',
@@ -82,9 +83,6 @@ const englishToChinese: Record<string, string> = {
 };
 
 // 国家名称到数据库 ID 的映射
-// 数据库中世界地图区域的ID规则：
-// - 大洲: 8-11 (欧洲、亚洲、北美洲、大洋洲等)
-// - 国家: 大洲ID * 100 + 国家序号 (如德国=800, 日本=900, 美国=1000)
 const countryNameToId: Record<string, number> = {
   // 欧洲 (大洲ID: 8)
   'Germany': 800, '德国': 800,
@@ -182,7 +180,7 @@ const countryNameToId: Record<string, number> = {
   'Turkmenistan': 938, '土库曼斯坦': 938,
   'Tajikistan': 939, '塔吉克斯坦': 939,
   'Kyrgyzstan': 940, '吉尔吉斯斯坦': 940,
-  'China': 100, '中国': 100, // 中国在数据库中属于 china 类型
+  'China': 100, '中国': 100,
 
   // 北美洲 (大洲ID: 10)
   'United States': 1000, '美国': 1000, 'USA': 1000, 'United States of America': 1000,
@@ -289,10 +287,13 @@ export function WorldMap({ onRegionClick, selectedRegion, visitedRegions = new S
       try {
         const response = await fetch(WORLD_MAP_URL);
         if (!response.ok) throw new Error('Failed to fetch map data');
-        const data = await response.json();
-        setMapData(data);
+        const topology = await response.json();
+        // 将 TopoJSON 转换为 GeoJSON
+        const geoData = feature(topology, topology.objects.countries);
+        setMapData(geoData);
         setLoading(false);
       } catch (err) {
+        console.error('地图加载失败:', err);
         setError('无法加载地图数据');
         setLoading(false);
       }
@@ -302,14 +303,14 @@ export function WorldMap({ onRegionClick, selectedRegion, visitedRegions = new S
   }, []);
 
   const getCountryName = (geo: any): string => {
-    return geo.properties?.ADMIN ||
-           geo.properties?.name ||
+    // TopoJSON world-atlas 格式
+    return geo.properties?.name ||
+           geo.properties?.ADMIN ||
            geo.properties?.NAME ||
            geo.properties?.country ||
            '';
   };
 
-  // 获取国家中文名称
   const getCountryChineseName = (englishName: string): string => {
     return englishToChinese[englishName] || englishName;
   };
