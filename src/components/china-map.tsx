@@ -124,8 +124,6 @@ export function ChinaMap({ onRegionClick, selectedRegion, visitedRegions = new S
   const [tooltip, setTooltip] = useState({
     show: false,
     content: '',
-    x: 0,
-    y: 0,
   });
 
   useEffect(() => {
@@ -190,13 +188,11 @@ export function ChinaMap({ onRegionClick, selectedRegion, visitedRegions = new S
     setTooltip({
       show: true,
       content: `${name}${isVisited ? ' ✓' : ''}`,
-      x: event.clientX,
-      y: event.clientY,
     });
   };
 
   const handleMouseLeave = () => {
-    setTooltip({ show: false, content: '', x: 0, y: 0 });
+    setTooltip({ show: false, content: '' });
   };
 
   if (loading) {
@@ -299,15 +295,10 @@ export function ChinaMap({ onRegionClick, selectedRegion, visitedRegions = new S
           </Geographies>
       </ComposableMap>
 
-      {/* Tooltip */}
+      {/* Tooltip - 固定在容器右上角 */}
       {tooltip.show && (
         <div
-          className="fixed pointer-events-none bg-black/80 backdrop-blur-sm text-white px-4 py-2 rounded-lg shadow-lg text-sm font-medium z-50 border border-[#CEA472]/30"
-          style={{
-            left: tooltip.x + 10,
-            top: tooltip.y - 30,
-            transform: 'translateY(-100%)',
-          }}
+          className="absolute top-3 right-3 pointer-events-none bg-black/80 backdrop-blur-sm text-white px-4 py-2 rounded-lg shadow-lg text-sm font-medium z-50 border border-[#CEA472]/30"
         >
           {tooltip.content}
         </div>
