@@ -295,6 +295,22 @@ export function ChinaMap({ onRegionClick, selectedRegion, visitedRegions = new S
           </Geographies>
       </ComposableMap>
 
+      {/* 左上角统计信息 */}
+      <div className="absolute top-3 left-3 bg-black/80 backdrop-blur-sm text-white px-3 py-1.5 rounded-lg shadow-lg text-sm font-medium z-50 border border-[#CEA472]/30">
+        <span className="text-[#CEA472]">{(() => {
+          // 计算已访问的中国省份数量
+          const chinaProvinceIds = new Set(Object.values(provinceNameToId));
+          let count = 0;
+          visitedRegions.forEach(id => {
+            if (chinaProvinceIds.has(id)) count++;
+          });
+          return count;
+        })()}</span>
+        <span className="text-white/60"> / </span>
+        <span className="text-white/80">{mapData?.features?.length || 34}</span>
+        <span className="text-white/60 ml-1">省区</span>
+      </div>
+
       {/* Tooltip - 固定在容器右上角 */}
       {tooltip.show && (
         <div
