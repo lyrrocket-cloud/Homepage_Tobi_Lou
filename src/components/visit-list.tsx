@@ -75,14 +75,14 @@ export function VisitList({ regionId, regionName, onRefresh }: VisitListProps) {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[480px] bg-gradient-to-br from-[#CEA472]/5 to-black/40 rounded-lg border border-[#CEA472]/10 p-4">
+      <div className="flex items-center justify-center min-h-[200px] md:min-h-[480px] bg-gradient-to-br from-[#CEA472]/5 to-black/40 rounded-lg border border-[#CEA472]/10 p-4">
         <div className="text-[#CEA472]">加载中...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-[480px] bg-gradient-to-br from-[#CEA472]/5 to-black/40 rounded-lg border border-[#CEA472]/10 p-4 flex flex-col">
+    <div className="min-h-[200px] md:min-h-[480px] bg-gradient-to-br from-[#CEA472]/5 to-black/40 rounded-lg border border-[#CEA472]/10 p-4 flex flex-col">
       <div className="flex items-center justify-between mb-4 flex-shrink-0">
         <h3 className="text-2xl font-bold text-[#CEA472]">
           {regionName ? regionName : '全部访问记录'}

@@ -331,8 +331,8 @@ function WorldTracker() {
         />
       </div>
 
-      {/* 右侧：打卡记录列表 - 固定宽度，与地图等高 */}
-      <div className="w-full md:w-[320px] flex-shrink-0 h-[300px] md:h-[480px] overflow-y-auto">
+      {/* 右侧：打卡记录列表 - 固定宽度，手机端自适应高度 */}
+      <div className="w-full md:w-[320px] flex-shrink-0 md:h-[480px] md:overflow-y-auto">
         <WorldVisitList
           regionId={selectedRegion?.id || null}
           regionName={selectedRegion?.name || ''}
@@ -402,14 +402,14 @@ function WorldVisitList({ regionId, regionName, onRefresh }: { regionId: number 
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-[480px] bg-gradient-to-br from-[#CEA472]/5 to-black/40 rounded-lg border border-[#CEA472]/10 p-4">
+      <div className="flex items-center justify-center min-h-[200px] md:min-h-[480px] bg-gradient-to-br from-[#CEA472]/5 to-black/40 rounded-lg border border-[#CEA472]/10 p-4">
         <div className="text-[#CEA472]">加载中...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-[480px] bg-gradient-to-br from-[#CEA472]/5 to-black/40 rounded-lg border border-[#CEA472]/10 p-4 flex flex-col">
+    <div className="min-h-[200px] md:min-h-[480px] bg-gradient-to-br from-[#CEA472]/5 to-black/40 rounded-lg border border-[#CEA472]/10 p-4 flex flex-col">
       <div className="flex items-center justify-between mb-4 flex-shrink-0">
         <h3 className="text-2xl font-bold text-[#CEA472]">
           {regionName ? regionName : '全部访问记录'}
@@ -512,8 +512,8 @@ function VisitTracker() {
         />
       </div>
 
-      {/* 右侧：打卡记录列表 - 固定宽度，与地图等高 */}
-      <div className="w-full md:w-[320px] flex-shrink-0 h-[300px] md:h-[480px] overflow-y-auto">
+      {/* 右侧：打卡记录列表 - 固定宽度，手机端自适应高度 */}
+      <div className="w-full md:w-[320px] flex-shrink-0 md:h-[480px] md:overflow-y-auto">
         <VisitList
           regionId={selectedRegion?.id || null}
           regionName={selectedRegion?.name || ''}
