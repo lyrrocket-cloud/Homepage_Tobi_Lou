@@ -242,13 +242,13 @@ export function ChinaMap({ onRegionClick, selectedRegion, visitedRegions = new S
                 const regionId = getRegionId(geo);
                 const isChecked = visitedRegions.has(regionId);
                 const isSelected = selectedRegion?.id === regionId;
-                // 上海(108)和江苏(109)使用特殊颜色（住在）
+                // 上海(108)和江苏(109)使用特殊颜色（久居）
                 const isHome = regionId === 108 || regionId === 109;
 
                 // 根据状态确定填充颜色
                 const getFillColor = () => {
-                  if (isHome) return '#002D28'; // 深绿色表示"住在"
-                  if (isChecked) return '#CEA472'; // 金色表示"已访问"
+                  if (isHome) return '#002D28'; // 深绿色表示"久居"
+                  if (isChecked) return '#CEA472'; // 金色表示"曾至"
                   return 'rgba(255, 255, 255, 0.1)';
                 };
 

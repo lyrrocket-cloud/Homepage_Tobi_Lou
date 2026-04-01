@@ -688,15 +688,15 @@ export default function Home() {
           <div className="flex items-center gap-6 text-sm">
             <div className="flex items-center gap-2">
               <div className="w-4 h-4 bg-[#002D28] rounded"></div>
-              <span className="text-[#FFFFFF]/70">住在</span>
+              <span className="text-[#FFFFFF]/70">久居</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-4 h-4 bg-[#CEA472] rounded"></div>
-              <span className="text-[#FFFFFF]/70">已访问</span>
+              <span className="text-[#FFFFFF]/70">曾至</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-4 h-4 bg-black/30 border border-[#CEA472]/10 rounded"></div>
-              <span className="text-[#FFFFFF]/70">未访问</span>
+              <span className="text-[#FFFFFF]/70">未临</span>
             </div>
           </div>
 

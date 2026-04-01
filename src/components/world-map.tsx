@@ -393,13 +393,13 @@ export function WorldMap({ onRegionClick, selectedRegion, visitedRegions = new S
                 const englishName = getCountryName(geo);
                 const isVisited = visitedRegions.has(regionId);
                 const isSelected = selectedRegion?.id === regionId;
-                // 中国和台湾使用特殊颜色（住在）
+                // 中国和台湾使用特殊颜色（久居）
                 const isHome = regionId === 100 || englishName === 'Taiwan';
 
                 // 根据状态确定填充颜色
                 const getFillColor = () => {
-                  if (isHome) return '#002D28'; // 深绿色表示"住在"
-                  if (isVisited) return '#CEA472'; // 金色表示"已访问"
+                  if (isHome) return '#002D28'; // 深绿色表示"久居"
+                  if (isVisited) return '#CEA472'; // 金色表示"曾至"
                   if (isSelected) return '#CEA472';
                   return 'rgba(255, 255, 255, 0.1)';
                 };
