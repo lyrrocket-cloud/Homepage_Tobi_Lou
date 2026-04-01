@@ -662,23 +662,6 @@ function PhotoGalleryContent() {
               })}
             </div>
 
-            {/* 快捷入口 */}
-            <div className="mb-6 flex items-center gap-3 flex-wrap">
-              <span className="text-sm text-gray-400">快捷入口：</span>
-              <a
-                href="/photos/friend"
-                className="px-4 py-1.5 rounded-full text-sm bg-[#CEA472]/10 text-[#CEA472] hover:bg-[#CEA472]/20 transition-all border border-[#CEA472]/30"
-              >
-                朋友照片 →
-              </a>
-              <a
-                href="/photos/family"
-                className="px-4 py-1.5 rounded-full text-sm bg-[#CEA472]/10 text-[#CEA472] hover:bg-[#CEA472]/20 transition-all border border-[#CEA472]/30"
-              >
-                家庭照片 →
-              </a>
-            </div>
-
             {/* 标题 */}
             <div className="mb-6">
               <h2 className="text-xl font-semibold text-white flex items-center gap-2">
@@ -762,6 +745,23 @@ function PhotoGalleryContent() {
                 ))}
               </div>
             )}
+
+            {/* 快捷入口 */}
+            <div className="mt-8 pt-6 border-t border-[#CEA472]/10 flex items-center gap-3 flex-wrap">
+              <span className="text-sm text-gray-400">快捷入口：</span>
+              <a
+                href="/photos/friend"
+                className="px-4 py-1.5 rounded-full text-sm bg-[#CEA472]/10 text-[#CEA472] hover:bg-[#CEA472]/20 transition-all border border-[#CEA472]/30"
+              >
+                朋友照片 →
+              </a>
+              <a
+                href="/photos/family"
+                className="px-4 py-1.5 rounded-full text-sm bg-[#CEA472]/10 text-[#CEA472] hover:bg-[#CEA472]/20 transition-all border border-[#CEA472]/30"
+              >
+                家庭照片 →
+              </a>
+            </div>
           </main>
         </div>
       </div>
