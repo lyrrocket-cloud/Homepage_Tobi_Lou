@@ -695,7 +695,7 @@ export default function Home() {
               <span className="text-[#FFFFFF]/70">曾至</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-black/30 border border-[#CEA472]/10 rounded"></div>
+              <div className="w-4 h-4 bg-black/30 border-2 border-[#CEA472]/40 rounded"></div>
               <span className="text-[#FFFFFF]/70">未临</span>
             </div>
           </div>
