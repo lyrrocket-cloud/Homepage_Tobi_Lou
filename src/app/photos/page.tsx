@@ -102,7 +102,7 @@ function PhotoGalleryContent() {
     }
     return [];
   });
-  const [isTimelineVisible, setIsTimelineVisible] = useState(true);
+  const [isTimelineVisible, setIsTimelineVisible] = useState(false);
   const [isManageOpen, setIsManageOpen] = useState(false);
   const [isPasswordOpen, setIsPasswordOpen] = useState(false);
   const [isAddPhotoOpen, setIsAddPhotoOpen] = useState(false);
@@ -689,7 +689,7 @@ function PhotoGalleryContent() {
                 <p className="text-sm mt-1">点击右上角"管理"添加照片</p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
                 {filteredPhotos.map((photo) => (
                   <Card 
                     key={photo.id} 
