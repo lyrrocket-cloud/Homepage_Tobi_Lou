@@ -424,17 +424,6 @@ export function PhotoGallery({
               </div>
             )}
 
-            {/* 强制分类提示 */}
-            {forceCategory && (
-              <div className="mb-6 flex items-center gap-3">
-                <span className="text-sm text-gray-400">分类：</span>
-                <span className="px-4 py-1.5 rounded-full text-sm bg-[#CEA472] text-[#0a0a0f] font-medium">
-                  {categories.find(c => c.id === forceCategory)?.name}
-                </span>
-                <span className="text-xs text-gray-500">（已固定筛选）</span>
-              </div>
-            )}
-
             {/* 标题 */}
             <div className="mb-6">
               <h2 className="text-xl font-semibold text-white flex items-center gap-2">
