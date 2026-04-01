@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
-import { Card } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -471,25 +471,32 @@ export function PhotoGallery({
                             const cat = categories.find(c => c.id === catId);
                             if (!cat) return null;
                             return (
-                              <span key={catId} className="px-2 py-0.5 text-xs rounded-full bg-black/60 backdrop-blur-sm text-[#CEA472]">
+                              <span key={catId} className="px-2 py-0.5 text-xs rounded-full bg-black/60 text-[#CEA472] backdrop-blur-sm">
                                 {cat.name}
                               </span>
                             );
                           })}
                         </div>
                       )}
-                    </div>
-                    <div className="p-4">
-                      <h3 className="text-white font-medium text-sm mb-1 truncate">{photo.title}</h3>
-                      <div className="flex items-center gap-2 text-xs text-gray-400">
-                        <MapPin className="w-3 h-3" />
-                        <span className="truncate">{getRegionName(photo)}</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-xs text-gray-400 mt-1">
-                        <Calendar className="w-3 h-3" />
-                        <span>{photo.date.split('-')[0]}年{photo.date.split('-')[1]}月</span>
+                      
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                      <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-500">
+                        <h4 className="text-white font-bold text-lg">{photo.title}</h4>
                       </div>
                     </div>
+                    
+                    <CardContent className="p-4 bg-gradient-to-r from-black/60 to-black/40">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2 text-sm text-white/80">
+                          <MapPin className="w-4 h-4 text-[#CEA472]" />
+                          <span className="line-clamp-1">{getRegionName(photo)}</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-white/60">
+                          <Calendar className="w-4 h-4 text-[#CEA472]" />
+                          <span>{photo.date.split('-')[0]}年{photo.date.split('-')[1]}月</span>
+                        </div>
+                      </div>
+                    </CardContent>
                   </Card>
                 ))}
               </div>
