@@ -776,7 +776,7 @@ export function UnifiedPhotoManager({ onPhotoAdded }: UnifiedPhotoManagerProps) 
                   className="w-full px-3 py-2 bg-black/40 border border-[#CEA472]/30 rounded-md text-white"
                 >
                   <option value="">请选择年份</option>
-                  {Array.from({ length: 21 }, (_, i) => 2026 - i).map(year => (
+                  {Array.from({ length: 37 }, (_, i) => 2026 - i).map(year => (
                     <option key={year} value={year}>{year}年</option>
                   ))}
                 </select>
