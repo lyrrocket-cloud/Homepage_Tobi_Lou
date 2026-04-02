@@ -21,6 +21,7 @@ interface Photo {
   image_url: string;
   url?: string;
   category: string;
+  is_yearly?: boolean;
   created_at: string;
   region?: {
     id: number;
@@ -165,6 +166,17 @@ export function PhotoGallery({
     const matchCategory = selectedCategories.length === 0 ? true : 
       selectedCategories.some(cat => (photo.category || '').split(',').includes(cat));
     return matchYear && matchCategory;
+  }).sort((a, b) => {
+    // 排序逻辑：同年内，月份照片按日期降序，年度相册排在最后
+    // 1. 先按年份降序
+    if (b.year !== a.year) {
+      return b.year - a.year;
+    }
+    // 2. 同年内，年度相册排在最后
+    if (a.is_yearly && !b.is_yearly) return 1;
+    if (!a.is_yearly && b.is_yearly) return -1;
+    // 3. 都是月份照片或都是年度相册，按日期降序
+    return b.date.localeCompare(a.date);
   });
 
   // 获取指定年份的照片数量
@@ -198,6 +210,16 @@ export function PhotoGallery({
   // 获取地区名称
   const getRegionName = (photo: Photo) => {
     return photo.region?.name || '未知地点';
+  };
+
+  // 格式化日期显示
+  const formatDate = (dateStr: string, isYearly?: boolean) => {
+    const [year, month] = dateStr.split('-');
+    // 年度相册或月份为00时只显示年份
+    if (isYearly || month === '00') {
+      return `${year}年`;
+    }
+    return `${year}年${month}月`;
   };
 
   // 获取页面标题
@@ -493,7 +515,7 @@ export function PhotoGallery({
                         </div>
                         <div className="flex items-center gap-2 text-sm text-white/60">
                           <Calendar className="w-4 h-4 text-[#CEA472]" />
-                          <span>{photo.date.split('-')[0]}年{photo.date.split('-')[1]}月</span>
+                          <span>{formatDate(photo.date, photo.is_yearly)}</span>
                         </div>
                       </div>
                     </CardContent>

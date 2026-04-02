@@ -16,6 +16,7 @@ export interface GalleryPhoto {
   image_url: string;
   url?: string;
   category: string;
+  is_yearly?: boolean;
   created_at: string;
   updated_at?: string;
   region?: {
@@ -69,7 +70,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { title, regionId, date, year, imageKey, imageUrl, url, category } = body;
+    const { title, regionId, date, year, imageKey, imageUrl, url, category, isYearly } = body;
 
     if (!title || !regionId || !date || !year || !imageKey || !imageUrl || !category) {
       return NextResponse.json({ error: '缺少必要字段' }, { status: 400 });
@@ -89,6 +90,7 @@ export async function POST(request: NextRequest) {
         image_url: imageUrl,
         url: url || null,
         category,
+        is_yearly: isYearly || false,
       })
       .select('*, region:regions(id, name, type)')
       .single();
@@ -160,7 +162,7 @@ export async function DELETE(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
-    const { id, title, regionId, date, year, imageKey, imageUrl, url, category } = body;
+    const { id, title, regionId, date, year, imageKey, imageUrl, url, category, isYearly } = body;
 
     if (!id || !title || !regionId || !date || !year || !imageKey || !imageUrl || !category) {
       return NextResponse.json({ error: '缺少必要字段' }, { status: 400 });
@@ -192,6 +194,7 @@ export async function PUT(request: NextRequest) {
         image_url: imageUrl,
         url: url || null,
         category,
+        is_yearly: isYearly || false,
         updated_at: new Date().toISOString(),
       })
       .eq('id', id)

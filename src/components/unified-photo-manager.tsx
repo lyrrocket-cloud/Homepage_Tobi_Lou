@@ -37,6 +37,7 @@ interface GalleryPhoto {
   image_url: string;
   url?: string;
   category: string;
+  is_yearly?: boolean;
   region?: {
     id: number;
     name: string;
@@ -197,6 +198,7 @@ export function UnifiedPhotoManager({ onPhotoAdded }: UnifiedPhotoManagerProps) 
     title: '',
     regionId: null as number | null,
     yearMonth: '',
+    isYearly: false, // 是否为年度相册
     image: '',
     imageKey: '',
     url: '',
@@ -301,6 +303,7 @@ export function UnifiedPhotoManager({ onPhotoAdded }: UnifiedPhotoManagerProps) 
       title: '',
       regionId: null,
       yearMonth: '',
+      isYearly: false,
       image: '',
       imageKey: '',
       url: '',
@@ -345,7 +348,10 @@ export function UnifiedPhotoManager({ onPhotoAdded }: UnifiedPhotoManagerProps) 
 
   // 添加照片
   const handleAddPhoto = async () => {
-    if (!newPhoto.title || !newPhoto.regionId || !newPhoto.yearMonth || !newPhoto.image) return;
+    // 年度相册时只需要年份，月份照片需要年月
+    if (!newPhoto.title || !newPhoto.regionId || !newPhoto.image) return;
+    if (!newPhoto.isYearly && !newPhoto.yearMonth) return;
+    if (newPhoto.isYearly && !newPhoto.yearMonth) return; // 年度相册也需要年份
     if (activeTab === 'china' && newPhoto.categories.length === 0) return;
 
     setSaving(true);
@@ -353,6 +359,8 @@ export function UnifiedPhotoManager({ onPhotoAdded }: UnifiedPhotoManagerProps) 
     try {
       const year = parseInt(newPhoto.yearMonth.split('-')[0]);
       const categoryString = newPhoto.categories.length > 0 ? newPhoto.categories.join(',') : (activeTab === 'world' ? 'world' : '');
+      // 年度相册的 date 存储为 "YYYY-00"
+      const date = newPhoto.isYearly ? `${newPhoto.yearMonth.split('-')[0]}-00` : newPhoto.yearMonth;
 
       const response = await fetch('/api/gallery/photos', {
         method: 'POST',
@@ -360,12 +368,13 @@ export function UnifiedPhotoManager({ onPhotoAdded }: UnifiedPhotoManagerProps) 
         body: JSON.stringify({
           title: newPhoto.title,
           regionId: newPhoto.regionId,
-          date: newPhoto.yearMonth,
+          date,
           year,
           imageKey: newPhoto.imageKey,
           imageUrl: newPhoto.image,
           url: newPhoto.url || null,
           category: categoryString,
+          isYearly: newPhoto.isYearly,
         }),
       });
 
@@ -414,6 +423,7 @@ export function UnifiedPhotoManager({ onPhotoAdded }: UnifiedPhotoManagerProps) 
           imageUrl: editingPhoto.image_url,
           url: editingPhoto.url || null,
           category: editingPhoto.category,
+          isYearly: editingPhoto.is_yearly || false,
         }),
       });
 
@@ -465,8 +475,12 @@ export function UnifiedPhotoManager({ onPhotoAdded }: UnifiedPhotoManagerProps) 
   };
 
   // 格式化日期
-  const formatDate = (dateStr: string) => {
+  const formatDate = (dateStr: string, isYearly?: boolean) => {
     const [year, month] = dateStr.split('-');
+    // 年度相册或月份为00时只显示年份
+    if (isYearly || month === '00') {
+      return `${year}年`;
+    }
     return `${year}年${month}月`;
   };
 
@@ -657,7 +671,7 @@ export function UnifiedPhotoManager({ onPhotoAdded }: UnifiedPhotoManagerProps) 
                     <div className="flex-1 min-w-0 flex flex-col justify-center">
                       <h4 className="text-white font-medium truncate">{photo.title}</h4>
                       <p className="text-gray-400 text-sm mt-1 truncate">
-                        {getRegionName(photo)} · {formatDate(photo.date)}
+                        {getRegionName(photo)} · {formatDate(photo.date, photo.is_yearly)}
                       </p>
                       {photo.category && photo.category !== 'world' && (
                         <div className="flex gap-1 mt-2 flex-wrap">
@@ -737,13 +751,46 @@ export function UnifiedPhotoManager({ onPhotoAdded }: UnifiedPhotoManagerProps) 
             </div>
 
             <div>
-              <Label className="text-gray-400">日期（年-月）</Label>
-              <Input
-                type="month"
-                value={newPhoto.yearMonth}
-                onChange={(e) => setNewPhoto(prev => ({ ...prev, yearMonth: e.target.value }))}
-                className="bg-black/40 border-[#CEA472]/30 text-white"
-              />
+              <div className="flex items-center justify-between mb-2">
+                <Label className="text-gray-400">
+                  {newPhoto.isYearly ? '年份' : '日期（年-月）'}
+                </Label>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={newPhoto.isYearly}
+                    onChange={(e) => setNewPhoto(prev => ({ 
+                      ...prev, 
+                      isYearly: e.target.checked,
+                      yearMonth: '' // 切换时清空
+                    }))}
+                    className="w-4 h-4 rounded border-[#CEA472]/30 bg-black/40 text-[#CEA472] focus:ring-[#CEA472]"
+                  />
+                  <span className="text-sm text-gray-400">年度相册</span>
+                </label>
+              </div>
+              {newPhoto.isYearly ? (
+                <select
+                  value={newPhoto.yearMonth.split('-')[0] || ''}
+                  onChange={(e) => setNewPhoto(prev => ({ ...prev, yearMonth: `${e.target.value}-01` }))}
+                  className="w-full px-3 py-2 bg-black/40 border border-[#CEA472]/30 rounded-md text-white"
+                >
+                  <option value="">请选择年份</option>
+                  {Array.from({ length: 20 }, (_, i) => 2025 - i).map(year => (
+                    <option key={year} value={year}>{year}年</option>
+                  ))}
+                </select>
+              ) : (
+                <Input
+                  type="month"
+                  value={newPhoto.yearMonth}
+                  onChange={(e) => setNewPhoto(prev => ({ ...prev, yearMonth: e.target.value }))}
+                  className="bg-black/40 border-[#CEA472]/30 text-white"
+                />
+              )}
+              {newPhoto.isYearly && (
+                <p className="text-xs text-gray-500 mt-1">年度相册将显示在当年照片的最后</p>
+              )}
             </div>
 
             <div>
@@ -879,13 +926,47 @@ export function UnifiedPhotoManager({ onPhotoAdded }: UnifiedPhotoManagerProps) 
               </div>
 
               <div>
-                <Label className="text-gray-400">日期（年-月）</Label>
-                <Input
-                  type="month"
-                  value={editingPhoto.date}
-                  onChange={(e) => setEditingPhoto({ ...editingPhoto, date: e.target.value })}
-                  className="bg-black/40 border-[#CEA472]/30 text-white"
-                />
+                <div className="flex items-center justify-between mb-2">
+                  <Label className="text-gray-400">
+                    {editingPhoto.is_yearly ? '年份' : '日期（年-月）'}
+                  </Label>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={editingPhoto.is_yearly || false}
+                      onChange={(e) => {
+                        const newIsYearly = e.target.checked;
+                        setEditingPhoto({ 
+                          ...editingPhoto, 
+                          is_yearly: newIsYearly,
+                          // 切换为年度相册时，如果日期是 YYYY-MM 格式，转换为 YYYY-00
+                          date: newIsYearly && editingPhoto.date ? `${editingPhoto.date.split('-')[0]}-00` : editingPhoto.date
+                        });
+                      }}
+                      className="w-4 h-4 rounded border-[#CEA472]/30 bg-black/40 text-[#CEA472] focus:ring-[#CEA472]"
+                    />
+                    <span className="text-sm text-gray-400">年度相册</span>
+                  </label>
+                </div>
+                {editingPhoto.is_yearly ? (
+                  <select
+                    value={editingPhoto.date?.split('-')[0] || ''}
+                    onChange={(e) => setEditingPhoto({ ...editingPhoto, date: `${e.target.value}-00` })}
+                    className="w-full px-3 py-2 bg-black/40 border border-[#CEA472]/30 rounded-md text-white"
+                  >
+                    <option value="">请选择年份</option>
+                    {Array.from({ length: 20 }, (_, i) => 2025 - i).map(year => (
+                      <option key={year} value={year}>{year}年</option>
+                    ))}
+                  </select>
+                ) : (
+                  <Input
+                    type="month"
+                    value={editingPhoto.date?.endsWith('-00') ? '' : editingPhoto.date}
+                    onChange={(e) => setEditingPhoto({ ...editingPhoto, date: e.target.value })}
+                    className="bg-black/40 border-[#CEA472]/30 text-white"
+                  />
+                )}
               </div>
 
               <div>
