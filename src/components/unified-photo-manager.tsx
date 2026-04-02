@@ -174,6 +174,12 @@ export function UnifiedPhotoManager({ onPhotoAdded }: UnifiedPhotoManagerProps) 
   // 标签切换：'world' | 'china'
   const [activeTab, setActiveTab] = useState<'world' | 'china'>('china');
   
+  // 年度筛选
+  const [filterYear, setFilterYear] = useState<number | 'all'>('all');
+  
+  // 排序方式：'desc' 降序（最新在前）| 'asc' 升序（最旧在前）
+  const [sortOrder, setSortOrder] = useState<'desc' | 'asc'>('desc');
+  
   // 数据
   const [photos, setPhotos] = useState<GalleryPhoto[]>([]);
   const [regions, setRegions] = useState<Region[]>([]);
@@ -237,10 +243,29 @@ export function UnifiedPhotoManager({ onPhotoAdded }: UnifiedPhotoManagerProps) 
     }
   }, [isManageOpen]);
 
-  // 获取当前标签的照片
-  const currentPhotos = activeTab === 'world' 
-    ? photos.filter(p => p.region?.type === 'world')
-    : photos.filter(p => p.region?.type === 'china');
+  // 获取所有年份（从照片数据中提取）
+  const availableYears = Array.from(new Set(photos.map(p => p.year))).sort((a, b) => b - a);
+  
+  // 获取当前标签的照片（带年度筛选和排序）
+  const currentPhotos = (() => {
+    let filtered = activeTab === 'world' 
+      ? photos.filter(p => p.region?.type === 'world')
+      : photos.filter(p => p.region?.type === 'china');
+    
+    // 年度筛选
+    if (filterYear !== 'all') {
+      filtered = filtered.filter(p => p.year === filterYear);
+    }
+    
+    // 排序
+    filtered.sort((a, b) => {
+      const dateA = new Date(a.date).getTime();
+      const dateB = new Date(b.date).getTime();
+      return sortOrder === 'desc' ? dateB - dateA : dateA - dateB;
+    });
+    
+    return filtered;
+  })();
 
   // 打开管理界面
   const handleOpen = () => {
@@ -537,8 +562,8 @@ export function UnifiedPhotoManager({ onPhotoAdded }: UnifiedPhotoManagerProps) 
           </DialogHeader>
 
           <div className="space-y-6">
-            {/* 标签切换和添加按钮 */}
-            <div className="flex items-center justify-between border-b border-[#CEA472]/20 pb-4">
+            {/* 标签切换、筛选和添加按钮 */}
+            <div className="flex items-center justify-between border-b border-[#CEA472]/20 pb-4 flex-wrap gap-4">
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => setActiveTab('china')}
@@ -561,13 +586,54 @@ export function UnifiedPhotoManager({ onPhotoAdded }: UnifiedPhotoManagerProps) 
                   世界
                 </button>
               </div>
-              <Button
-                onClick={() => { setIsAddPhotoOpen(true); resetForm(); }}
-                className="bg-[#CEA472] hover:bg-[#CEA472]/80 text-[#0a0a0f]"
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                添加照片
-              </Button>
+              
+              {/* 筛选和排序 */}
+              <div className="flex items-center gap-4">
+                {/* 年度筛选 */}
+                <div className="flex items-center gap-2">
+                  <span className="text-gray-400 text-sm">年度：</span>
+                  <select
+                    value={filterYear}
+                    onChange={(e) => setFilterYear(e.target.value === 'all' ? 'all' : Number(e.target.value))}
+                    className="px-3 py-1.5 bg-black/40 border border-[#CEA472]/30 rounded-md text-white text-sm"
+                  >
+                    <option value="all">全部</option>
+                    {availableYears.map(year => (
+                      <option key={year} value={year}>{year}年</option>
+                    ))}
+                  </select>
+                </div>
+                
+                {/* 排序 */}
+                <div className="flex items-center gap-2">
+                  <span className="text-gray-400 text-sm">排序：</span>
+                  <button
+                    onClick={() => setSortOrder(sortOrder === 'desc' ? 'asc' : 'desc')}
+                    className={`px-3 py-1.5 rounded-md text-sm transition-all ${
+                      sortOrder === 'desc'
+                        ? 'bg-[#CEA472]/20 text-[#CEA472] border border-[#CEA472]/30'
+                        : 'bg-black/40 text-gray-400 border border-[#CEA472]/20 hover:text-white'
+                    }`}
+                  >
+                    {sortOrder === 'desc' ? '最新优先 ↓' : '最早优先 ↑'}
+                  </button>
+                </div>
+                
+                {/* 添加按钮 */}
+                <Button
+                  onClick={() => { setIsAddPhotoOpen(true); resetForm(); }}
+                  className="bg-[#CEA472] hover:bg-[#CEA472]/80 text-[#0a0a0f]"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  添加照片
+                </Button>
+              </div>
+            </div>
+
+            {/* 照片统计 */}
+            <div className="text-sm text-gray-400">
+              共 {currentPhotos.length} 张照片
+              {filterYear !== 'all' && ` (${filterYear}年)`}
             </div>
 
             {/* 照片列表 - 一行两组 */}
