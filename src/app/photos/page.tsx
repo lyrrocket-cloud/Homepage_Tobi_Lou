@@ -231,7 +231,6 @@ function PhotoGalleryContent() {
     setEditingPhoto({
       ...photo,
       image_url: photo.image_url,
-      date: photo.date.replace('-', '.'), // 将 YYYY-MM 格式转换为 YYYY.MM 格式
     });
     setIsEditPhotoOpen(true);
   };
@@ -278,9 +277,6 @@ function PhotoGalleryContent() {
     setIsSaving(true);
 
     try {
-      // 将 YYYY.MM 格式转换为 YYYY-MM 格式
-      const normalizedDate = editingPhoto.date.replace('.', '-');
-
       const response = await fetch('/api/gallery/photos', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -288,8 +284,8 @@ function PhotoGalleryContent() {
           id: editingPhoto.id,
           title: editingPhoto.title,
           regionId: editingPhoto.region_id,
-          date: normalizedDate,
-          year: parseInt(normalizedDate.split('-')[0]),
+          date: editingPhoto.date,
+          year: parseInt(editingPhoto.date.split('-')[0]),
           imageKey: editingPhoto.image_key,
           imageUrl: editingPhoto.image_url,
           url: editingPhoto.url || null,
@@ -407,18 +403,16 @@ function PhotoGalleryContent() {
     setIsSaving(true);
 
     try {
-      // 将 YYYY.MM 格式转换为 YYYY-MM 格式
-      const normalizedDate = newPhoto.yearMonth.replace('.', '-');
-      const year = parseInt(normalizedDate.split('-')[0]);
+      const year = parseInt(newPhoto.yearMonth.split('-')[0]);
       const categoryString = newPhoto.categories.join(',');
-
+      
       await fetch('/api/gallery/photos', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           title: newPhoto.title,
           regionId: newPhoto.regionId,
-          date: normalizedDate,
+          date: newPhoto.yearMonth,
           year: year,
           imageKey: newPhoto.imageKey,
           imageUrl: newPhoto.image,
@@ -925,13 +919,12 @@ function PhotoGalleryContent() {
             </div>
 
             <div>
-              <Label className="text-gray-400">日期</Label>
+              <Label className="text-gray-400">日期（年-月）</Label>
               <Input
-                type="text"
+                type="month"
                 value={newPhoto.yearMonth}
                 onChange={(e) => setNewPhoto(prev => ({ ...prev, yearMonth: e.target.value }))}
                 className="bg-black/40 border-[#CEA472]/30 text-white"
-                placeholder="如: 2025.01"
               />
             </div>
 
@@ -1045,13 +1038,12 @@ function PhotoGalleryContent() {
               </div>
 
               <div>
-                <Label className="text-gray-400">日期</Label>
+                <Label className="text-gray-400">日期（年-月）</Label>
                 <Input
-                  type="text"
+                  type="month"
                   value={editingPhoto.date}
                   onChange={(e) => setEditingPhoto(prev => prev ? ({ ...prev, date: e.target.value }) : null)}
                   className="bg-black/40 border-[#CEA472]/30 text-white"
-                  placeholder="如: 2025.01"
                 />
               </div>
 
