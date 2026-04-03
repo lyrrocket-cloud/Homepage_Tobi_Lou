@@ -276,7 +276,7 @@ export function PhotoManager({ photos: initialPhotos, onPhotosUpdate }: PhotoMan
               <Button
                 variant="outline"
                 onClick={() => setIsPasswordDialogOpen(false)}
-                className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10"
+                className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10 hover:text-[#CEA472]"
               >
                 取消
               </Button>
@@ -321,7 +321,7 @@ export function PhotoManager({ photos: initialPhotos, onPhotosUpdate }: PhotoMan
                 <Button
                   variant="outline"
                   onClick={handleCloseManager}
-                  className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10"
+                  className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10 hover:text-[#CEA472]"
                 >
                   <X className="w-4 h-4" />
                 </Button>
@@ -417,7 +417,7 @@ export function PhotoManager({ photos: initialPhotos, onPhotosUpdate }: PhotoMan
                         variant="outline"
                         size="sm"
                         onClick={() => setEditingPhoto(photo)}
-                        className="w-full border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10 text-xs"
+                        className="w-full border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10 hover:text-[#CEA472] text-xs"
                       >
                         编辑详细信息
                       </Button>
@@ -508,7 +508,7 @@ export function PhotoManager({ photos: initialPhotos, onPhotosUpdate }: PhotoMan
                 <Button
                   variant="outline"
                   onClick={() => setEditingPhoto(null)}
-                  className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10"
+                  className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10 hover:text-[#CEA472]"
                 >
                   取消
                 </Button>

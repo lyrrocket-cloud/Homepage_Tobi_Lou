@@ -372,7 +372,7 @@ export function VisitManager({ defaultRegionId = null, defaultRegionName = '', o
                 type="button"
                 variant="outline"
                 onClick={() => setMode('list')}
-                className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10"
+                className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10 hover:text-[#CEA472]"
               >
                 取消
               </Button>

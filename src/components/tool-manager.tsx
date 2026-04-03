@@ -232,7 +232,7 @@ export function ToolManager({ tools: initialTools, onToolsUpdate }: ToolManagerP
               <Button
                 variant="outline"
                 onClick={() => setIsPasswordDialogOpen(false)}
-                className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10"
+                className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10 hover:text-[#CEA472]"
               >
                 取消
               </Button>
@@ -260,7 +260,7 @@ export function ToolManager({ tools: initialTools, onToolsUpdate }: ToolManagerP
                 <Button
                   onClick={handleAddTool}
                   variant="outline"
-                  className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10"
+                  className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10 hover:text-[#CEA472]"
                 >
                   <Plus className="w-4 h-4 mr-2" />
                   添加工具
@@ -285,7 +285,7 @@ export function ToolManager({ tools: initialTools, onToolsUpdate }: ToolManagerP
                 <Button
                   variant="outline"
                   onClick={handleCloseManager}
-                  className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10"
+                  className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10 hover:text-[#CEA472]"
                 >
                   <X className="w-4 h-4" />
                 </Button>
@@ -343,7 +343,7 @@ export function ToolManager({ tools: initialTools, onToolsUpdate }: ToolManagerP
                       variant="outline"
                       size="sm"
                       onClick={() => setEditingTool(tool)}
-                      className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10"
+                      className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10 hover:text-[#CEA472]"
                     >
                       编辑
                     </Button>
@@ -431,7 +431,7 @@ export function ToolManager({ tools: initialTools, onToolsUpdate }: ToolManagerP
                 <Button
                   variant="outline"
                   onClick={() => setEditingTool(null)}
-                  className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10"
+                  className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10 hover:text-[#CEA472]"
                 >
                   取消
                 </Button>

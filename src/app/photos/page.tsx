@@ -820,7 +820,7 @@ function PhotoGalleryContent() {
               <Button
                 variant="outline"
                 onClick={() => setIsPasswordOpen(false)}
-                className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10"
+                className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10 hover:text-[#CEA472]"
               >
                 取消
               </Button>
@@ -875,7 +875,7 @@ function PhotoGalleryContent() {
                     </div>
                   </div>
                   <div className="flex gap-2">
-                    <Button variant="outline" size="sm" onClick={() => handleOpenEdit(photo)} className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10">
+                    <Button variant="outline" size="sm" onClick={() => handleOpenEdit(photo)} className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10 hover:text-[#CEA472]">
                       <Edit className="w-4 h-4" />
                     </Button>
                     <Button variant="outline" size="sm" onClick={() => handleDeletePhoto(photo.id)} className="border-red-500/30 text-red-500 hover:bg-red-500/10">
@@ -993,7 +993,7 @@ function PhotoGalleryContent() {
             </div>
 
             <div className="flex justify-end gap-2">
-              <Button variant="outline" onClick={() => setIsAddPhotoOpen(false)} className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10">
+              <Button variant="outline" onClick={() => setIsAddPhotoOpen(false)} className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10 hover:text-[#CEA472]">
                 取消
               </Button>
               <Button
@@ -1099,7 +1099,7 @@ function PhotoGalleryContent() {
               </div>
 
               <div className="flex justify-end gap-2">
-                <Button variant="outline" onClick={() => setIsEditPhotoOpen(false)} className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10">
+                <Button variant="outline" onClick={() => setIsEditPhotoOpen(false)} className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10 hover:text-[#CEA472]">
                   取消
                 </Button>
                 <Button

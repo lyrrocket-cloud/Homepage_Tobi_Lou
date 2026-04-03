@@ -68,7 +68,7 @@ bg-[#CEA472] hover:bg-[#CEA472]/80 text-[#0a0a0f]
 
 **样式**:
 ```css
-border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10
+border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10 hover:text-[#CEA472]
 ```
 
 **使用场景**:
@@ -78,10 +78,12 @@ border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10
 
 **代码示例**:
 ```tsx
-<Button variant="outline" className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10">
+<Button variant="outline" className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10 hover:text-[#CEA472]">
   取消
 </Button>
 ```
+
+**说明**: hover时保持文本颜色为金色，增强视觉反馈效果
 
 ---
 
@@ -322,6 +324,7 @@ shadow-2xl shadow-[#CEA472]/20
 
 ### 按钮组合
 - **主操作 + 次要操作**: 使用 `flex gap-2` 或 `flex justify-end gap-2`
+- **按钮顺序**: 确认按钮（主按钮）在左，取消按钮（次要按钮）在右
 - **按钮组**: 保持视觉对齐，避免过多按钮混杂
 
 ### 交互反馈
@@ -340,14 +343,7 @@ shadow-2xl shadow-[#CEA472]/20
 
 ### 表单操作按钮组
 ```tsx
-<div className="flex justify-end gap-2">
-  <Button
-    variant="outline"
-    className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10"
-    onClick={onCancel}
-  >
-    取消
-  </Button>
+<div className="flex gap-2">
   <Button
     className="bg-[#CEA472] hover:bg-[#CEA472]/80 text-[#0a0a0f]"
     onClick={onConfirm}
@@ -362,8 +358,17 @@ shadow-2xl shadow-[#CEA472]/20
       '确认添加'
     )}
   </Button>
+  <Button
+    variant="outline"
+    className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10 hover:text-[#CEA472]"
+    onClick={onCancel}
+  >
+    取消
+  </Button>
 </div>
 ```
+
+**说明**: 确认按钮（主按钮）在左，取消按钮（次要按钮）在右
 
 ### 带图标的主要按钮
 ```tsx
@@ -376,10 +381,10 @@ shadow-2xl shadow-[#CEA472]/20
 ### 编辑/删除按钮组（小尺寸）
 ```tsx
 <div className="flex gap-2">
-  <Button variant="outline" size="sm" onClick={() => handleEdit()} className="border-[#CEA472]/30 text-[#CEA472]">
+  <Button variant="outline" size="sm" onClick={() => handleEdit()} className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10 hover:text-[#CEA472]">
     <Edit className="w-4 h-4" />
   </Button>
-  <Button variant="outline" size="sm" onClick={() => handleDelete()} className="border-red-500/30 text-red-500">
+  <Button variant="outline" size="sm" onClick={() => handleDelete()} className="border-red-500/30 text-red-500 hover:bg-red-500/10">
     <Trash2 className="w-4 h-4" />
   </Button>
 </div>
@@ -441,6 +446,7 @@ shadow-2xl shadow-[#CEA472]/20
 5. **圆角**: 大多数按钮使用 `rounded-md`，Tab按钮使用 `rounded-full`
 6. **图标按钮**: 必须添加 `title` 属性说明功能
 7. **状态管理**: Loading时必须禁用按钮并显示加载图标
+8. **按钮顺序**: 确认按钮（主按钮）在左，取消按钮（次要按钮）在右
 
 ---
 
@@ -461,6 +467,11 @@ A: 使用 `disabled` 属性禁用按钮，并显示 `<Loader2 className="w-4 h-4
 ---
 
 ## 版本历史
+
+### v1.1.0 (2026-03-29)
+- 优化次要/取消按钮的hover效果，添加 `hover:text-[#CEA472]` 增强视觉反馈
+- 明确按钮顺序规范：确认按钮（主按钮）在左，取消按钮（次要按钮）在右
+- 更新所有代码示例以符合最新规范
 
 ### v1.0.0 (2026-03-29)
 - 初始版本
