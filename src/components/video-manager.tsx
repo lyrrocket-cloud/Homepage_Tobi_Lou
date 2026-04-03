@@ -41,6 +41,14 @@ export function VideoManager({ videos: initialVideos, onVideosUpdate }: VideoMan
   const [isSaving, setIsSaving] = useState(false);
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
 
+  // 格式化日期：将 '2025.01' 转换为 '2025年01月'
+  const formatDate = (dateStr: string): string => {
+    if (!dateStr) return '';
+    const [year, month] = dateStr.split('.');
+    if (!year || !month) return dateStr;
+    return `${year}年${month}月`;
+  };
+
   // 同步外部videos（仅在弹窗关闭时同步）
   useEffect(() => {
     if (!isOpen) {
@@ -346,7 +354,7 @@ export function VideoManager({ videos: initialVideos, onVideosUpdate }: VideoMan
                           <h4 className="font-bold text-[#FFFFFF] truncate">{video.title || '敬请期待'}</h4>
                           <div className="flex items-center gap-3 text-xs text-[#FFFFFF]/60 mt-1">
                             <span>{video.location || '未设置位置'}</span>
-                            <span className="text-[#CEA472]/60">{video.date || '未设置日期'}</span>
+                            <span className="text-[#CEA472]/60">{formatDate(video.date) || '未设置日期'}</span>
                           </div>
                           {video.isEmpty && (
                             <span className="inline-block mt-1 px-2 py-0.5 text-xs bg-[#CEA472]/10 text-[#CEA472]/60 rounded">

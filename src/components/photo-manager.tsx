@@ -42,6 +42,14 @@ export function PhotoManager({ photos: initialPhotos, onPhotosUpdate }: PhotoMan
   const [uploadingId, setUploadingId] = useState<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // 格式化日期：将 '2025.01' 转换为 '2025年01月'
+  const formatDate = (dateStr: string): string => {
+    if (!dateStr) return '';
+    const [year, month] = dateStr.split('.');
+    if (!year || !month) return dateStr;
+    return `${year}年${month}月`;
+  };
+
   // 同步外部photos（仅在弹窗关闭时同步）
   useEffect(() => {
     if (!isOpen) {
@@ -412,7 +420,7 @@ export function PhotoManager({ photos: initialPhotos, onPhotosUpdate }: PhotoMan
                           <h4 className="font-bold text-[#FFFFFF] truncate">{photo.title || '敬请期待'}</h4>
                           <div className="flex items-center gap-3 text-xs text-[#FFFFFF]/60 mt-1">
                             <span>{photo.location || '未设置位置'}</span>
-                            <span className="text-[#CEA472]/60">{photo.date || '未设置日期'}</span>
+                            <span className="text-[#CEA472]/60">{formatDate(photo.date) || '未设置日期'}</span>
                           </div>
                         </div>
                       </div>
