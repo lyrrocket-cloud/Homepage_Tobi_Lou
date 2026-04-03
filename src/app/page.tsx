@@ -357,7 +357,7 @@ function WorldVisitList({ regionId, regionName, onRefresh }: { regionId: number 
     is_yearly?: boolean;
     region?: { id: number; name: string; type: string };
   }>>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const fetchVisits = useCallback(async () => {
     try {

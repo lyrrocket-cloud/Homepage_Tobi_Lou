@@ -30,7 +30,7 @@ interface VisitListProps {
 
 export function VisitList({ regionId, regionName, onRefresh }: VisitListProps) {
   const [visits, setVisits] = useState<PhotoVisit[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   // 获取访问记录（从 gallery_photos 表）
   const fetchVisits = useCallback(async () => {
