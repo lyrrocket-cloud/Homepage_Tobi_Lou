@@ -333,7 +333,7 @@ export function PhotoManager({ photos: initialPhotos, onPhotosUpdate }: PhotoMan
             </p>
 
             {/* 照片列表 - 固定显示9个栏位 */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {Array.from({ length: 9 }, (_, index) => {
                 const photo = photos.find(p => p.order === index + 1) || {
                   id: index + 1,
@@ -380,7 +380,7 @@ export function PhotoManager({ photos: initialPhotos, onPhotosUpdate }: PhotoMan
                             <ImageIcon className="w-8 h-8 text-[#CEA472]/30" />
                           </div>
                         )}
-                        
+
                         {/* 上传遮罩 */}
                         <label className="absolute inset-0 bg-black/60 opacity-0 group-hover/img:opacity-100 transition-opacity cursor-pointer flex flex-col items-center justify-center gap-2">
                           {uploadingId === photo.id ? (
@@ -402,23 +402,24 @@ export function PhotoManager({ photos: initialPhotos, onPhotosUpdate }: PhotoMan
                       </div>
 
                       {/* 基本信息 */}
-                      <div>
-                        <h4 className="font-bold text-[#FFFFFF] truncate">{photo.title || '敬请期待'}</h4>
-                        <div className="flex items-center gap-3 text-xs text-[#FFFFFF]/60 mt-1">
-                          <span>{photo.location || '未设置位置'}</span>
-                          <span className="text-[#CEA472]/60">{photo.date || '未设置日期'}</span>
+                      <div className="flex items-start gap-2">
+                        {/* 编辑按钮 */}
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          onClick={() => setEditingPhoto(photo)}
+                          className="bg-black/40 border-[#CEA472]/30 hover:bg-[#CEA472]/20 hover:border-[#CEA472]/50 flex-shrink-0 mt-1"
+                        >
+                          <Edit2 className="w-4 h-4 text-[#CEA472]" />
+                        </Button>
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-bold text-[#FFFFFF] truncate">{photo.title || '敬请期待'}</h4>
+                          <div className="flex items-center gap-3 text-xs text-[#FFFFFF]/60 mt-1">
+                            <span>{photo.location || '未设置位置'}</span>
+                            <span className="text-[#CEA472]/60">{photo.date || '未设置日期'}</span>
+                          </div>
                         </div>
                       </div>
-
-                      {/* 编辑按钮 */}
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        onClick={() => setEditingPhoto(photo)}
-                        className="bg-black/40 border-[#CEA472]/30 hover:bg-[#CEA472]/20 hover:border-[#CEA472]/50"
-                      >
-                        <Edit2 className="w-4 h-4 text-[#CEA472]" />
-                      </Button>
                     </div>
                   </div>
                 );

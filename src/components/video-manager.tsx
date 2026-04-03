@@ -21,6 +21,7 @@ import {
   Video as VideoIcon,
   Play,
   ExternalLink,
+  Edit2,
 } from 'lucide-react';
 
 interface VideoManagerProps {
@@ -286,7 +287,7 @@ export function VideoManager({ videos: initialVideos, onVideosUpdate }: VideoMan
             </p>
 
             {/* 视频列表 - 固定显示9个栏位 */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {Array.from({ length: 9 }, (_, index) => {
                 const video = videos.find(v => v.order === index + 1) || {
                   id: index + 1,
@@ -335,28 +336,29 @@ export function VideoManager({ videos: initialVideos, onVideosUpdate }: VideoMan
                       </div>
 
                       {/* 基本信息 */}
-                      <div>
-                        <h4 className="font-bold text-[#FFFFFF] truncate">{video.title || '敬请期待'}</h4>
-                        <div className="flex items-center gap-3 text-xs text-[#FFFFFF]/60 mt-1">
-                          <span>{video.location || '未设置位置'}</span>
-                          <span className="text-[#CEA472]/60">{video.date || '未设置日期'}</span>
+                      <div className="flex items-start gap-2">
+                        {/* 编辑按钮 */}
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          onClick={() => setEditingVideo(video)}
+                          className="bg-black/40 border-[#CEA472]/30 hover:bg-[#CEA472]/20 hover:border-[#CEA472]/50 flex-shrink-0 mt-1"
+                        >
+                          <Edit2 className="w-4 h-4 text-[#CEA472]" />
+                        </Button>
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-bold text-[#FFFFFF] truncate">{video.title || '敬请期待'}</h4>
+                          <div className="flex items-center gap-3 text-xs text-[#FFFFFF]/60 mt-1">
+                            <span>{video.location || '未设置位置'}</span>
+                            <span className="text-[#CEA472]/60">{video.date || '未设置日期'}</span>
+                          </div>
+                          {video.isEmpty && (
+                            <span className="inline-block mt-1 px-2 py-0.5 text-xs bg-[#CEA472]/10 text-[#CEA472]/60 rounded">
+                              占位符
+                            </span>
+                          )}
                         </div>
-                        {video.isEmpty && (
-                          <span className="inline-block mt-1 px-2 py-0.5 text-xs bg-[#CEA472]/10 text-[#CEA472]/60 rounded">
-                            占位符
-                          </span>
-                        )}
                       </div>
-
-                      {/* 编辑按钮 */}
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setEditingVideo(video)}
-                        className="w-full border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10 hover:text-[#CEA472] text-xs"
-                      >
-                        编辑详细信息
-                      </Button>
                     </div>
                   </div>
                 );
@@ -445,7 +447,7 @@ export function VideoManager({ videos: initialVideos, onVideosUpdate }: VideoMan
                   }}
                   className="bg-[#CEA472] hover:bg-[#CEA472]/80 text-[#0a0a0f]"
                 >
-                  确认修改
+                  确认
                 </Button>
                 <Button
                   variant="outline"
