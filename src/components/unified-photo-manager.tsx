@@ -477,6 +477,10 @@ export function UnifiedPhotoManager({ onPhotoAdded }: UnifiedPhotoManagerProps) 
   // 格式化日期
   const formatDate = (dateStr: string, isYearly?: boolean) => {
     const [year, month] = dateStr.split('-');
+    // 特殊年份选项
+    if (year === '2001-2010') return '2001-2010年';
+    if (year === '1991-2000') return '1991-2000年';
+    if (year === '-1990') return '1990及以前';
     // 年度相册或月份为00时只显示年份
     if (isYearly || month === '00') {
       return `${year}年`;
@@ -776,7 +780,12 @@ export function UnifiedPhotoManager({ onPhotoAdded }: UnifiedPhotoManagerProps) 
                   className="w-full px-3 py-2 bg-black/40 border border-[#CEA472]/30 rounded-md text-white"
                 >
                   <option value="">请选择年份</option>
-                  {Array.from({ length: 37 }, (_, i) => 2026 - i).map(year => (
+                  {/* 特殊年份选项 */}
+                  <option value="2001-2010">2001-2010</option>
+                  <option value="1991-2000">1991-2000</option>
+                  <option value="-1990">1990及以前</option>
+                  {/* 单一年份 */}
+                  {Array.from({ length: 16 }, (_, i) => 2026 - i).map(year => (
                     <option key={year} value={year}>{year}年</option>
                   ))}
                 </select>
@@ -955,7 +964,12 @@ export function UnifiedPhotoManager({ onPhotoAdded }: UnifiedPhotoManagerProps) 
                     className="w-full px-3 py-2 bg-black/40 border border-[#CEA472]/30 rounded-md text-white"
                   >
                     <option value="">请选择年份</option>
-                    {Array.from({ length: 21 }, (_, i) => 2026 - i).map(year => (
+                    {/* 特殊年份选项 */}
+                    <option value="2001-2010">2001-2010</option>
+                    <option value="1991-2000">1991-2000</option>
+                    <option value="-1990">1990及以前</option>
+                    {/* 单一年份 */}
+                    {Array.from({ length: 16 }, (_, i) => 2026 - i).map(year => (
                       <option key={year} value={year}>{year}年</option>
                     ))}
                   </select>
