@@ -746,13 +746,13 @@ function PhotoGalleryContent() {
                     </div>
                     
                     <CardContent className="p-4 bg-gradient-to-r from-black/60 to-black/40">
-                      <div className="flex items-center justify-between">
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
                         <div className="flex items-center gap-2 text-sm text-white/80">
-                          <MapPin className="w-4 h-4 text-[#CEA472]" />
+                          <MapPin className="w-4 h-4 text-[#CEA472] flex-shrink-0" />
                           <span className="line-clamp-1">{getRegionName(photo)}</span>
                         </div>
                         <div className="flex items-center gap-2 text-sm text-white/60">
-                          <Calendar className="w-4 h-4 text-[#CEA472]" />
+                          <Calendar className="w-4 h-4 text-[#CEA472] flex-shrink-0" />
                           <span>{formatDate(photo.date, photo.is_yearly)}</span>
                         </div>
                       </div>
