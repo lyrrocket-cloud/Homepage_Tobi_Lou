@@ -363,7 +363,7 @@ export function ToolManager({ tools: initialTools, onToolsUpdate }: ToolManagerP
 
       {/* 编辑工具弹窗 */}
       <Dialog open={!!editingTool} onOpenChange={() => setEditingTool(null)}>
-        <DialogContent className="bg-[#0a0a0f] border-[#CEA472]/30 text-white max-w-md" showCloseButton={true}>
+        <DialogContent className="bg-[#0a0a0f] border-[#CEA472]/30 text-white max-w-md" showCloseButton={false}>
           <DialogHeader>
             <DialogTitle className="text-[#CEA472]">编辑工具信息</DialogTitle>
           </DialogHeader>
@@ -428,25 +428,23 @@ export function ToolManager({ tools: initialTools, onToolsUpdate }: ToolManagerP
               <div className="flex gap-3 justify-end pt-4">
                 <Button
                   variant="outline"
-                  size="icon"
                   onClick={() => setEditingTool(null)}
-                  className="bg-black/40 border-[#CEA472]/30 hover:bg-[#CEA472]/20 hover:border-[#CEA472]/50"
+                  className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10 hover:text-[#CEA472]"
                 >
-                  <X className="w-4 h-4 text-[#CEA472]" />
+                  取消
                 </Button>
                 <Button
-                  size="icon"
                   onClick={() => {
-                    const updatedTools = tools.map(t => 
+                    const updatedTools = tools.map(t =>
                       t.id === editingTool.id ? editingTool : t
                     );
                     setTools(updatedTools);
                     setHasChanges(true);
                     setEditingTool(null);
                   }}
-                  className="bg-black/40 border-[#CEA472]/30 hover:bg-[#CEA472]/20 hover:border-[#CEA472]/50"
+                  className="bg-[#CEA472] hover:bg-[#CEA472]/80 text-[#0a0a0f]"
                 >
-                  <Save className="w-4 h-4 text-[#CEA472]" />
+                  确认修改
                 </Button>
               </div>
             </div>
