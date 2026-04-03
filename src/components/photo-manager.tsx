@@ -328,10 +328,6 @@ export function PhotoManager({ photos: initialPhotos, onPhotosUpdate }: PhotoMan
           </DialogHeader>
 
           <div className="space-y-4 py-4">
-            <p className="text-[#FFFFFF]/60 text-sm">
-              拖拽照片卡片可调整顺序，点击图片可上传替换，点击编辑按钮修改详细信息
-            </p>
-
             {/* 照片列表 - 固定显示9个栏位 */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {Array.from({ length: 9 }, (_, index) => {

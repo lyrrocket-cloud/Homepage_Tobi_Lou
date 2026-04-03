@@ -250,7 +250,7 @@ export function ToolManager({ tools: initialTools, onToolsUpdate }: ToolManagerP
 
       {/* 管理界面 */}
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="bg-[#0a0a0f] border-[#CEA472]/30 text-white max-w-4xl max-h-[90vh] overflow-y-auto" showCloseButton={false}>
+        <DialogContent className="bg-[#0a0a0f] border-[#CEA472]/30 text-white min-w-[1200px] max-w-[1500px] max-h-[90vh] overflow-y-auto" showCloseButton={false}>
           <DialogHeader>
             <DialogTitle className="flex items-center justify-between text-[#CEA472]">
               <span className="flex items-center gap-2">
@@ -292,10 +292,6 @@ export function ToolManager({ tools: initialTools, onToolsUpdate }: ToolManagerP
           </DialogHeader>
 
           <div className="space-y-4 py-4">
-            <p className="text-[#FFFFFF]/60 text-sm">
-              拖拽工具卡片可调整顺序，点击编辑按钮修改详细信息
-            </p>
-
             {/* 工具列表 */}
             <div className="space-y-3">
               {tools.map((tool, index) => (

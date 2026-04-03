@@ -282,10 +282,6 @@ export function VideoManager({ videos: initialVideos, onVideosUpdate }: VideoMan
           </DialogHeader>
 
           <div className="space-y-4 py-4">
-            <p className="text-[#FFFFFF]/60 text-sm">
-              拖拽视频卡片可调整顺序，点击编辑按钮修改视频信息。支持B站视频链接，自动识别BV号。
-            </p>
-
             {/* 视频列表 - 固定显示9个栏位 */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {Array.from({ length: 9 }, (_, index) => {
