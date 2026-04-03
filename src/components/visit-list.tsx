@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { MapPin, Calendar } from 'lucide-react';
 import Image from 'next/image';
 
@@ -31,6 +31,12 @@ interface VisitListProps {
 export function VisitList({ regionId, regionName, onRefresh }: VisitListProps) {
   const [visits, setVisits] = useState<PhotoVisit[]>([]);
   const [loading, setLoading] = useState(true);
+  const onRefreshRef = useRef(onRefresh);
+
+  // 更新 onRefresh 的引用
+  useEffect(() => {
+    onRefreshRef.current = onRefresh;
+  }, [onRefresh]);
 
   // 获取访问记录（从 gallery_photos 表）
   const fetchVisits = useCallback(async () => {
@@ -60,19 +66,16 @@ export function VisitList({ regionId, regionName, onRefresh }: VisitListProps) {
       console.error('[VisitList] Failed to fetch visits:', error);
     } finally {
       setLoading(false);
+      // 数据加载完成后通知父组件刷新
+      if (onRefreshRef.current) {
+        onRefreshRef.current();
+      }
     }
   }, [regionId]);
 
   useEffect(() => {
     fetchVisits();
   }, [fetchVisits]);
-
-  // 暴露给父组件的刷新函数
-  useEffect(() => {
-    if (onRefresh) {
-      onRefresh();
-    }
-  }, [regionId, onRefresh]);
 
   if (loading) {
     return (

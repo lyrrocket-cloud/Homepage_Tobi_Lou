@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -43,8 +43,11 @@ import { Region } from '@/app/api/regions/route';
 const ChinaMap = dynamic(() => import('@/components/china-map').then(mod => ({ default: mod.ChinaMap })), {
   ssr: false,
   loading: () => (
-    <div className="w-full h-[300px] md:h-[480px] bg-black/40 backdrop-blur-md rounded-lg border border-[#CEA472]/20 flex items-center justify-center">
-      <div className="animate-spin rounded-full h-12 w-12 border-2 border-[#CEA472] border-t-transparent"></div>
+    <div className="w-full h-[480px] bg-black/40 backdrop-blur-md rounded-lg border border-[#CEA472]/20 flex items-center justify-center">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-2 border-[#CEA472] border-t-transparent mx-auto mb-4"></div>
+        <p className="text-white/60">加载中国地图中...</p>
+      </div>
     </div>
   )
 });
@@ -52,8 +55,11 @@ const ChinaMap = dynamic(() => import('@/components/china-map').then(mod => ({ d
 const WorldMap = dynamic(() => import('@/components/world-map').then(mod => ({ default: mod.WorldMap })), {
   ssr: false,
   loading: () => (
-    <div className="w-full h-[300px] md:h-[400px] bg-black/40 backdrop-blur-md rounded-lg border border-[#CEA472]/20 flex items-center justify-center">
-      <div className="animate-spin rounded-full h-12 w-12 border-2 border-[#CEA472] border-t-transparent"></div>
+    <div className="w-full h-[480px] bg-black/40 backdrop-blur-md rounded-lg border border-[#CEA472]/20 flex items-center justify-center">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-2 border-[#CEA472] border-t-transparent mx-auto mb-4"></div>
+        <p className="text-white/60">加载世界地图中...</p>
+      </div>
     </div>
   )
 });
@@ -321,9 +327,9 @@ function WorldTracker() {
   };
 
   return (
-    <div className="flex flex-col md:flex-row gap-6 items-stretch">
+    <div className="flex flex-col md:flex-row gap-6 items-start">
       {/* 左侧：世界地图 */}
-      <div className="flex-1 w-full min-h-[480px]">
+      <div className="flex-1 w-full h-[480px]">
         <WorldMap
           selectedRegion={selectedRegion}
           visitedRegions={visitedRegions}
@@ -332,7 +338,7 @@ function WorldTracker() {
       </div>
 
       {/* 右侧：打卡记录列表 - 固定宽度，手机端最大高度限制 */}
-      <div className="w-full md:w-[320px] flex-shrink-0 max-h-[400px] md:max-h-[480px] overflow-y-auto">
+      <div className="w-full md:w-[320px] flex-shrink-0">
         <WorldVisitList
           regionId={selectedRegion?.id || null}
           regionName={selectedRegion?.name || ''}
@@ -358,6 +364,12 @@ function WorldVisitList({ regionId, regionName, onRefresh }: { regionId: number 
     region?: { id: number; name: string; type: string };
   }>>([]);
   const [loading, setLoading] = useState(true);
+  const onRefreshRef = useRef(onRefresh);
+
+  // 更新 onRefresh 的引用
+  useEffect(() => {
+    onRefreshRef.current = onRefresh;
+  }, [onRefresh]);
 
   const fetchVisits = useCallback(async () => {
     try {
@@ -389,18 +401,16 @@ function WorldVisitList({ regionId, regionName, onRefresh }: { regionId: number 
       console.error('[WorldVisitList] Failed to fetch visits:', error);
     } finally {
       setLoading(false);
+      // 数据加载完成后通知父组件刷新
+      if (onRefreshRef.current) {
+        onRefreshRef.current();
+      }
     }
   }, [regionId]);
 
   useEffect(() => {
     fetchVisits();
   }, [fetchVisits]);
-
-  useEffect(() => {
-    if (onRefresh) {
-      onRefresh();
-    }
-  }, [regionId, onRefresh]);
 
   if (loading) {
     return (
@@ -507,9 +517,9 @@ function VisitTracker() {
   };
 
   return (
-    <div className="flex flex-col md:flex-row gap-6 items-stretch">
+    <div className="flex flex-col md:flex-row gap-6 items-start">
       {/* 左侧：中国地图 */}
-      <div className="flex-1 w-full min-h-[480px]">
+      <div className="flex-1 w-full h-[480px]">
         <ChinaMap
           selectedRegion={selectedRegion}
           visitedRegions={visitedRegions}
@@ -518,7 +528,7 @@ function VisitTracker() {
       </div>
 
       {/* 右侧：打卡记录列表 - 固定宽度，手机端最大高度限制 */}
-      <div className="w-full md:w-[320px] flex-shrink-0 max-h-[400px] md:max-h-[480px] overflow-y-auto">
+      <div className="w-full md:w-[320px] flex-shrink-0">
         <VisitList
           regionId={selectedRegion?.id || null}
           regionName={selectedRegion?.name || ''}
