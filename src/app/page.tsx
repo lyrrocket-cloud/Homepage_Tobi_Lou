@@ -39,6 +39,14 @@ import { Video as VideoType } from '@/app/api/videos/route';
 import { Tool } from '@/app/api/tools/route';
 import { Region } from '@/app/api/regions/route';
 
+// 格式化日期：将 '2025.01' 转换为 '20 25年01月'
+function formatDate(dateStr: string): string {
+  if (!dateStr) return '';
+  const [year, month] = dateStr.split('.');
+  if (!year || !month) return dateStr;
+  return `${year.slice(0, 2)} ${year.slice(2)}年${month}月`;
+}
+
 // 动态导入地图组件（SSR: false）
 const ChinaMap = dynamic(() => import('@/components/china-map').then(mod => ({ default: mod.ChinaMap })), {
   ssr: false,
@@ -783,7 +791,7 @@ export default function Home() {
                     </div>
                     <div className="flex items-center gap-2 text-sm text-[#FFFFFF]/60">
                       <Calendar className="w-4 h-4 text-[#CEA472]" />
-                      <span>{photo.date}</span>
+                      <span>{formatDate(photo.date)}</span>
                     </div>
                   </div>
                 </CardContent>
@@ -873,7 +881,7 @@ export default function Home() {
                         </div>
                         <div className="flex items-center gap-2 text-sm text-[#FFFFFF]/60">
                           <Calendar className="w-3 h-3 text-[#CEA472]" />
-                          <span>{video.date}</span>
+                          <span>{formatDate(video.date)}</span>
                         </div>
                       </div>
                     </CardContent>
