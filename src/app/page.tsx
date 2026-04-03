@@ -323,7 +323,7 @@ function WorldTracker() {
   return (
     <div className="flex flex-col md:flex-row gap-6 items-stretch">
       {/* 左侧：世界地图 */}
-      <div className="flex-1 w-full">
+      <div className="flex-1 w-full min-h-[480px]">
         <WorldMap
           selectedRegion={selectedRegion}
           visitedRegions={visitedRegions}
@@ -509,7 +509,7 @@ function VisitTracker() {
   return (
     <div className="flex flex-col md:flex-row gap-6 items-stretch">
       {/* 左侧：中国地图 */}
-      <div className="flex-1 w-full">
+      <div className="flex-1 w-full min-h-[480px]">
         <ChinaMap
           selectedRegion={selectedRegion}
           visitedRegions={visitedRegions}
