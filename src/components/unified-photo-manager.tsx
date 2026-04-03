@@ -616,69 +616,69 @@ export function UnifiedPhotoManager({ onPhotoAdded }: UnifiedPhotoManagerProps) 
                 <Settings className="w-5 h-5 text-[#CEA472]" />
                 <span>照片管理</span>
               </div>
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={handleClose}
-                className="bg-black/40 border-[#CEA472]/30 hover:bg-[#CEA472]/20 hover:border-[#CEA472]/50"
-              >
-                <X className="w-4 h-4 text-[#CEA472]" />
-              </Button>
-            </DialogTitle>
-          </DialogHeader>
-
-          <div className="space-y-6">
-            {/* 标签切换、筛选和添加按钮 */}
-            <div className="flex items-center justify-between border-b border-[#CEA472]/20 pb-4 flex-wrap gap-4">
               <div className="flex items-center gap-2">
-                <button
-                  onClick={() => setActiveTab('china')}
-                  className={`px-6 py-2 rounded-lg text-sm font-medium transition-all ${
-                    activeTab === 'china'
-                      ? 'bg-[#CEA472] text-[#0a0a0f]'
-                      : 'bg-black/40 text-gray-400 hover:text-white hover:bg-black/60'
-                  }`}
-                >
-                  中国
-                </button>
-                <button
-                  onClick={() => setActiveTab('world')}
-                  className={`px-6 py-2 rounded-lg text-sm font-medium transition-all ${
-                    activeTab === 'world'
-                      ? 'bg-[#CEA472] text-[#0a0a0f]'
-                      : 'bg-black/40 text-gray-400 hover:text-white hover:bg-black/60'
-                  }`}
-                >
-                  世界
-                </button>
-              </div>
-              
-              {/* 筛选和排序 */}
-              <div className="flex items-center gap-4">
-                {/* 年度筛选 */}
-                <div className="flex items-center gap-2">
-                  <span className="text-gray-400 text-sm">年度：</span>
-                  <select
-                    value={filterYear}
-                    onChange={(e) => setFilterYear(e.target.value === 'all' ? 'all' : Number(e.target.value))}
-                    className="px-3 py-1.5 bg-black/40 border border-[#CEA472]/30 rounded-md text-white text-sm"
-                  >
-                    <option value="all">全部</option>
-                    {availableYears.map(year => (
-                      <option key={year} value={year}>{year}年</option>
-                    ))}
-                  </select>
-                </div>
-                
-                {/* 添加按钮 */}
                 <Button
                   onClick={() => { setIsAddPhotoOpen(true); resetForm(); }}
                   variant="outline"
                   size="icon"
                   className="bg-black/40 border-[#CEA472]/30 hover:bg-[#CEA472]/20 hover:border-[#CEA472]/50"
+                  title="添加照片"
                 >
                   <Plus className="w-4 h-4 text-[#CEA472]" />
                 </Button>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={handleClose}
+                  className="bg-black/40 border-[#CEA472]/30 hover:bg-[#CEA472]/20 hover:border-[#CEA472]/50"
+                >
+                  <X className="w-4 h-4 text-[#CEA472]" />
+                </Button>
+              </div>
+            </DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-6">
+            {/* 标签切换和筛选 */}
+            <div className="flex items-center justify-between border-b border-[#CEA472]/20 pb-4 flex-wrap gap-4">
+              <div className="flex items-center gap-2">
+                <Button
+                  onClick={() => setActiveTab('china')}
+                  variant="outline"
+                  className={`${
+                    activeTab === 'china'
+                      ? 'bg-[#CEA472] text-[#0a0a0f] border-[#CEA472]'
+                      : 'bg-black/40 text-gray-400 hover:text-white hover:bg-black/60 border-[#CEA472]/30'
+                  }`}
+                >
+                  中国
+                </Button>
+                <Button
+                  onClick={() => setActiveTab('world')}
+                  variant="outline"
+                  className={`${
+                    activeTab === 'world'
+                      ? 'bg-[#CEA472] text-[#0a0a0f] border-[#CEA472]'
+                      : 'bg-black/40 text-gray-400 hover:text-white hover:bg-black/60 border-[#CEA472]/30'
+                  }`}
+                >
+                  世界
+                </Button>
+              </div>
+
+              {/* 年度筛选 */}
+              <div className="flex items-center gap-2">
+                <span className="text-gray-400 text-sm">年度：</span>
+                <select
+                  value={filterYear}
+                  onChange={(e) => setFilterYear(e.target.value === 'all' ? 'all' : Number(e.target.value))}
+                  className="px-3 py-1.5 bg-black/40 border border-[#CEA472]/30 rounded-md text-white text-sm"
+                >
+                  <option value="all">全部</option>
+                  {availableYears.map(year => (
+                    <option key={year} value={year}>{year}年</option>
+                  ))}
+                </select>
               </div>
             </div>
 
