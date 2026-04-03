@@ -248,7 +248,7 @@ export function VideoManager({ videos: initialVideos, onVideosUpdate }: VideoMan
 
       {/* 管理界面 */}
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="bg-[#0a0a0f] border-[#CEA472]/30 text-white max-w-4xl max-h-[90vh] overflow-y-auto" showCloseButton={false}>
+        <DialogContent className="bg-[#0a0a0f] border-[#CEA472]/30 text-white min-w-[750px] max-w-4xl max-h-[90vh] overflow-y-auto" showCloseButton={false}>
           <DialogHeader>
             <DialogTitle className="flex items-center justify-between text-[#CEA472]">
               <span className="flex items-center gap-2">
