@@ -482,11 +482,21 @@ export function WorldPhotoManager({ onPhotoAdded }: WorldPhotoManagerProps) {
                       <p className="text-gray-400 text-sm">{photo.region?.name || getCountryName(photo.region_id)} · {formatDate(photo.date)}</p>
                     </div>
                     <div className="flex gap-2">
-                      <Button variant="outline" size="sm" onClick={() => handleOpenEdit(photo)} className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10 hover:text-[#CEA472]">
-                        <Edit2 className="w-4 h-4" />
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => handleOpenEdit(photo)}
+                        className="bg-black/40 border-[#CEA472]/30 hover:bg-[#CEA472]/20 hover:border-[#CEA472]/50"
+                      >
+                        <Edit2 className="w-4 h-4 text-[#CEA472]" />
                       </Button>
-                      <Button variant="outline" size="sm" onClick={() => handleDeletePhoto(photo.id)} className="border-red-500/30 text-red-500 hover:bg-red-500/10 hover:text-red-500">
-                        <Trash2 className="w-4 h-4" />
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => handleDeletePhoto(photo.id)}
+                        className="bg-black/40 border-red-500/30 hover:bg-red-500/20 hover:border-red-500/50"
+                      >
+                        <Trash2 className="w-4 h-4 text-red-500" />
                       </Button>
                     </div>
                   </div>

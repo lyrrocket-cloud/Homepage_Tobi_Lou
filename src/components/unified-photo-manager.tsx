@@ -721,11 +721,21 @@ export function UnifiedPhotoManager({ onPhotoAdded }: UnifiedPhotoManagerProps) 
                       )}
                     </div>
                     <div className="flex items-center gap-2 flex-shrink-0">
-                      <Button variant="outline" size="sm" onClick={() => handleOpenEdit(photo)} className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10 hover:text-[#CEA472] h-8 w-8 p-0">
-                        <Edit2 className="w-4 h-4" />
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => handleOpenEdit(photo)}
+                        className="bg-black/40 border-[#CEA472]/30 hover:bg-[#CEA472]/20 hover:border-[#CEA472]/50"
+                      >
+                        <Edit2 className="w-4 h-4 text-[#CEA472]" />
                       </Button>
-                      <Button variant="outline" size="sm" onClick={() => handleDeletePhoto(photo.id)} className="border-red-500/30 text-red-500 hover:bg-red-500/10 hover:text-red-500 h-8 w-8 p-0">
-                        <Trash2 className="w-4 h-4" />
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => handleDeletePhoto(photo.id)}
+                        className="bg-black/40 border-red-500/30 hover:bg-red-500/20 hover:border-red-500/50"
+                      >
+                        <Trash2 className="w-4 h-4 text-red-500" />
                       </Button>
                     </div>
                   </div>
