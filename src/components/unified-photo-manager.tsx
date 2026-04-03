@@ -597,11 +597,10 @@ export function UnifiedPhotoManager({ onPhotoAdded }: UnifiedPhotoManagerProps) 
               </Button>
               <Button
                 variant="outline"
-                size="icon"
                 onClick={() => setIsPasswordOpen(false)}
-                className="bg-black/40 border-[#CEA472]/30 hover:bg-[#CEA472]/20 hover:border-[#CEA472]/50"
+                className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10 hover:text-[#CEA472]"
               >
-                <X className="w-4 h-4 text-[#CEA472]" />
+                取消
               </Button>
             </div>
           </div>
