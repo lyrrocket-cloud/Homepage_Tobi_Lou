@@ -160,6 +160,110 @@ pnpm add -D <package>
 - 添加/编辑表单弹窗（确认添加/保存 + 取消）
 - 确认删除弹窗（确认 + 取消）
 
+#### 4. 删除按钮（Delete Buttons）
+
+**适用场景**：照片/视频/工具等项目的删除操作
+
+**样式规范 - 图标按钮（列表中的删除按钮）**：
+```tsx
+<Button
+  variant="outline"
+  size="icon"
+  onClick={() => handleDelete(id)}
+  className="border-red-500/30 text-red-500 hover:bg-red-500/10 hover:text-red-500"
+>
+  <Trash2 className="w-4 h-4" />
+</Button>
+```
+
+**样式规范 - 图标按钮（size="sm"，管理列表中）**：
+```tsx
+<Button
+  variant="outline"
+  size="sm"
+  onClick={() => handleDelete(id)}
+  className="border-red-500/30 text-red-500 hover:bg-red-500/10 hover:text-red-500"
+>
+  <Trash2 className="w-4 h-4" />
+</Button>
+```
+
+**删除确认弹窗样式规范**：
+
+确认删除按钮（红色警告按钮）：
+```tsx
+<Button
+  onClick={handleConfirmDelete}
+  className="bg-red-600 hover:bg-red-700 text-white"
+>
+  确认删除
+</Button>
+```
+
+取消按钮（次要按钮）：
+```tsx
+<Button
+  variant="outline"
+  onClick={handleCancelDelete}
+  className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10 hover:text-[#CEA472]"
+>
+  取消
+</Button>
+```
+
+**完整删除确认弹窗示例**：
+```tsx
+<Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+  <DialogContent className="bg-[#0a0a0f] border-[#CEA472]/30 text-white max-w-md">
+    <DialogHeader>
+      <DialogTitle className="flex items-center gap-2 text-red-500">
+        <Trash2 className="w-5 h-5" />
+        确认删除
+      </DialogTitle>
+    </DialogHeader>
+    <div className="space-y-4 py-4">
+      <p className="text-[#FFFFFF]/80">
+        确定要删除"{itemTitle}"吗？此操作无法撤销。
+      </p>
+      <div className="flex gap-3 justify-end">
+        <Button
+          onClick={handleConfirmDelete}
+          className="bg-red-600 hover:bg-red-700 text-white"
+        >
+          确认删除
+        </Button>
+        <Button
+          variant="outline"
+          onClick={handleCancelDelete}
+          className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10 hover:text-[#CEA472]"
+        >
+          取消
+        </Button>
+      </div>
+    </div>
+  </DialogContent>
+</Dialog>
+```
+
+**颜色说明**：
+- 边框：`border-red-500/30`（30% 透明度的红色边框）
+- 文字：`text-red-500`（红色文字）
+- 悬停背景：`hover:bg-red-500/10`（10% 透明度的红色背景）
+- 确认删除按钮背景：`bg-red-600 hover:bg-red-700`（深红色背景）
+
+**应用位置**：
+- 照片管理界面：每张照片卡片的删除按钮
+- 视频管理界面：每个视频卡片的删除按钮
+- 工具管理界面：每个工具卡片的删除按钮
+- 打卡记录管理界面：每条打卡记录的删除按钮
+- 删除确认弹窗中的确认按钮
+
+**交互提示**：
+- 删除按钮应使用红色系颜色，传达警示意味
+- 删除操作前应弹出确认弹窗，防止误操作
+- 确认弹窗应明确说明删除对象和不可撤销的后果
+- 确认删除按钮应使用红色背景，取消按钮使用次要样式
+
 #### 3. 按钮布局规范
 
 - **主按钮在左**：确认/保存按钮位于左侧，为主要操作
