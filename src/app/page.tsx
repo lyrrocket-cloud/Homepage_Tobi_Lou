@@ -777,19 +777,6 @@ export default function Home() {
               </Card>
             ))}
           </div>
-
-          {/* 更多照片 */}
-          <div className="text-center mt-12">
-            <Button
-              size="lg"
-              className="gap-2 bg-[#CEA472] hover:bg-[#CEA472]/80 text-[#0a0a0f] shadow-lg font-semibold px-8 border-0"
-              onClick={() => window.location.href = '/photos'}
-            >
-              <Camera className="w-5 h-5" />
-              更多照片
-              <ChevronRight className="w-4 h-4" />
-            </Button>
-          </div>
         </div>
       </section>
 

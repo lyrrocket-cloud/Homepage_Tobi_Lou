@@ -670,22 +670,7 @@ export function UnifiedPhotoManager({ onPhotoAdded }: UnifiedPhotoManagerProps) 
                     ))}
                   </select>
                 </div>
-                
-                {/* 排序 */}
-                <div className="flex items-center gap-2">
-                  <span className="text-gray-400 text-sm">排序：</span>
-                  <button
-                    onClick={() => setSortOrder(sortOrder === 'desc' ? 'asc' : 'desc')}
-                    className={`px-3 py-1.5 rounded-md text-sm transition-all ${
-                      sortOrder === 'desc'
-                        ? 'bg-[#CEA472]/20 text-[#CEA472] border border-[#CEA472]/30'
-                        : 'bg-black/40 text-gray-400 border border-[#CEA472]/20 hover:text-white'
-                    }`}
-                  >
-                    {sortOrder === 'desc' ? '最新优先 ↓' : '最早优先 ↑'}
-                  </button>
-                </div>
-                
+
                 {/* 添加按钮 */}
                 <Button
                   onClick={() => { setIsAddPhotoOpen(true); resetForm(); }}
