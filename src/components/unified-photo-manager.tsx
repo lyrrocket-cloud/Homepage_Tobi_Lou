@@ -488,7 +488,16 @@ export function UnifiedPhotoManager({ onPhotoAdded }: UnifiedPhotoManagerProps) 
     return `${year}年${month}月`;
   };
 
-  // 获取地区名称
+  // 从日期中提取年份或特殊年份标识
+  const getYearFromDate = (dateStr?: string) => {
+    if (!dateStr) return '';
+    // 检查是否是特殊年份格式
+    if (dateStr.startsWith('2001-2010-00')) return '2001-2010';
+    if (dateStr.startsWith('1991-2000-00')) return '1991-2000';
+    if (dateStr.startsWith('-1990-00')) return '-1990';
+    // 单一年份，提取第一部分
+    return dateStr.split('-')[0];
+  };
   const getRegionName = (photo: GalleryPhoto) => {
     return photo.region?.name || '未知地点';
   };
@@ -775,7 +784,7 @@ export function UnifiedPhotoManager({ onPhotoAdded }: UnifiedPhotoManagerProps) 
               </div>
               {newPhoto.isYearly ? (
                 <select
-                  value={newPhoto.yearMonth.split('-')[0] || ''}
+                  value={newPhoto.yearMonth.includes('-01') ? newPhoto.yearMonth.replace('-01', '') : newPhoto.yearMonth}
                   onChange={(e) => setNewPhoto(prev => ({ ...prev, yearMonth: `${e.target.value}-01` }))}
                   className="w-full px-3 py-2 bg-black/40 border border-[#CEA472]/30 rounded-md text-white"
                 >
@@ -959,7 +968,7 @@ export function UnifiedPhotoManager({ onPhotoAdded }: UnifiedPhotoManagerProps) 
                 </div>
                 {editingPhoto.is_yearly ? (
                   <select
-                    value={editingPhoto.date?.split('-')[0] || ''}
+                    value={getYearFromDate(editingPhoto.date)}
                     onChange={(e) => setEditingPhoto({ ...editingPhoto, date: `${e.target.value}-00` })}
                     className="w-full px-3 py-2 bg-black/40 border border-[#CEA472]/30 rounded-md text-white"
                   >
