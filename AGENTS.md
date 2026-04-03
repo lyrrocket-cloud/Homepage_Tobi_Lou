@@ -98,6 +98,89 @@ pnpm add <package>
 pnpm add -D <package>
 ```
 
+### 按钮 UI 规范
+
+项目统一使用以下按钮 UI 规范，确保界面一致性。
+
+#### 1. 图标按钮（Icon Buttons）
+
+**适用场景**：保存、添加、编辑、关闭、删除等操作按钮
+
+**样式规范**：
+```tsx
+<Button
+  variant="outline"
+  size="icon"
+  className="bg-black/40 border-[#CEA472]/30 hover:bg-[#CEA472]/20 hover:border-[#CEA472]/50"
+>
+  <Icon className="w-4 h-4 text-[#CEA472]" />
+</Button>
+```
+
+**常见图标映射**：
+- 保存 → `Save`
+- 添加 → `Plus`
+- 编辑 → `Edit2`
+- 关闭 → `X`
+- 删除 → `Trash2`
+- 设置 → `Settings`
+
+**应用位置**：
+- 管理界面标题栏的保存/关闭按钮
+- 照片/视频/工具列表的编辑/删除按钮
+- 添加照片/视频/工具的快速操作按钮
+
+#### 2. 确认/取消按钮（Confirm/Cancel Buttons）
+
+**适用场景**：密码验证弹窗、表单提交弹窗
+
+**样式规范**：
+
+确认按钮（主按钮）：
+```tsx
+<Button
+  className="bg-[#CEA472] hover:bg-[#CEA472]/80 text-[#0a0a0f]"
+>
+  确认
+</Button>
+```
+
+取消按钮（次要按钮）：
+```tsx
+<Button
+  variant="outline"
+  className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10 hover:text-[#CEA472]"
+>
+  取消
+</Button>
+```
+
+**应用位置**：
+- 密码验证弹窗（确认 + 取消）
+- 添加/编辑表单弹窗（确认添加/保存 + 取消）
+- 确认删除弹窗（确认 + 取消）
+
+#### 3. 按钮布局规范
+
+- **主按钮在左**：确认/保存按钮位于左侧，为主要操作
+- **取消按钮在右**：取消按钮位于右侧，为次要操作
+- **间距**：按钮之间使用 `gap-2` 或 `gap-3` 保持适当间距
+
+**示例**：
+```tsx
+<div className="flex gap-3 justify-end">
+  <Button className="bg-[#CEA472] hover:bg-[#CEA472]/80 text-[#0a0a0f]">
+    确认
+  </Button>
+  <Button
+    variant="outline"
+    className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10 hover:text-[#CEA472]"
+  >
+    取消
+  </Button>
+</div>
+```
+
 ## 核心功能
 
 ### 1. 旅行打卡
@@ -402,6 +485,15 @@ npx tsc --noEmit
 ```
 
 ## 更新日志
+
+### 2026-04-03
+
+- 统一所有管理组件的按钮样式
+- 保存/添加/编辑/关闭按钮统一使用图标按钮样式（`variant="outline" size="icon"`）
+- 确认/取消按钮保持为带文字的原状样式
+- 新增"按钮 UI 规范"章节到开发规范文档，明确按钮样式规范
+- 所有密码验证弹窗的取消按钮均为文字形式的次要按钮
+- 统一使用 `Edit2` 图标替代 `Edit` 图标
 
 ### 2026-03-29
 
