@@ -215,6 +215,10 @@ export function PhotoGallery({
   // 格式化日期显示
   const formatDate = (dateStr: string, isYearly?: boolean) => {
     const [year, month] = dateStr.split('-');
+    // 特殊年份存储格式
+    if (year === '2001A') return '2001-2010年';
+    if (year === '1991B') return '1991-2000年';
+    if (year === '1990C') return '1990及以前';
     // 年度相册或月份为00时只显示年份
     if (isYearly || month === '00') {
       return `${year}年`;

@@ -357,10 +357,12 @@ export function UnifiedPhotoManager({ onPhotoAdded }: UnifiedPhotoManagerProps) 
     setSaving(true);
 
     try {
-      const year = parseInt(newPhoto.yearMonth.split('-')[0]);
+      const yearValue = newPhoto.yearMonth.split('-')[0];
+      const year = parseInt(isSpecialYear(yearValue) ? yearValue : yearValue);
       const categoryString = newPhoto.categories.length > 0 ? newPhoto.categories.join(',') : (activeTab === 'world' ? 'world' : '');
-      // 年度相册的 date 存储为 "YYYY-00"
-      const date = newPhoto.isYearly ? `${newPhoto.yearMonth.split('-')[0]}-00` : newPhoto.yearMonth;
+      // 年度相册的 date 存储：特殊年份转换为数据库格式，普通年份存储为 "YYYY-00"
+      const dbYearValue = newPhoto.isYearly ? convertToDbFormat(yearValue) : yearValue;
+      const date = newPhoto.isYearly ? `${dbYearValue}-00` : newPhoto.yearMonth;
 
       const response = await fetch('/api/gallery/photos', {
         method: 'POST',
@@ -408,7 +410,11 @@ export function UnifiedPhotoManager({ onPhotoAdded }: UnifiedPhotoManagerProps) 
     setSaving(true);
 
     try {
-      const year = parseInt(editingPhoto.date.split('-')[0]);
+      const yearValue = editingPhoto.date.split('-')[0];
+      // 如果是特殊年份格式（如 2001A），需要提取数字部分作为 year
+      const frontendValue = convertToFrontendFormat(editingPhoto.date);
+      const isSpecial = isSpecialYear(frontendValue);
+      const year = parseInt(isSpecial ? frontendValue.match(/\d+/)?.[0] || yearValue : yearValue);
 
       const response = await fetch('/api/gallery/photos', {
         method: 'PUT',
@@ -474,13 +480,47 @@ export function UnifiedPhotoManager({ onPhotoAdded }: UnifiedPhotoManagerProps) 
     }));
   };
 
+  // 特殊年份映射（前端显示 → 后端存储）
+  const SPECIAL_YEAR_MAP: Record<string, string> = {
+    '2001-2010': '2001A',
+    '1991-2000': '1991B',
+    '-1990': '1990C',
+  };
+
+  // 反向映射（后端存储 → 前端显示）
+  const REVERSE_SPECIAL_YEAR_MAP: Record<string, string> = {
+    '2001A': '2001-2010',
+    '1991B': '1991-2000',
+    '1990C': '-1990',
+  };
+
+  // 检查是否是特殊年份
+  const isSpecialYear = (value: string): boolean => {
+    return Object.keys(SPECIAL_YEAR_MAP).includes(value);
+  };
+
+  // 将前端特殊年份转换为后端存储格式
+  const convertToDbFormat = (yearValue: string): string => {
+    return SPECIAL_YEAR_MAP[yearValue] || yearValue;
+  };
+
+  // 将后端存储格式转换为前端显示
+  const convertToFrontendFormat = (dateStr: string): string => {
+    const [year, month] = dateStr.split('-');
+    // 检查是否是特殊年份存储格式
+    if (REVERSE_SPECIAL_YEAR_MAP[year]) {
+      return REVERSE_SPECIAL_YEAR_MAP[year];
+    }
+    return year;
+  };
+
   // 格式化日期
   const formatDate = (dateStr: string, isYearly?: boolean) => {
     const [year, month] = dateStr.split('-');
-    // 特殊年份选项
-    if (year === '2001-2010') return '2001-2010年';
-    if (year === '1991-2000') return '1991-2000年';
-    if (year === '-1990') return '1990及以前';
+    // 检查是否是特殊年份存储格式
+    if (year === '2001A') return '2001-2010年';
+    if (year === '1991B') return '1991-2000年';
+    if (year === '1990C') return '1990及以前';
     // 年度相册或月份为00时只显示年份
     if (isYearly || month === '00') {
       return `${year}年`;
@@ -491,10 +531,10 @@ export function UnifiedPhotoManager({ onPhotoAdded }: UnifiedPhotoManagerProps) 
   // 从日期中提取年份或特殊年份标识
   const getYearFromDate = (dateStr?: string) => {
     if (!dateStr) return '';
-    // 检查是否是特殊年份格式
-    if (dateStr.startsWith('2001-2010-00')) return '2001-2010';
-    if (dateStr.startsWith('1991-2000-00')) return '1991-2000';
-    if (dateStr.startsWith('-1990-00')) return '-1990';
+    // 检查是否是特殊年份存储格式
+    if (dateStr.startsWith('2001A-00')) return '2001-2010';
+    if (dateStr.startsWith('1991B-00')) return '1991-2000';
+    if (dateStr.startsWith('1990C-00')) return '-1990';
     // 单一年份，提取第一部分
     return dateStr.split('-')[0];
   };
@@ -957,8 +997,8 @@ export function UnifiedPhotoManager({ onPhotoAdded }: UnifiedPhotoManagerProps) 
                         setEditingPhoto({ 
                           ...editingPhoto, 
                           is_yearly: newIsYearly,
-                          // 切换为年度相册时，如果日期是 YYYY-MM 格式，转换为 YYYY-00
-                          date: newIsYearly && editingPhoto.date ? `${editingPhoto.date.split('-')[0]}-00` : editingPhoto.date
+                          // 切换为年度相册时，如果日期是 YYYY-MM 格式，转换为 YYYY-00 或特殊年份格式
+                          date: newIsYearly && editingPhoto.date ? `${convertToFrontendFormat(editingPhoto.date)}-00` : editingPhoto.date
                         });
                       }}
                       className="w-4 h-4 rounded border-[#CEA472]/30 bg-black/40 text-[#CEA472] focus:ring-[#CEA472]"
@@ -969,7 +1009,12 @@ export function UnifiedPhotoManager({ onPhotoAdded }: UnifiedPhotoManagerProps) 
                 {editingPhoto.is_yearly ? (
                   <select
                     value={getYearFromDate(editingPhoto.date)}
-                    onChange={(e) => setEditingPhoto({ ...editingPhoto, date: `${e.target.value}-00` })}
+                    onChange={(e) => {
+                      const yearValue = e.target.value;
+                      // 将前端特殊年份转换为数据库格式
+                      const dbYearValue = convertToDbFormat(yearValue);
+                      setEditingPhoto({ ...editingPhoto, date: `${dbYearValue}-00` });
+                    }}
                     className="w-full px-3 py-2 bg-black/40 border border-[#CEA472]/30 rounded-md text-white"
                   >
                     <option value="">请选择年份</option>
