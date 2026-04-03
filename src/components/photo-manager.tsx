@@ -511,7 +511,7 @@ export function PhotoManager({ photos: initialPhotos, onPhotosUpdate }: PhotoMan
                   }}
                   className="bg-[#CEA472] hover:bg-[#CEA472]/80 text-[#0a0a0f]"
                 >
-                  确认修改
+                  确认
                 </Button>
                 <Button
                   variant="outline"
