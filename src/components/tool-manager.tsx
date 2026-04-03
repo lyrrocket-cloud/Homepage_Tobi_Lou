@@ -20,7 +20,7 @@ import {
   Loader2,
   Trash2,
   Plus,
-  Edit,
+  Edit2,
 } from 'lucide-react';
 
 // 可用图标列表
@@ -339,7 +339,7 @@ export function ToolManager({ tools: initialTools, onToolsUpdate }: ToolManagerP
                       onClick={() => setEditingTool(tool)}
                       className="bg-black/40 border-[#CEA472]/30 hover:bg-[#CEA472]/20 hover:border-[#CEA472]/50"
                     >
-                      <Edit className="w-4 h-4 text-[#CEA472]" />
+                      <Edit2 className="w-4 h-4 text-[#CEA472]" />
                     </Button>
                     <Button
                       variant="outline"
