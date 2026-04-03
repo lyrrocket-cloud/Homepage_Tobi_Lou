@@ -470,9 +470,9 @@ function PhotoGalleryContent() {
     if (year === '1990C') return '1990及以前';
     // 年度相册或月份为00时只显示年份
     if (isYearly || month === '00') {
-      return `${year.slice(0, 2)} ${year.slice(2)}年`;
+      return `${year}年`;
     }
-    return `${year.slice(0, 2)} ${year.slice(2)}年${month}月`;
+    return `${year}年${month}月`;
   };
 
   // 获取地区名称

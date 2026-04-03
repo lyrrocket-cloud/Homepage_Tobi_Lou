@@ -39,12 +39,12 @@ import { Video as VideoType } from '@/app/api/videos/route';
 import { Tool } from '@/app/api/tools/route';
 import { Region } from '@/app/api/regions/route';
 
-// 格式化日期：将 '2025.01' 转换为 '20 25年01月'
+// 格式化日期：将 '2025.01' 转换为 '2025年01月'
 function formatDate(dateStr: string): string {
   if (!dateStr) return '';
   const [year, month] = dateStr.split('.');
   if (!year || !month) return dateStr;
-  return `${year.slice(0, 2)} ${year.slice(2)}年${month}月`;
+  return `${year}年${month}月`;
 }
 
 // 动态导入地图组件（SSR: false）
