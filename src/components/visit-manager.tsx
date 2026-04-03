@@ -368,20 +368,17 @@ export function VisitManager({ defaultRegionId = null, defaultRegionName = '', o
               <Button
                 type="submit"
                 disabled={loading}
-                variant="outline"
-                size="icon"
-                className="bg-black/40 border-[#CEA472]/30 hover:bg-[#CEA472]/20 hover:border-[#CEA472]/50"
+                className="flex-1 bg-[#CEA472] text-black hover:bg-[#CEA472]/80"
               >
-                {loading ? <Loader2 className="w-4 h-4 text-[#CEA472] animate-spin" /> : <Save className="w-4 h-4 text-[#CEA472]" />}
+                {loading ? '保存中...' : (mode === 'add' ? '确认添加' : '确认修改')}
               </Button>
               <Button
                 type="button"
                 variant="outline"
-                size="icon"
                 onClick={() => setMode('list')}
-                className="bg-black/40 border-[#CEA472]/30 hover:bg-[#CEA472]/20 hover:border-[#CEA472]/50"
+                className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10 hover:text-[#CEA472]"
               >
-                <X className="w-4 h-4 text-[#CEA472]" />
+                取消
               </Button>
             </div>
           </form>

@@ -229,19 +229,16 @@ export function VideoManager({ videos: initialVideos, onVideosUpdate }: VideoMan
             <div className="flex gap-3 justify-end">
               <Button
                 onClick={handleVerifyPassword}
-                variant="outline"
-                size="icon"
-                className="bg-black/40 border-[#CEA472]/30 hover:bg-[#CEA472]/20 hover:border-[#CEA472]/50"
+                className="bg-[#CEA472] hover:bg-[#CEA472]/80 text-[#0a0a0f]"
               >
-                <Lock className="w-4 h-4 text-[#CEA472]" />
+                确认
               </Button>
               <Button
                 variant="outline"
-                size="icon"
                 onClick={() => setIsPasswordDialogOpen(false)}
-                className="bg-black/40 border-[#CEA472]/30 hover:bg-[#CEA472]/20 hover:border-[#CEA472]/50"
+                className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10 hover:text-[#CEA472]"
               >
-                <X className="w-4 h-4 text-[#CEA472]" />
+                取消
               </Button>
             </div>
           </div>
@@ -446,19 +443,16 @@ export function VideoManager({ videos: initialVideos, onVideosUpdate }: VideoMan
                     setHasChanges(true);
                     setEditingVideo(null);
                   }}
-                  variant="outline"
-                  size="icon"
-                  className="bg-black/40 border-[#CEA472]/30 hover:bg-[#CEA472]/20 hover:border-[#CEA472]/50"
+                  className="bg-[#CEA472] hover:bg-[#CEA472]/80 text-[#0a0a0f]"
                 >
-                  <Save className="w-4 h-4 text-[#CEA472]" />
+                  确认修改
                 </Button>
                 <Button
                   variant="outline"
-                  size="icon"
                   onClick={() => setEditingVideo(null)}
-                  className="bg-black/40 border-[#CEA472]/30 hover:bg-[#CEA472]/20 hover:border-[#CEA472]/50"
+                  className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10 hover:text-[#CEA472]"
                 >
-                  <X className="w-4 h-4 text-[#CEA472]" />
+                  取消
                 </Button>
               </div>
             </div>

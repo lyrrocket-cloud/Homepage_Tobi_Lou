@@ -905,19 +905,16 @@ export function UnifiedPhotoManager({ onPhotoAdded }: UnifiedPhotoManagerProps) 
               <Button
                 onClick={handleAddPhoto}
                 disabled={saving || !newPhoto.title || !newPhoto.regionId || !newPhoto.yearMonth || !newPhoto.image}
-                variant="outline"
-                size="icon"
-                className="bg-black/40 border-[#CEA472]/30 hover:bg-[#CEA472]/20 hover:border-[#CEA472]/50"
+                className="bg-[#CEA472] hover:bg-[#CEA472]/80 text-[#0a0a0f]"
               >
-                {saving ? <Loader2 className="w-4 h-4 text-[#CEA472] animate-spin" /> : <Save className="w-4 h-4 text-[#CEA472]" />}
+                {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : '添加'}
               </Button>
               <Button
                 variant="outline"
-                size="icon"
                 onClick={() => setIsAddPhotoOpen(false)}
-                className="bg-black/40 border-[#CEA472]/30 hover:bg-[#CEA472]/20 hover:border-[#CEA472]/50"
+                className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10 hover:text-[#CEA472]"
               >
-                <X className="w-4 h-4 text-[#CEA472]" />
+                取消
               </Button>
             </div>
           </div>
@@ -1117,19 +1114,16 @@ export function UnifiedPhotoManager({ onPhotoAdded }: UnifiedPhotoManagerProps) 
                 <Button
                   onClick={handleUpdatePhoto}
                   disabled={saving}
-                  variant="outline"
-                  size="icon"
-                  className="bg-black/40 border-[#CEA472]/30 hover:bg-[#CEA472]/20 hover:border-[#CEA472]/50"
+                  className="bg-[#CEA472] hover:bg-[#CEA472]/80 text-[#0a0a0f]"
                 >
-                  {saving ? <Loader2 className="w-4 h-4 text-[#CEA472] animate-spin" /> : <Save className="w-4 h-4 text-[#CEA472]" />}
+                  {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : '保存'}
                 </Button>
                 <Button
                   variant="outline"
-                  size="icon"
                   onClick={() => setIsEditPhotoOpen(false)}
-                  className="bg-black/40 border-[#CEA472]/30 hover:bg-[#CEA472]/20 hover:border-[#CEA472]/50"
+                  className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10 hover:text-[#CEA472]"
                 >
-                  <X className="w-4 h-4 text-[#CEA472]" />
+                  取消
                 </Button>
               </div>
             </div>
