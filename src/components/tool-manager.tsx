@@ -230,17 +230,17 @@ export function ToolManager({ tools: initialTools, onToolsUpdate }: ToolManagerP
             </div>
             <div className="flex gap-3 justify-end">
               <Button
+                onClick={handleVerifyPassword}
+                className="bg-[#CEA472] hover:bg-[#CEA472]/80 text-[#0a0a0f]"
+              >
+                确认
+              </Button>
+              <Button
                 variant="outline"
                 onClick={() => setIsPasswordDialogOpen(false)}
                 className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10 hover:text-[#CEA472]"
               >
                 取消
-              </Button>
-              <Button
-                onClick={handleVerifyPassword}
-                className="bg-[#CEA472] hover:bg-[#CEA472]/80 text-[#0a0a0f]"
-              >
-                确认
               </Button>
             </div>
           </div>

@@ -420,17 +420,17 @@ export function WorldPhotoManager({ onPhotoAdded }: WorldPhotoManagerProps) {
             </div>
             <div className="flex gap-3 justify-end">
               <Button
+                onClick={handlePasswordSubmit}
+                className="bg-[#CEA472] hover:bg-[#CEA472]/80 text-[#0a0a0f]"
+              >
+                确认
+              </Button>
+              <Button
                 variant="outline"
                 onClick={() => setIsPasswordOpen(false)}
                 className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10 hover:text-[#CEA472]"
               >
                 取消
-              </Button>
-              <Button
-                onClick={handlePasswordSubmit}
-                className="bg-[#CEA472] hover:bg-[#CEA472]/80 text-[#0a0a0f]"
-              >
-                确认
               </Button>
             </div>
           </div>
@@ -588,15 +588,15 @@ export function WorldPhotoManager({ onPhotoAdded }: WorldPhotoManagerProps) {
             </div>
 
             <div className="flex justify-end gap-2">
-              <Button variant="outline" onClick={() => setIsAddPhotoOpen(false)} className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10 hover:text-[#CEA472]">
-                取消
-              </Button>
               <Button
                 onClick={handleAddPhoto}
                 disabled={saving || !newPhoto.title || !newPhoto.countryId || !newPhoto.yearMonth || !newPhoto.image}
                 className="bg-[#CEA472] hover:bg-[#CEA472]/80 text-[#0a0a0f]"
               >
                 {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : '添加'}
+              </Button>
+              <Button variant="outline" onClick={() => setIsAddPhotoOpen(false)} className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10 hover:text-[#CEA472]">
+                取消
               </Button>
             </div>
           </div>
@@ -707,15 +707,15 @@ export function WorldPhotoManager({ onPhotoAdded }: WorldPhotoManagerProps) {
               </div>
 
               <div className="flex justify-end gap-2">
-                <Button variant="outline" onClick={() => setIsEditPhotoOpen(false)} className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10 hover:text-[#CEA472]">
-                  取消
-                </Button>
                 <Button
                   onClick={handleUpdatePhoto}
                   disabled={saving}
                   className="bg-[#CEA472] hover:bg-[#CEA472]/80 text-[#0a0a0f]"
                 >
                   {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : '保存'}
+                </Button>
+                <Button variant="outline" onClick={() => setIsEditPhotoOpen(false)} className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10 hover:text-[#CEA472]">
+                  取消
                 </Button>
               </div>
             </div>

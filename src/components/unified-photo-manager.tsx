@@ -592,17 +592,17 @@ export function UnifiedPhotoManager({ onPhotoAdded }: UnifiedPhotoManagerProps) 
             </div>
             <div className="flex gap-3 justify-end">
               <Button
+                onClick={handlePasswordSubmit}
+                className="bg-[#CEA472] hover:bg-[#CEA472]/80 text-[#0a0a0f]"
+              >
+                确认
+              </Button>
+              <Button
                 variant="outline"
                 onClick={() => setIsPasswordOpen(false)}
                 className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10 hover:text-[#CEA472]"
               >
                 取消
-              </Button>
-              <Button
-                onClick={handlePasswordSubmit}
-                className="bg-[#CEA472] hover:bg-[#CEA472]/80 text-[#0a0a0f]"
-              >
-                确认
               </Button>
             </div>
           </div>
@@ -739,7 +739,7 @@ export function UnifiedPhotoManager({ onPhotoAdded }: UnifiedPhotoManagerProps) 
                       <Button variant="outline" size="sm" onClick={() => handleOpenEdit(photo)} className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10 hover:text-[#CEA472] h-8 w-8 p-0">
                         <Edit className="w-4 h-4" />
                       </Button>
-                      <Button variant="outline" size="sm" onClick={() => handleDeletePhoto(photo.id)} className="border-red-500/30 text-red-500 hover:bg-red-500/10 h-8 w-8 p-0">
+                      <Button variant="outline" size="sm" onClick={() => handleDeletePhoto(photo.id)} className="border-red-500/30 text-red-500 hover:bg-red-500/10 hover:text-red-500 h-8 w-8 p-0">
                         <Trash2 className="w-4 h-4" />
                       </Button>
                     </div>
@@ -916,15 +916,15 @@ export function UnifiedPhotoManager({ onPhotoAdded }: UnifiedPhotoManagerProps) 
             </div>
 
             <div className="flex justify-end gap-2">
-              <Button variant="outline" onClick={() => setIsAddPhotoOpen(false)} className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10 hover:text-[#CEA472]">
-                取消
-              </Button>
               <Button
                 onClick={handleAddPhoto}
                 disabled={saving || !newPhoto.title || !newPhoto.regionId || !newPhoto.yearMonth || !newPhoto.image}
                 className="bg-[#CEA472] hover:bg-[#CEA472]/80 text-[#0a0a0f]"
               >
                 {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : '添加'}
+              </Button>
+              <Button variant="outline" onClick={() => setIsAddPhotoOpen(false)} className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10 hover:text-[#CEA472]">
+                取消
               </Button>
             </div>
           </div>
@@ -1121,15 +1121,15 @@ export function UnifiedPhotoManager({ onPhotoAdded }: UnifiedPhotoManagerProps) 
               </div>
 
               <div className="flex justify-end gap-2">
-                <Button variant="outline" onClick={() => setIsEditPhotoOpen(false)} className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10 hover:text-[#CEA472]">
-                  取消
-                </Button>
                 <Button
                   onClick={handleUpdatePhoto}
                   disabled={saving}
                   className="bg-[#CEA472] hover:bg-[#CEA472]/80 text-[#0a0a0f]"
                 >
                   {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : '保存'}
+                </Button>
+                <Button variant="outline" onClick={() => setIsEditPhotoOpen(false)} className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10 hover:text-[#CEA472]">
+                  取消
                 </Button>
               </div>
             </div>

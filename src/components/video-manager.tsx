@@ -228,17 +228,17 @@ export function VideoManager({ videos: initialVideos, onVideosUpdate }: VideoMan
             </div>
             <div className="flex gap-3 justify-end">
               <Button
+                onClick={handleVerifyPassword}
+                className="bg-[#CEA472] hover:bg-[#CEA472]/80 text-[#0a0a0f]"
+              >
+                确认
+              </Button>
+              <Button
                 variant="outline"
                 onClick={() => setIsPasswordDialogOpen(false)}
                 className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10 hover:text-[#CEA472]"
               >
                 取消
-              </Button>
-              <Button
-                onClick={handleVerifyPassword}
-                className="bg-[#CEA472] hover:bg-[#CEA472]/80 text-[#0a0a0f]"
-              >
-                确认
               </Button>
             </div>
           </div>
@@ -435,17 +435,10 @@ export function VideoManager({ videos: initialVideos, onVideosUpdate }: VideoMan
               </div>
               <div className="flex gap-3 justify-end pt-4">
                 <Button
-                  variant="outline"
-                  onClick={() => setEditingVideo(null)}
-                  className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10 hover:text-[#CEA472]"
-                >
-                  取消
-                </Button>
-                <Button
                   onClick={() => {
                     console.log('[VideoManager] Confirming edit for video:', editingVideo);
                     console.log('[VideoManager] Current videos:', videos);
-                    const updatedVideos = videos.map(v => 
+                    const updatedVideos = videos.map(v =>
                       v.order === editingVideo.order ? editingVideo : v
                     );
                     console.log('[VideoManager] Updated videos:', updatedVideos);
@@ -456,6 +449,13 @@ export function VideoManager({ videos: initialVideos, onVideosUpdate }: VideoMan
                   className="bg-[#CEA472] hover:bg-[#CEA472]/80 text-[#0a0a0f]"
                 >
                   确认修改
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => setEditingVideo(null)}
+                  className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10 hover:text-[#CEA472]"
+                >
+                  取消
                 </Button>
               </div>
             </div>

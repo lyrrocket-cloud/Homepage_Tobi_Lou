@@ -878,7 +878,7 @@ function PhotoGalleryContent() {
                     <Button variant="outline" size="sm" onClick={() => handleOpenEdit(photo)} className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10 hover:text-[#CEA472]">
                       <Edit className="w-4 h-4" />
                     </Button>
-                    <Button variant="outline" size="sm" onClick={() => handleDeletePhoto(photo.id)} className="border-red-500/30 text-red-500 hover:bg-red-500/10">
+                    <Button variant="outline" size="sm" onClick={() => handleDeletePhoto(photo.id)} className="border-red-500/30 text-red-500 hover:bg-red-500/10 hover:text-red-500">
                       <Trash2 className="w-4 h-4" />
                     </Button>
                   </div>
@@ -993,15 +993,15 @@ function PhotoGalleryContent() {
             </div>
 
             <div className="flex justify-end gap-2">
-              <Button variant="outline" onClick={() => setIsAddPhotoOpen(false)} className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10 hover:text-[#CEA472]">
-                取消
-              </Button>
               <Button
                 onClick={handleAddPhoto}
                 disabled={isSaving || !newPhoto.title || !newPhoto.regionId || !newPhoto.yearMonth || !newPhoto.image || !newPhoto.categories?.length}
                 className="bg-[#CEA472] hover:bg-[#CEA472]/80 text-[#0a0a0f]"
               >
                 {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : '添加'}
+              </Button>
+              <Button variant="outline" onClick={() => setIsAddPhotoOpen(false)} className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10 hover:text-[#CEA472]">
+                取消
               </Button>
             </div>
           </div>
@@ -1099,15 +1099,15 @@ function PhotoGalleryContent() {
               </div>
 
               <div className="flex justify-end gap-2">
-                <Button variant="outline" onClick={() => setIsEditPhotoOpen(false)} className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10 hover:text-[#CEA472]">
-                  取消
-                </Button>
                 <Button
                   onClick={handleUpdatePhoto}
                   disabled={isSaving}
                   className="bg-[#CEA472] hover:bg-[#CEA472]/80 text-[#0a0a0f]"
                 >
                   {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : '保存'}
+                </Button>
+                <Button variant="outline" onClick={() => setIsEditPhotoOpen(false)} className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10 hover:text-[#CEA472]">
+                  取消
                 </Button>
               </div>
             </div>
