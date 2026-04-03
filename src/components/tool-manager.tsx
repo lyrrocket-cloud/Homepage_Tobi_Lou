@@ -423,26 +423,24 @@ export function ToolManager({ tools: initialTools, onToolsUpdate }: ToolManagerP
               </div>
               <div className="flex gap-3 justify-end pt-4">
                 <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={() => setEditingTool(null)}
-                  className="bg-black/40 border-[#CEA472]/30 hover:bg-[#CEA472]/20 hover:border-[#CEA472]/50"
-                >
-                  <X className="w-4 h-4 text-[#CEA472]" />
-                </Button>
-                <Button
-                  size="icon"
+                  className="bg-[#CEA472] hover:bg-[#CEA472]/80 text-[#0a0a0f]"
                   onClick={() => {
-                    const updatedTools = tools.map(t => 
+                    const updatedTools = tools.map(t =>
                       t.id === editingTool.id ? editingTool : t
                     );
                     setTools(updatedTools);
                     setHasChanges(true);
                     setEditingTool(null);
                   }}
-                  className="bg-black/40 border-[#CEA472]/30 hover:bg-[#CEA472]/20 hover:border-[#CEA472]/50"
                 >
-                  <Save className="w-4 h-4 text-[#CEA472]" />
+                  确认
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => setEditingTool(null)}
+                  className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10 hover:text-[#CEA472]"
+                >
+                  取消
                 </Button>
               </div>
             </div>
