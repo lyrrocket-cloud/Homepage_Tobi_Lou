@@ -494,7 +494,7 @@ export function PhotoManager({ photos: initialPhotos, onPhotosUpdate }: PhotoMan
                 <Input
                   value={editingPhoto.date}
                   onChange={(e) => setEditingPhoto({ ...editingPhoto, date: e.target.value })}
-                  placeholder="如：2025.01"
+                  placeholder="如: 2025.01"
                   className="bg-black/40 border-[#CEA472]/30 text-white focus:border-[#CEA472]"
                 />
               </div>
