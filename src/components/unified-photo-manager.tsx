@@ -178,9 +178,6 @@ export function UnifiedPhotoManager({ onPhotoAdded }: UnifiedPhotoManagerProps) 
   // 年度筛选
   const [filterYear, setFilterYear] = useState<number | 'all'>('all');
   
-  // 排序方式：'desc' 降序（最新在前）| 'asc' 升序（最旧在前）
-  const [sortOrder, setSortOrder] = useState<'desc' | 'asc'>('desc');
-  
   // 数据
   const [photos, setPhotos] = useState<GalleryPhoto[]>([]);
   const [regions, setRegions] = useState<Region[]>([]);
@@ -248,24 +245,24 @@ export function UnifiedPhotoManager({ onPhotoAdded }: UnifiedPhotoManagerProps) 
   // 获取所有年份（从照片数据中提取）
   const availableYears = Array.from(new Set(photos.map(p => p.year))).sort((a, b) => b - a);
   
-  // 获取当前标签的照片（带年度筛选和排序）
+  // 获取当前标签的照片（带年度筛选）
   const currentPhotos = (() => {
-    let filtered = activeTab === 'world' 
+    let filtered = activeTab === 'world'
       ? photos.filter(p => p.region?.type === 'world')
       : photos.filter(p => p.region?.type === 'china');
-    
+
     // 年度筛选
     if (filterYear !== 'all') {
       filtered = filtered.filter(p => p.year === filterYear);
     }
-    
-    // 排序
+
+    // 默认按日期降序（最新在前）
     filtered.sort((a, b) => {
       const dateA = new Date(a.date).getTime();
       const dateB = new Date(b.date).getTime();
-      return sortOrder === 'desc' ? dateB - dateA : dateA - dateB;
+      return dateB - dateA;
     });
-    
+
     return filtered;
   })();
 
@@ -669,21 +666,6 @@ export function UnifiedPhotoManager({ onPhotoAdded }: UnifiedPhotoManagerProps) 
                       <option key={year} value={year}>{year}年</option>
                     ))}
                   </select>
-                </div>
-                
-                {/* 排序 */}
-                <div className="flex items-center gap-2">
-                  <span className="text-gray-400 text-sm">排序：</span>
-                  <button
-                    onClick={() => setSortOrder(sortOrder === 'desc' ? 'asc' : 'desc')}
-                    className={`px-3 py-1.5 rounded-md text-sm transition-all ${
-                      sortOrder === 'desc'
-                        ? 'bg-[#CEA472]/20 text-[#CEA472] border border-[#CEA472]/30'
-                        : 'bg-black/40 text-gray-400 border border-[#CEA472]/20 hover:text-white'
-                    }`}
-                  >
-                    {sortOrder === 'desc' ? '最新优先 ↓' : '最早优先 ↑'}
-                  </button>
                 </div>
                 
                 {/* 添加按钮 */}
