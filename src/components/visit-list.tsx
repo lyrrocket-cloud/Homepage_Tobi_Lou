@@ -14,6 +14,7 @@ interface PhotoVisit {
   image_url: string;
   url?: string;
   category: string;
+  is_yearly?: boolean;
   region?: {
     id: number;
     name: string;
@@ -37,18 +38,18 @@ export function VisitList({ regionId, regionName, onRefresh }: VisitListProps) {
       setLoading(true);
       const response = await fetch('/api/gallery/photos');
       const result = await response.json();
-      
+
       if (result.photos) {
-        // 只获取中国地图类型的照片
+        // 只获取中国地图类型的照片，且排除年度相册
         let chinaPhotos = result.photos.filter(
-          (photo: PhotoVisit) => photo.region?.type === 'china'
+          (photo: PhotoVisit) => photo.region?.type === 'china' && !photo.is_yearly
         );
-        
+
         // 如果有 regionId，只显示该地区的记录
         if (regionId) {
           chinaPhotos = chinaPhotos.filter((photo: PhotoVisit) => photo.region_id === regionId);
         }
-        
+
         // 按日期降序排列（最新的在前）
         const sortedVisits = chinaPhotos.sort((a: PhotoVisit, b: PhotoVisit) =>
           b.date.localeCompare(a.date)

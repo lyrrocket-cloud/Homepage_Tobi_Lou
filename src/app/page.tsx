@@ -354,6 +354,7 @@ function WorldVisitList({ regionId, regionName, onRefresh }: { regionId: number 
     image_url: string;
     url?: string;
     category: string;
+    is_yearly?: boolean;
     region?: { id: number; name: string; type: string };
   }>>([]);
   const [loading, setLoading] = useState(false);
@@ -363,20 +364,21 @@ function WorldVisitList({ regionId, regionName, onRefresh }: { regionId: number 
       setLoading(true);
       const response = await fetch('/api/gallery/photos');
       const result = await response.json();
-      
+
       if (result.photos) {
-        // 只获取世界地图类型的照片
+        // 只获取世界地图类型的照片，且排除年度相册
         let worldPhotos = result.photos.filter(
-          (photo: { region?: { type: string } }) => photo.region?.type === 'world'
+          (photo: { region?: { type: string }; is_yearly?: boolean }) =>
+            photo.region?.type === 'world' && !photo.is_yearly
         );
-        
+
         // 如果有 regionId，只显示该地区的记录
         if (regionId) {
           worldPhotos = worldPhotos.filter(
             (photo: { region_id: number }) => photo.region_id === regionId
           );
         }
-        
+
         // 按日期降序排列
         const sortedVisits = worldPhotos.sort(
           (a: { date: string }, b: { date: string }) => b.date.localeCompare(a.date)
