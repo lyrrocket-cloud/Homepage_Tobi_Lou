@@ -430,7 +430,7 @@ export function PhotoManager({ photos: initialPhotos, onPhotosUpdate }: PhotoMan
 
       {/* 编辑照片弹窗 */}
       <Dialog open={!!editingPhoto} onOpenChange={() => setEditingPhoto(null)}>
-        <DialogContent className="bg-[#0a0a0f] border-[#CEA472]/30 text-white max-w-md" showCloseButton={false}>
+        <DialogContent className="bg-[#0a0a0f] border-[#CEA472]/30 text-white max-w-md" showCloseButton={true}>
           <DialogHeader>
             <DialogTitle className="text-[#CEA472]">编辑照片信息</DialogTitle>
           </DialogHeader>
