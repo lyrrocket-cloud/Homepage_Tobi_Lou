@@ -11,6 +11,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Globe,
   Lock,
@@ -641,30 +642,22 @@ export function UnifiedPhotoManager({ onPhotoAdded }: UnifiedPhotoManagerProps) 
           <div className="space-y-6">
             {/* 标签切换和筛选 */}
             <div className="flex items-center justify-between border-b border-[#CEA472]/20 pb-4 flex-wrap gap-4">
-              <div className="flex items-center gap-2">
-                <Button
-                  onClick={() => setActiveTab('china')}
-                  variant="outline"
-                  className={`${
-                    activeTab === 'china'
-                      ? 'bg-[#CEA472] text-[#0a0a0f] border-[#CEA472]'
-                      : 'bg-black/40 text-gray-400 hover:text-white hover:bg-black/60 border-[#CEA472]/30'
-                  }`}
-                >
-                  中国
-                </Button>
-                <Button
-                  onClick={() => setActiveTab('world')}
-                  variant="outline"
-                  className={`${
-                    activeTab === 'world'
-                      ? 'bg-[#CEA472] text-[#0a0a0f] border-[#CEA472]'
-                      : 'bg-black/40 text-gray-400 hover:text-white hover:bg-black/60 border-[#CEA472]/30'
-                  }`}
-                >
-                  世界
-                </Button>
-              </div>
+              <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'world' | 'china')}>
+                <TabsList className="bg-black/40 border border-[#CEA472]/30">
+                  <TabsTrigger
+                    value="china"
+                    className="data-[state=active]:bg-[#CEA472] data-[state=active]:text-[#0a0a0f] data-[state=active]:border-[#CEA472] text-gray-400 hover:text-white border-transparent"
+                  >
+                    中国
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="world"
+                    className="data-[state=active]:bg-[#CEA472] data-[state=active]:text-[#0a0a0f] data-[state=active]:border-[#CEA472] text-gray-400 hover:text-white border-transparent"
+                  >
+                    世界
+                  </TabsTrigger>
+                </TabsList>
+              </Tabs>
 
               {/* 年度筛选 */}
               <div className="flex items-center gap-2">
