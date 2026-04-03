@@ -43,17 +43,16 @@
 
 ## 项目自定义按钮样式
 
-本项目定义了9种自定义按钮样式，涵盖了所有使用场景：
+本项目定义了8种自定义按钮样式，涵盖了所有使用场景：
 
 1. **主按钮** - 确认、保存等主要操作
 2. **次要/取消按钮** - 取消、编辑等辅助操作
-3. **图标按钮（悬浮/触发器）** - 设置、回到顶部等触发器
+3. **图标按钮（通用）** - 设置、回到顶部、编辑、关闭等所有图标按钮
 4. **Tab切换按钮** - 分类筛选、地图类型切换
 5. **分类筛选按钮（圆形/小型）** - 年份、月份筛选
 6. **地图状态指示按钮** - 打卡状态筛选
-7. **图标按钮（文字）** - 编辑、关闭等纯图标按钮
-8. **删除/危险操作按钮** - 删除等危险操作
-9. **骨架屏/加载按钮** - 占位和加载状态
+7. **删除/危险操作按钮** - 删除等危险操作
+8. **骨架屏/加载按钮** - 占位和加载状态
 
 ---
 
@@ -101,24 +100,41 @@ border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10 hover:text-[#CEA472]
 
 ---
 
-### 3. 图标按钮（悬浮/触发器）
+### 3. 图标按钮（通用）
 
-**样式**:
+**样式（标准图标按钮）**:
 ```css
 bg-black/40 border-[#CEA472]/30 hover:bg-[#CEA472]/20 hover:border-[#CEA472]/50
+```
+
+**样式（纯文字图标按钮）**:
+```css
+text-[#CEA472] hover:text-[#CEA472]/80 hover:bg-[#CEA472]/10
 ```
 
 **使用场景**:
 - 设置按钮
 - 回到顶部按钮
 - 弹窗触发器
+- 编辑图标按钮
+- 关闭图标按钮
+- 所有纯图标操作
 
-**代码示例**:
+**代码示例（标准图标按钮）**:
 ```tsx
 <Button className="bg-black/40 border-[#CEA472]/30 hover:bg-[#CEA472]/20 hover:border-[#CEA472]/50">
   <Settings className="w-4 h-4 text-[#CEA472]" />
 </Button>
 ```
+
+**代码示例（纯文字图标按钮）**:
+```tsx
+<button className="text-[#CEA472] hover:text-[#CEA472]/80 hover:bg-[#CEA472]/10 p-2 rounded-md">
+  <Edit2 className="w-4 h-4" />
+</button>
+```
+
+**说明**: 根据使用场景选择合适的样式，标准图标按钮有边框和背景，纯文字图标按钮只有hover背景效果
 
 ---
 
@@ -126,12 +142,12 @@ bg-black/40 border-[#CEA472]/30 hover:bg-[#CEA472]/20 hover:border-[#CEA472]/50
 
 **激活状态**:
 ```css
-bg-[#CEA472] text-[#0a0a0f] font-medium
+bg-[#CEA472] text-[#0a0a0f] font-medium border border-[#CEA472]
 ```
 
 **非激活状态**:
 ```css
-bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white
+bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white border border-[#CEA472]/20
 ```
 
 **使用场景**:
@@ -141,15 +157,17 @@ bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white
 **代码示例**:
 ```tsx
 <button
-  className={`rounded-full px-4 py-2 transition-all ${
+  className={`rounded-full px-4 py-2 transition-all border ${
     isActive
-      ? 'bg-[#CEA472] text-[#0a0a0f] font-medium'
-      : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white'
+      ? 'bg-[#CEA472] text-[#0a0a0f] font-medium border-[#CEA472]'
+      : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white border-[#CEA472]/20'
   }`}
 >
   全部
 </button>
 ```
+
+**说明**: 为Tab按钮增加线框，增强视觉边界
 
 ---
 
@@ -229,27 +247,7 @@ bg-black/30 border-[#CEA472]/10 text-[#FFFFFF]/60 hover:border-[#CEA472]/30
 
 ---
 
-### 7. 图标按钮（文字）
-
-**样式**:
-```css
-text-[#CEA472] hover:text-[#CEA472]/80 hover:bg-[#CEA472]/10
-```
-
-**使用场景**:
-- 编辑图标按钮
-- 关闭图标按钮
-
-**代码示例**:
-```tsx
-<button className="text-[#CEA472] hover:text-[#CEA472]/80 hover:bg-[#CEA472]/10 p-2 rounded-md">
-  <Edit2 className="w-4 h-4" />
-</button>
-```
-
----
-
-### 8. 删除/危险操作按钮
+### 7. 删除/危险操作按钮
 
 **样式**:
 ```css
@@ -275,7 +273,7 @@ border-red-500/30 text-red-500 hover:bg-red-500/10 hover:text-red-500
 
 ---
 
-### 9. 骨架屏/加载按钮
+### 8. 骨架屏/加载按钮
 
 **样式**:
 ```css
@@ -441,30 +439,30 @@ shadow-2xl shadow-[#CEA472]/20
 ```tsx
 <div className="flex gap-2">
   <button
-    className={`rounded-full px-4 py-2 transition-all ${
+    className={`rounded-full px-4 py-2 transition-all border ${
       activeTab === 'all'
-        ? 'bg-[#CEA472] text-[#0a0a0f] font-medium'
-        : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white'
+        ? 'bg-[#CEA472] text-[#0a0a0f] font-medium border-[#CEA472]'
+        : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white border-[#CEA472]/20'
     }`}
     onClick={() => setActiveTab('all')}
   >
     全部
   </button>
   <button
-    className={`rounded-full px-4 py-2 transition-all ${
+    className={`rounded-full px-4 py-2 transition-all border ${
       activeTab === 'friend'
-        ? 'bg-[#CEA472] text-[#0a0a0f] font-medium'
-        : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white'
+        ? 'bg-[#CEA472] text-[#0a0a0f] font-medium border-[#CEA472]'
+        : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white border-[#CEA472]/20'
     }`}
     onClick={() => setActiveTab('friend')}
   >
     朋友
   </button>
   <button
-    className={`rounded-full px-4 py-2 transition-all ${
+    className={`rounded-full px-4 py-2 transition-all border ${
       activeTab === 'family'
-        ? 'bg-[#CEA472] text-[#0a0a0f] font-medium'
-        : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white'
+        ? 'bg-[#CEA472] text-[#0a0a0f] font-medium border-[#CEA472]'
+        : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white border-[#CEA472]/20'
     }`}
     onClick={() => setActiveTab('family')}
   >
@@ -507,6 +505,11 @@ A: 使用 `disabled` 属性禁用按钮，并显示 `<Loader2 className="w-4 h-4
 ---
 
 ## 版本历史
+
+### v1.3.0 (2026-03-29)
+- 合并类型3和类型7图标按钮，统一为"图标按钮（通用）"
+- 为Tab切换按钮增加线框（非激活状态 `border-[#CEA472]/20`，激活状态 `border-[#CEA472]`）
+- 更新所有按钮类型编号（从9种减少为8种）
 
 ### v1.2.0 (2026-03-29)
 - 优化删除按钮的hover效果，添加 `hover:text-red-500` 增强视觉反馈

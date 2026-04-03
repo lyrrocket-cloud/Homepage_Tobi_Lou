@@ -423,10 +423,10 @@ export function PhotoGallery({
                 <span className="text-sm text-gray-400">分类：</span>
                 <button
                   onClick={() => setSelectedCategories([])}
-                  className={`px-4 py-1.5 rounded-full text-sm transition-all ${
+                  className={`px-4 py-1.5 rounded-full text-sm transition-all border ${
                     selectedCategories.length === 0
-                      ? 'bg-[#CEA472] text-[#0a0a0f] font-medium'
-                      : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white'
+                      ? 'bg-[#CEA472] text-[#0a0a0f] font-medium border-[#CEA472]'
+                      : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white border-[#CEA472]/20'
                   }`}
                 >
                   全部
@@ -438,9 +438,9 @@ export function PhotoGallery({
                     <button
                       key={cat.id}
                       onClick={() => toggleCategoryFilter(cat.id)}
-                      className={`px-4 py-1.5 rounded-full text-sm transition-all ${
-                        isActive ? 'bg-[#CEA472] text-[#0a0a0f] font-medium'
-                          : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white'
+                      className={`px-4 py-1.5 rounded-full text-sm transition-all border ${
+                        isActive ? 'bg-[#CEA472] text-[#0a0a0f] font-medium border-[#CEA472]'
+                          : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white border-[#CEA472]/20'
                       }`}
                     >
                       {cat.name}

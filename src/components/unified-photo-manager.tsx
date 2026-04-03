@@ -840,10 +840,10 @@ export function UnifiedPhotoManager({ onPhotoAdded }: UnifiedPhotoManagerProps) 
                   <button
                     key={cat.id}
                     onClick={() => togglePhotoCategory(cat.id)}
-                    className={`px-3 py-1 rounded-full text-sm transition-all ${
+                    className={`px-3 py-1 rounded-full text-sm transition-all border ${
                       newPhoto.categories.includes(cat.id)
-                        ? 'bg-[#CEA472] text-[#0a0a0f]'
-                        : 'bg-white/5 text-gray-400 hover:bg-white/10'
+                        ? 'bg-[#CEA472] text-[#0a0a0f] border-[#CEA472]'
+                        : 'bg-white/5 text-gray-400 hover:bg-white/10 border-[#CEA472]/20'
                     }`}
                   >
                     {cat.name}
@@ -1033,10 +1033,10 @@ export function UnifiedPhotoManager({ onPhotoAdded }: UnifiedPhotoManagerProps) 
                             : [...selectedCategories, cat.id];
                           setEditingPhoto({ ...editingPhoto, category: newCategories.join(',') });
                         }}
-                        className={`px-3 py-1 rounded-full text-sm transition-all ${
+                        className={`px-3 py-1 rounded-full text-sm transition-all border ${
                           selectedCategories.includes(cat.id)
-                            ? 'bg-[#CEA472] text-[#0a0a0f]'
-                            : 'bg-white/5 text-gray-400 hover:bg-white/10'
+                            ? 'bg-[#CEA472] text-[#0a0a0f] border-[#CEA472]'
+                            : 'bg-white/5 text-gray-400 hover:bg-white/10 border-[#CEA472]/20'
                         }`}
                       >
                         {cat.name}
