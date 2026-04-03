@@ -20,6 +20,7 @@ import {
   Loader2,
   Upload,
   Image as ImageIcon,
+  Edit2,
 } from 'lucide-react';
 
 interface PhotoManagerProps {
@@ -275,16 +276,19 @@ export function PhotoManager({ photos: initialPhotos, onPhotosUpdate }: PhotoMan
             <div className="flex gap-3 justify-end">
               <Button
                 onClick={handleVerifyPassword}
-                className="bg-[#CEA472] hover:bg-[#CEA472]/80 text-[#0a0a0f]"
+                variant="outline"
+                size="icon"
+                className="bg-black/40 border-[#CEA472]/30 hover:bg-[#CEA472]/20 hover:border-[#CEA472]/50"
               >
-                确认
+                <Lock className="w-4 h-4 text-[#CEA472]" />
               </Button>
               <Button
                 variant="outline"
+                size="icon"
                 onClick={() => setIsPasswordDialogOpen(false)}
-                className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10 hover:text-[#CEA472]"
+                className="bg-black/40 border-[#CEA472]/30 hover:bg-[#CEA472]/20 hover:border-[#CEA472]/50"
               >
-                取消
+                <X className="w-4 h-4 text-[#CEA472]" />
               </Button>
             </div>
           </div>
@@ -304,26 +308,23 @@ export function PhotoManager({ photos: initialPhotos, onPhotosUpdate }: PhotoMan
                 <Button
                   onClick={handleSaveAll}
                   disabled={isSaving || !hasChanges}
-                  className="bg-[#CEA472] hover:bg-[#CEA472]/80 text-[#0a0a0f] disabled:opacity-50 disabled:cursor-not-allowed"
+                  variant="outline"
+                  size="icon"
+                  className="bg-black/40 border-[#CEA472]/30 hover:bg-[#CEA472]/20 hover:border-[#CEA472]/50 disabled:opacity-50"
                 >
                   {isSaving ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      保存中...
-                    </>
+                    <Loader2 className="w-4 h-4 text-[#CEA472] animate-spin" />
                   ) : (
-                    <>
-                      <Save className="w-4 h-4 mr-2" />
-                      {hasChanges ? '保存更改' : '无更改'}
-                    </>
+                    <Save className="w-4 h-4 text-[#CEA472]" />
                   )}
                 </Button>
                 <Button
                   variant="outline"
+                  size="icon"
                   onClick={handleCloseManager}
-                  className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10 hover:text-[#CEA472]"
+                  className="bg-black/40 border-[#CEA472]/30 hover:bg-[#CEA472]/20 hover:border-[#CEA472]/50"
                 >
-                  <X className="w-4 h-4" />
+                  <X className="w-4 h-4 text-[#CEA472]" />
                 </Button>
               </div>
             </DialogTitle>
@@ -415,11 +416,11 @@ export function PhotoManager({ photos: initialPhotos, onPhotosUpdate }: PhotoMan
                       {/* 编辑按钮 */}
                       <Button
                         variant="outline"
-                        size="sm"
+                        size="icon"
                         onClick={() => setEditingPhoto(photo)}
-                        className="w-full border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10 hover:text-[#CEA472] text-xs"
+                        className="bg-black/40 border-[#CEA472]/30 hover:bg-[#CEA472]/20 hover:border-[#CEA472]/50"
                       >
-                        编辑详细信息
+                        <Edit2 className="w-4 h-4 text-[#CEA472]" />
                       </Button>
                     </div>
                   </div>

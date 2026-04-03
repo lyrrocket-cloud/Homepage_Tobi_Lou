@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { MapPin, Calendar, ExternalLink, Edit2, Trash2, Plus, Lock } from 'lucide-react';
+import { MapPin, Calendar, ExternalLink, Edit2, Trash2, Plus, Lock, Loader2, Save, X } from 'lucide-react';
 import { Region } from '@/app/api/regions/route';
 import { Visit } from '@/app/api/visits/route';
 
@@ -231,9 +231,13 @@ export function VisitManager({ defaultRegionId = null, defaultRegionName = '', o
           <DialogTitle className="text-[#CEA472] flex items-center justify-between">
             <span>{mode === 'list' ? '到访记录管理' : (mode === 'add' ? '添加到访记录' : '编辑到访记录')}</span>
             {mode === 'list' && (
-              <Button onClick={handleOpenAdd} className="bg-[#CEA472] text-black hover:bg-[#CEA472]/80 text-sm">
-                <Plus className="w-4 h-4 mr-2" />
-                添加记录
+              <Button
+                onClick={handleOpenAdd}
+                variant="outline"
+                size="icon"
+                className="bg-black/40 border-[#CEA472]/30 hover:bg-[#CEA472]/20 hover:border-[#CEA472]/50"
+              >
+                <Plus className="w-4 h-4 text-[#CEA472]" />
               </Button>
             )}
           </DialogTitle>
@@ -364,17 +368,20 @@ export function VisitManager({ defaultRegionId = null, defaultRegionName = '', o
               <Button
                 type="submit"
                 disabled={loading}
-                className="flex-1 bg-[#CEA472] text-black hover:bg-[#CEA472]/80"
+                variant="outline"
+                size="icon"
+                className="bg-black/40 border-[#CEA472]/30 hover:bg-[#CEA472]/20 hover:border-[#CEA472]/50"
               >
-                {loading ? '保存中...' : (mode === 'add' ? '确认添加' : '确认修改')}
+                {loading ? <Loader2 className="w-4 h-4 text-[#CEA472] animate-spin" /> : <Save className="w-4 h-4 text-[#CEA472]" />}
               </Button>
               <Button
                 type="button"
                 variant="outline"
+                size="icon"
                 onClick={() => setMode('list')}
-                className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10 hover:text-[#CEA472]"
+                className="bg-black/40 border-[#CEA472]/30 hover:bg-[#CEA472]/20 hover:border-[#CEA472]/50"
               >
-                取消
+                <X className="w-4 h-4 text-[#CEA472]" />
               </Button>
             </div>
           </form>

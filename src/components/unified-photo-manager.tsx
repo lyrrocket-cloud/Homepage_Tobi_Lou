@@ -22,8 +22,9 @@ import {
   MapPin,
   Calendar,
   Trash2,
-  Edit,
+  Edit2,
   Plus,
+  Save,
 } from 'lucide-react';
 
 // 照片类型
@@ -596,10 +597,11 @@ export function UnifiedPhotoManager({ onPhotoAdded }: UnifiedPhotoManagerProps) 
               </Button>
               <Button
                 variant="outline"
+                size="icon"
                 onClick={() => setIsPasswordOpen(false)}
-                className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10 hover:text-[#CEA472]"
+                className="bg-black/40 border-[#CEA472]/30 hover:bg-[#CEA472]/20 hover:border-[#CEA472]/50"
               >
-                取消
+                <X className="w-4 h-4 text-[#CEA472]" />
               </Button>
             </div>
           </div>
@@ -617,10 +619,11 @@ export function UnifiedPhotoManager({ onPhotoAdded }: UnifiedPhotoManagerProps) 
               </div>
               <Button
                 variant="outline"
+                size="icon"
                 onClick={handleClose}
-                className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10 hover:text-[#CEA472]"
+                className="bg-black/40 border-[#CEA472]/30 hover:bg-[#CEA472]/20 hover:border-[#CEA472]/50"
               >
-                <X className="w-4 h-4" />
+                <X className="w-4 h-4 text-[#CEA472]" />
               </Button>
             </DialogTitle>
           </DialogHeader>
@@ -671,10 +674,11 @@ export function UnifiedPhotoManager({ onPhotoAdded }: UnifiedPhotoManagerProps) 
                 {/* 添加按钮 */}
                 <Button
                   onClick={() => { setIsAddPhotoOpen(true); resetForm(); }}
-                  className="bg-[#CEA472] hover:bg-[#CEA472]/80 text-[#0a0a0f]"
+                  variant="outline"
+                  size="icon"
+                  className="bg-black/40 border-[#CEA472]/30 hover:bg-[#CEA472]/20 hover:border-[#CEA472]/50"
                 >
-                  <Plus className="w-4 h-4 mr-2" />
-                  添加照片
+                  <Plus className="w-4 h-4 text-[#CEA472]" />
                 </Button>
               </div>
             </div>
@@ -719,7 +723,7 @@ export function UnifiedPhotoManager({ onPhotoAdded }: UnifiedPhotoManagerProps) 
                     </div>
                     <div className="flex items-center gap-2 flex-shrink-0">
                       <Button variant="outline" size="sm" onClick={() => handleOpenEdit(photo)} className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10 hover:text-[#CEA472] h-8 w-8 p-0">
-                        <Edit className="w-4 h-4" />
+                        <Edit2 className="w-4 h-4" />
                       </Button>
                       <Button variant="outline" size="sm" onClick={() => handleDeletePhoto(photo.id)} className="border-red-500/30 text-red-500 hover:bg-red-500/10 hover:text-red-500 h-8 w-8 p-0">
                         <Trash2 className="w-4 h-4" />
@@ -901,12 +905,19 @@ export function UnifiedPhotoManager({ onPhotoAdded }: UnifiedPhotoManagerProps) 
               <Button
                 onClick={handleAddPhoto}
                 disabled={saving || !newPhoto.title || !newPhoto.regionId || !newPhoto.yearMonth || !newPhoto.image}
-                className="bg-[#CEA472] hover:bg-[#CEA472]/80 text-[#0a0a0f]"
+                variant="outline"
+                size="icon"
+                className="bg-black/40 border-[#CEA472]/30 hover:bg-[#CEA472]/20 hover:border-[#CEA472]/50"
               >
-                {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : '添加'}
+                {saving ? <Loader2 className="w-4 h-4 text-[#CEA472] animate-spin" /> : <Save className="w-4 h-4 text-[#CEA472]" />}
               </Button>
-              <Button variant="outline" onClick={() => setIsAddPhotoOpen(false)} className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10 hover:text-[#CEA472]">
-                取消
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => setIsAddPhotoOpen(false)}
+                className="bg-black/40 border-[#CEA472]/30 hover:bg-[#CEA472]/20 hover:border-[#CEA472]/50"
+              >
+                <X className="w-4 h-4 text-[#CEA472]" />
               </Button>
             </div>
           </div>
@@ -1106,12 +1117,19 @@ export function UnifiedPhotoManager({ onPhotoAdded }: UnifiedPhotoManagerProps) 
                 <Button
                   onClick={handleUpdatePhoto}
                   disabled={saving}
-                  className="bg-[#CEA472] hover:bg-[#CEA472]/80 text-[#0a0a0f]"
+                  variant="outline"
+                  size="icon"
+                  className="bg-black/40 border-[#CEA472]/30 hover:bg-[#CEA472]/20 hover:border-[#CEA472]/50"
                 >
-                  {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : '保存'}
+                  {saving ? <Loader2 className="w-4 h-4 text-[#CEA472] animate-spin" /> : <Save className="w-4 h-4 text-[#CEA472]" />}
                 </Button>
-                <Button variant="outline" onClick={() => setIsEditPhotoOpen(false)} className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10 hover:text-[#CEA472]">
-                  取消
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => setIsEditPhotoOpen(false)}
+                  className="bg-black/40 border-[#CEA472]/30 hover:bg-[#CEA472]/20 hover:border-[#CEA472]/50"
+                >
+                  <X className="w-4 h-4 text-[#CEA472]" />
                 </Button>
               </div>
             </div>

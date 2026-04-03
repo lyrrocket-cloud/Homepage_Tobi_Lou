@@ -20,6 +20,7 @@ import {
   Loader2,
   Trash2,
   Plus,
+  Edit,
 } from 'lucide-react';
 
 // 可用图标列表
@@ -260,34 +261,31 @@ export function ToolManager({ tools: initialTools, onToolsUpdate }: ToolManagerP
                 <Button
                   onClick={handleAddTool}
                   variant="outline"
-                  className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10 hover:text-[#CEA472]"
+                  size="icon"
+                  className="bg-black/40 border-[#CEA472]/30 hover:bg-[#CEA472]/20 hover:border-[#CEA472]/50"
                 >
-                  <Plus className="w-4 h-4 mr-2" />
-                  添加工具
+                  <Plus className="w-4 h-4 text-[#CEA472]" />
                 </Button>
                 <Button
                   onClick={handleSaveAll}
                   disabled={isSaving || !hasChanges}
-                  className="bg-[#CEA472] hover:bg-[#CEA472]/80 text-[#0a0a0f] disabled:opacity-50"
+                  variant="outline"
+                  size="icon"
+                  className="bg-black/40 border-[#CEA472]/30 hover:bg-[#CEA472]/20 hover:border-[#CEA472]/50 disabled:opacity-50"
                 >
                   {isSaving ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      保存中...
-                    </>
+                    <Loader2 className="w-4 h-4 text-[#CEA472] animate-spin" />
                   ) : (
-                    <>
-                      <Save className="w-4 h-4 mr-2" />
-                      {hasChanges ? '保存更改' : '无更改'}
-                    </>
+                    <Save className="w-4 h-4 text-[#CEA472]" />
                   )}
                 </Button>
                 <Button
                   variant="outline"
+                  size="icon"
                   onClick={handleCloseManager}
-                  className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10 hover:text-[#CEA472]"
+                  className="bg-black/40 border-[#CEA472]/30 hover:bg-[#CEA472]/20 hover:border-[#CEA472]/50"
                 >
-                  <X className="w-4 h-4" />
+                  <X className="w-4 h-4 text-[#CEA472]" />
                 </Button>
               </div>
             </DialogTitle>
@@ -341,19 +339,19 @@ export function ToolManager({ tools: initialTools, onToolsUpdate }: ToolManagerP
                   <div className="flex gap-2 shrink-0">
                     <Button
                       variant="outline"
-                      size="sm"
+                      size="icon"
                       onClick={() => setEditingTool(tool)}
-                      className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10 hover:text-[#CEA472]"
+                      className="bg-black/40 border-[#CEA472]/30 hover:bg-[#CEA472]/20 hover:border-[#CEA472]/50"
                     >
-                      编辑
+                      <Edit className="w-4 h-4 text-[#CEA472]" />
                     </Button>
                     <Button
                       variant="outline"
-                      size="sm"
+                      size="icon"
                       onClick={() => handleDeleteTool(tool.id)}
-                      className="border-red-500/30 text-red-500 hover:bg-red-500/10 hover:text-red-500"
+                      className="bg-black/40 border-red-500/30 hover:bg-red-500/20 hover:border-red-500/50"
                     >
-                      <Trash2 className="w-4 h-4" />
+                      <Trash2 className="w-4 h-4 text-red-500" />
                     </Button>
                   </div>
                 </div>
@@ -430,12 +428,14 @@ export function ToolManager({ tools: initialTools, onToolsUpdate }: ToolManagerP
               <div className="flex gap-3 justify-end pt-4">
                 <Button
                   variant="outline"
+                  size="icon"
                   onClick={() => setEditingTool(null)}
-                  className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10 hover:text-[#CEA472]"
+                  className="bg-black/40 border-[#CEA472]/30 hover:bg-[#CEA472]/20 hover:border-[#CEA472]/50"
                 >
-                  取消
+                  <X className="w-4 h-4 text-[#CEA472]" />
                 </Button>
                 <Button
+                  size="icon"
                   onClick={() => {
                     const updatedTools = tools.map(t => 
                       t.id === editingTool.id ? editingTool : t
@@ -444,9 +444,9 @@ export function ToolManager({ tools: initialTools, onToolsUpdate }: ToolManagerP
                     setHasChanges(true);
                     setEditingTool(null);
                   }}
-                  className="bg-[#CEA472] hover:bg-[#CEA472]/80 text-[#0a0a0f]"
+                  className="bg-black/40 border-[#CEA472]/30 hover:bg-[#CEA472]/20 hover:border-[#CEA472]/50"
                 >
-                  确认修改
+                  <Save className="w-4 h-4 text-[#CEA472]" />
                 </Button>
               </div>
             </div>

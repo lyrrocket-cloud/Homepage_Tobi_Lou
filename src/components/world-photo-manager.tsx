@@ -22,8 +22,9 @@ import {
   MapPin,
   Calendar,
   Trash2,
-  Edit,
+  Edit2,
   Plus,
+  Save,
 } from 'lucide-react';
 
 // 照片类型
@@ -421,16 +422,19 @@ export function WorldPhotoManager({ onPhotoAdded }: WorldPhotoManagerProps) {
             <div className="flex gap-3 justify-end">
               <Button
                 onClick={handlePasswordSubmit}
-                className="bg-[#CEA472] hover:bg-[#CEA472]/80 text-[#0a0a0f]"
+                variant="outline"
+                size="icon"
+                className="bg-black/40 border-[#CEA472]/30 hover:bg-[#CEA472]/20 hover:border-[#CEA472]/50"
               >
-                确认
+                <Lock className="w-4 h-4 text-[#CEA472]" />
               </Button>
               <Button
                 variant="outline"
+                size="icon"
                 onClick={() => setIsPasswordOpen(false)}
-                className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10 hover:text-[#CEA472]"
+                className="bg-black/40 border-[#CEA472]/30 hover:bg-[#CEA472]/20 hover:border-[#CEA472]/50"
               >
-                取消
+                <X className="w-4 h-4 text-[#CEA472]" />
               </Button>
             </div>
           </div>
@@ -451,10 +455,11 @@ export function WorldPhotoManager({ onPhotoAdded }: WorldPhotoManagerProps) {
             {/* 添加照片按钮 */}
             <Button
               onClick={() => setIsAddPhotoOpen(true)}
-              className="bg-[#CEA472] hover:bg-[#CEA472]/80 text-[#0a0a0f]"
+              variant="outline"
+              size="icon"
+              className="bg-black/40 border-[#CEA472]/30 hover:bg-[#CEA472]/20 hover:border-[#CEA472]/50"
             >
-              <Plus className="w-4 h-4 mr-2" />
-              添加照片
+              <Plus className="w-4 h-4 text-[#CEA472]" />
             </Button>
 
             {/* 照片列表 */}
@@ -481,7 +486,7 @@ export function WorldPhotoManager({ onPhotoAdded }: WorldPhotoManagerProps) {
                     </div>
                     <div className="flex gap-2">
                       <Button variant="outline" size="sm" onClick={() => handleOpenEdit(photo)} className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10 hover:text-[#CEA472]">
-                        <Edit className="w-4 h-4" />
+                        <Edit2 className="w-4 h-4" />
                       </Button>
                       <Button variant="outline" size="sm" onClick={() => handleDeletePhoto(photo.id)} className="border-red-500/30 text-red-500 hover:bg-red-500/10 hover:text-red-500">
                         <Trash2 className="w-4 h-4" />
@@ -591,12 +596,19 @@ export function WorldPhotoManager({ onPhotoAdded }: WorldPhotoManagerProps) {
               <Button
                 onClick={handleAddPhoto}
                 disabled={saving || !newPhoto.title || !newPhoto.countryId || !newPhoto.yearMonth || !newPhoto.image}
-                className="bg-[#CEA472] hover:bg-[#CEA472]/80 text-[#0a0a0f]"
+                variant="outline"
+                size="icon"
+                className="bg-black/40 border-[#CEA472]/30 hover:bg-[#CEA472]/20 hover:border-[#CEA472]/50"
               >
-                {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : '添加'}
+                {saving ? <Loader2 className="w-4 h-4 text-[#CEA472] animate-spin" /> : <Save className="w-4 h-4 text-[#CEA472]" />}
               </Button>
-              <Button variant="outline" onClick={() => setIsAddPhotoOpen(false)} className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10 hover:text-[#CEA472]">
-                取消
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => setIsAddPhotoOpen(false)}
+                className="bg-black/40 border-[#CEA472]/30 hover:bg-[#CEA472]/20 hover:border-[#CEA472]/50"
+              >
+                <X className="w-4 h-4 text-[#CEA472]" />
               </Button>
             </div>
           </div>
@@ -710,12 +722,19 @@ export function WorldPhotoManager({ onPhotoAdded }: WorldPhotoManagerProps) {
                 <Button
                   onClick={handleUpdatePhoto}
                   disabled={saving}
-                  className="bg-[#CEA472] hover:bg-[#CEA472]/80 text-[#0a0a0f]"
+                  variant="outline"
+                  size="icon"
+                  className="bg-black/40 border-[#CEA472]/30 hover:bg-[#CEA472]/20 hover:border-[#CEA472]/50"
                 >
-                  {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : '保存'}
+                  {saving ? <Loader2 className="w-4 h-4 text-[#CEA472] animate-spin" /> : <Save className="w-4 h-4 text-[#CEA472]" />}
                 </Button>
-                <Button variant="outline" onClick={() => setIsEditPhotoOpen(false)} className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10 hover:text-[#CEA472]">
-                  取消
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => setIsEditPhotoOpen(false)}
+                  className="bg-black/40 border-[#CEA472]/30 hover:bg-[#CEA472]/20 hover:border-[#CEA472]/50"
+                >
+                  <X className="w-4 h-4 text-[#CEA472]" />
                 </Button>
               </div>
             </div>
