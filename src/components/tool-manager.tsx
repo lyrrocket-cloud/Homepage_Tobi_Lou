@@ -351,7 +351,7 @@ export function ToolManager({ tools: initialTools, onToolsUpdate }: ToolManagerP
                       variant="outline"
                       size="sm"
                       onClick={() => handleDeleteTool(tool.id)}
-                      className="border-red-500/30 text-red-400 hover:bg-red-500/10"
+                      className="border-red-500/30 text-red-500 hover:bg-red-500/10 hover:text-red-500"
                     >
                       <Trash2 className="w-4 h-4" />
                     </Button>
