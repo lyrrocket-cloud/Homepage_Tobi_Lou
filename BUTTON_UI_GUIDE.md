@@ -43,6 +43,20 @@
 
 ## 项目自定义按钮样式
 
+本项目定义了9种自定义按钮样式，涵盖了所有使用场景：
+
+1. **主按钮** - 确认、保存等主要操作
+2. **次要/取消按钮** - 取消、编辑等辅助操作
+3. **图标按钮（悬浮/触发器）** - 设置、回到顶部等触发器
+4. **Tab切换按钮** - 分类筛选、地图类型切换
+5. **分类筛选按钮（圆形/小型）** - 年份、月份筛选
+6. **地图状态指示按钮** - 打卡状态筛选
+7. **图标按钮（文字）** - 编辑、关闭等纯图标按钮
+8. **删除/危险操作按钮** - 删除等危险操作
+9. **骨架屏/加载按钮** - 占位和加载状态
+
+---
+
 ### 1. 主按钮
 
 **样式**:
@@ -235,7 +249,33 @@ text-[#CEA472] hover:text-[#CEA472]/80 hover:bg-[#CEA472]/10
 
 ---
 
-### 8. 骨架屏/加载按钮
+### 8. 删除/危险操作按钮
+
+**样式**:
+```css
+border-red-500/30 text-red-500 hover:bg-red-500/10 hover:text-red-500
+```
+
+**使用场景**:
+- 删除操作
+- 危险操作
+- 需要用户特别警惕的操作
+
+**代码示例**:
+```tsx
+<Button variant="outline" size="sm" onClick={() => handleDelete()} className="border-red-500/30 text-red-500 hover:bg-red-500/10 hover:text-red-500">
+  <Trash2 className="w-4 h-4" />
+</Button>
+```
+
+**说明**:
+- 使用红色边框和文本，强调危险操作
+- hover时保持红色文本，增强视觉警示效果
+- 背景色变化提供额外的交互反馈
+
+---
+
+### 9. 骨架屏/加载按钮
 
 **样式**:
 ```css
@@ -384,7 +424,7 @@ shadow-2xl shadow-[#CEA472]/20
   <Button variant="outline" size="sm" onClick={() => handleEdit()} className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10 hover:text-[#CEA472]">
     <Edit className="w-4 h-4" />
   </Button>
-  <Button variant="outline" size="sm" onClick={() => handleDelete()} className="border-red-500/30 text-red-500 hover:bg-red-500/10">
+  <Button variant="outline" size="sm" onClick={() => handleDelete()} className="border-red-500/30 text-red-500 hover:bg-red-500/10 hover:text-red-500">
     <Trash2 className="w-4 h-4" />
   </Button>
 </div>
@@ -472,6 +512,7 @@ A: 使用 `disabled` 属性禁用按钮，并显示 `<Loader2 className="w-4 h-4
 - 优化删除按钮的hover效果，添加 `hover:text-red-500` 增强视觉反馈
 - 修正所有表单按钮顺序：确认按钮（主按钮）在左，取消按钮（次要按钮）在右
 - 更新删除按钮样式规范
+- 新增删除/危险操作按钮独立分类（第8种）
 
 ### v1.1.0 (2026-03-29)
 - 优化次要/取消按钮的hover效果，添加 `hover:text-[#CEA472]` 增强视觉反馈
@@ -483,3 +524,24 @@ A: 使用 `disabled` 属性禁用按钮，并显示 `<Loader2 className="w-4 h-4
 - 定义8种项目自定义按钮样式
 - 完善状态规范和图标使用规范
 - 添加完整代码示例
+
+---
+
+## 快速参考
+
+### 按钮样式速查表
+
+| 按钮类型 | 样式 | Hover效果 | 使用场景 |
+|---------|------|----------|---------|
+| 主按钮 | `bg-[#CEA472] text-[#0a0a0f]` | `hover:bg-[#CEA472]/80` | 确认、保存 |
+| 次要/取消 | `border-[#CEA472]/30 text-[#CEA472]` | `hover:bg-[#CEA472]/10 hover:text-[#CEA472]` | 取消、编辑 |
+| 删除/危险 | `border-red-500/30 text-red-500` | `hover:bg-red-500/10 hover:text-red-500` | 删除 |
+| 图标按钮 | `bg-black/40 border-[#CEA472]/30` | `hover:bg-[#CEA472]/20 hover:border-[#CEA472]/50` | 设置、触发器 |
+
+### 通用规则
+
+- **按钮顺序**: 确认在左，取消在右
+- **图标尺寸**: 标准按钮`w-5 h-5`，小按钮`w-4 h-4`
+- **间距**: 文本+图标用`gap-2`，图标+文本用`mr-2`
+- **阴影**: 主按钮用`shadow-lg`
+- **圆角**: 大部分用`rounded-md`，Tab用`rounded-full`
