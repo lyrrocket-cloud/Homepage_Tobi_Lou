@@ -780,14 +780,14 @@ export function UnifiedPhotoManager({ onPhotoAdded }: UnifiedPhotoManagerProps) 
                   className="w-full px-3 py-2 bg-black/40 border border-[#CEA472]/30 rounded-md text-white"
                 >
                   <option value="">请选择年份</option>
-                  {/* 特殊年份选项 */}
-                  <option value="2001-2010">2001-2010</option>
-                  <option value="1991-2000">1991-2000</option>
-                  <option value="-1990">1990及以前</option>
                   {/* 单一年份 */}
                   {Array.from({ length: 16 }, (_, i) => 2026 - i).map(year => (
                     <option key={year} value={year}>{year}年</option>
                   ))}
+                  {/* 特殊年份选项 */}
+                  <option value="2001-2010">2001-2010</option>
+                  <option value="1991-2000">1991-2000</option>
+                  <option value="-1990">1990及以前</option>
                 </select>
               ) : (
                 <Input
@@ -964,14 +964,14 @@ export function UnifiedPhotoManager({ onPhotoAdded }: UnifiedPhotoManagerProps) 
                     className="w-full px-3 py-2 bg-black/40 border border-[#CEA472]/30 rounded-md text-white"
                   >
                     <option value="">请选择年份</option>
-                    {/* 特殊年份选项 */}
-                    <option value="2001-2010">2001-2010</option>
-                    <option value="1991-2000">1991-2000</option>
-                    <option value="-1990">1990及以前</option>
                     {/* 单一年份 */}
                     {Array.from({ length: 16 }, (_, i) => 2026 - i).map(year => (
                       <option key={year} value={year}>{year}年</option>
                     ))}
+                    {/* 特殊年份选项 */}
+                    <option value="2001-2010">2001-2010</option>
+                    <option value="1991-2000">1991-2000</option>
+                    <option value="-1990">1990及以前</option>
                   </select>
                 ) : (
                   <Input
