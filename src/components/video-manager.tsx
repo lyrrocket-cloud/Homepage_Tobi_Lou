@@ -368,7 +368,7 @@ export function VideoManager({ videos: initialVideos, onVideosUpdate }: VideoMan
       <Dialog open={!!editingVideo} onOpenChange={() => setEditingVideo(null)}>
         <DialogContent className="bg-[#0a0a0f] border-[#CEA472]/30 text-white max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-[#CEA472]">编辑视频信息 - 第 {editingVideo?.order} 个位置</DialogTitle>
+            <DialogTitle className="text-[#CEA472]">编辑视频信息</DialogTitle>
           </DialogHeader>
           {editingVideo && (
             <div className="space-y-4 py-4">
