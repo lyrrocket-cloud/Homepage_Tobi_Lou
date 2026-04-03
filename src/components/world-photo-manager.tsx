@@ -588,7 +588,7 @@ export function WorldPhotoManager({ onPhotoAdded }: WorldPhotoManagerProps) {
             </div>
 
             <div className="flex justify-end gap-2">
-              <Button variant="outline" onClick={() => setIsAddPhotoOpen(false)} className="border-[#CEA472]/30 text-[#CEA472]">
+              <Button variant="outline" onClick={() => setIsAddPhotoOpen(false)} className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10">
                 取消
               </Button>
               <Button
@@ -707,7 +707,7 @@ export function WorldPhotoManager({ onPhotoAdded }: WorldPhotoManagerProps) {
               </div>
 
               <div className="flex justify-end gap-2">
-                <Button variant="outline" onClick={() => setIsEditPhotoOpen(false)} className="border-[#CEA472]/30 text-[#CEA472]">
+                <Button variant="outline" onClick={() => setIsEditPhotoOpen(false)} className="border-[#CEA472]/30 text-[#CEA472] hover:bg-[#CEA472]/10">
                   取消
                 </Button>
                 <Button
