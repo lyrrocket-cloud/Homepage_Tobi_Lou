@@ -615,7 +615,7 @@ export function UnifiedPhotoManager({ onPhotoAdded }: UnifiedPhotoManagerProps) 
             <DialogTitle className="text-white flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <Settings className="w-5 h-5 text-[#CEA472]" />
-                <span>照片管理</span>
+                <span className="text-[#CEA472]">照片管理</span>
               </div>
               <div className="flex items-center gap-2">
                 <Button
