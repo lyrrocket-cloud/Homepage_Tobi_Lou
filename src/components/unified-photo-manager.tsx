@@ -26,6 +26,7 @@ import {
   Edit2,
   Plus,
   Save,
+  Check,
 } from 'lucide-react';
 
 // 照片类型
@@ -190,6 +191,7 @@ export function UnifiedPhotoManager({ onPhotoAdded }: UnifiedPhotoManagerProps) 
   const [isEditPhotoOpen, setIsEditPhotoOpen] = useState(false);
   const [editingPhoto, setEditingPhoto] = useState<GalleryPhoto | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [uploadSuccess, setUploadSuccess] = useState(false);
   const [saving, setSaving] = useState(false);
   
   // 新照片表单
@@ -316,6 +318,7 @@ export function UnifiedPhotoManager({ onPhotoAdded }: UnifiedPhotoManagerProps) 
     if (!file) return;
 
     setUploading(true);
+    setUploadSuccess(false);
 
     try {
       const formData = new FormData();
@@ -334,6 +337,9 @@ export function UnifiedPhotoManager({ onPhotoAdded }: UnifiedPhotoManagerProps) 
         } else {
           setNewPhoto(prev => ({ ...prev, image: result.data.url, imageKey: result.data.key }));
         }
+        // 显示上传成功状态
+        setUploadSuccess(true);
+        setTimeout(() => setUploadSuccess(false), 2000);
       } else {
         alert('上传失败: ' + result.error);
       }
@@ -862,14 +868,32 @@ export function UnifiedPhotoManager({ onPhotoAdded }: UnifiedPhotoManagerProps) 
               <Label className="text-gray-400">照片</Label>
               <div className="mt-2">
                 {newPhoto.image ? (
-                  <div className="relative w-full aspect-video rounded-lg overflow-hidden">
+                  <div className={`relative w-full aspect-video rounded-lg overflow-hidden border-2 transition-all ${
+                    uploadSuccess 
+                      ? 'border-green-500 shadow-lg shadow-green-500/30' 
+                      : 'border-transparent'
+                  }`}>
                     <Image src={newPhoto.image} alt="预览" fill className="object-cover" />
-                    <button
-                      onClick={() => setNewPhoto(prev => ({ ...prev, image: '', imageKey: '' }))}
-                      className="absolute top-2 right-2 p-1 bg-black/60 rounded-full text-white hover:bg-black/80"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+                    {uploadSuccess ? (
+                      <div className="absolute top-2 right-2 p-2 bg-green-500 rounded-full shadow-lg">
+                        <Check className="w-4 h-4 text-white" />
+                      </div>
+                    ) : (
+                      <button
+                        onClick={() => setNewPhoto(prev => ({ ...prev, image: '', imageKey: '' }))}
+                        className="absolute top-2 right-2 p-1 bg-black/60 rounded-full text-white hover:bg-black/80"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    )}
+                    {!uploadSuccess && (
+                      <button
+                        onClick={() => setNewPhoto(prev => ({ ...prev, image: '', imageKey: '' }))}
+                        className="absolute top-2 right-2 p-1 bg-black/60 rounded-full text-white hover:bg-black/80"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    )}
                   </div>
                 ) : (
                   <label className="flex flex-col items-center justify-center w-full aspect-video border-2 border-dashed border-[#CEA472]/30 rounded-lg cursor-pointer hover:border-[#CEA472]/50 transition-colors">
@@ -1060,25 +1084,54 @@ export function UnifiedPhotoManager({ onPhotoAdded }: UnifiedPhotoManagerProps) 
                 <Label className="text-gray-400">照片</Label>
                 <div className="mt-2">
                   {editingPhoto.image_url ? (
-                    <div className="relative w-full aspect-video rounded-lg overflow-hidden">
+                    <div className={`relative w-full aspect-video rounded-lg overflow-hidden border-2 transition-all ${
+                      uploadSuccess 
+                        ? 'border-green-500 shadow-lg shadow-green-500/30' 
+                        : 'border-transparent'
+                    }`}>
                       <Image src={editingPhoto.image_url} alt="预览" fill className="object-cover" />
-                      <label className="absolute inset-0 bg-black/60 opacity-0 hover:opacity-100 transition-opacity cursor-pointer flex flex-col items-center justify-center gap-2">
-                        {uploading ? (
-                          <Loader2 className="w-8 h-8 text-[#CEA472] animate-spin" />
-                        ) : (
-                          <>
-                            <Upload className="w-8 h-8 text-[#CEA472]" />
-                            <span className="text-[#CEA472] text-sm">点击更换照片</span>
-                          </>
-                        )}
-                        <input
-                          ref={editFileInputRef}
-                          type="file"
-                          accept="image/*"
-                          className="hidden"
-                          onChange={(e) => handleImageUpload(e, true)}
-                        />
-                      </label>
+                      {uploadSuccess ? (
+                        <div className="absolute top-2 right-2 p-2 bg-green-500 rounded-full shadow-lg">
+                          <Check className="w-4 h-4 text-white" />
+                        </div>
+                      ) : (
+                        <label className="absolute inset-0 bg-black/60 opacity-0 hover:opacity-100 transition-opacity cursor-pointer flex flex-col items-center justify-center gap-2">
+                          {uploading ? (
+                            <Loader2 className="w-8 h-8 text-[#CEA472] animate-spin" />
+                          ) : (
+                            <>
+                              <Upload className="w-8 h-8 text-[#CEA472]" />
+                              <span className="text-[#CEA472] text-sm">点击更换照片</span>
+                            </>
+                          )}
+                          <input
+                            ref={editFileInputRef}
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(e) => handleImageUpload(e, true)}
+                          />
+                        </label>
+                      )}
+                      {!uploadSuccess && (
+                        <label className="absolute inset-0 bg-black/60 opacity-0 hover:opacity-100 transition-opacity cursor-pointer flex flex-col items-center justify-center gap-2">
+                          {uploading ? (
+                            <Loader2 className="w-8 h-8 text-[#CEA472] animate-spin" />
+                          ) : (
+                            <>
+                              <Upload className="w-8 h-8 text-[#CEA472]" />
+                              <span className="text-[#CEA472] text-sm">点击更换照片</span>
+                            </>
+                          )}
+                          <input
+                            ref={editFileInputRef}
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(e) => handleImageUpload(e, true)}
+                          />
+                        </label>
+                      )}
                     </div>
                   ) : (
                     <label className="flex flex-col items-center justify-center w-full aspect-video border-2 border-dashed border-[#CEA472]/30 rounded-lg cursor-pointer hover:border-[#CEA472]/50 transition-colors">
