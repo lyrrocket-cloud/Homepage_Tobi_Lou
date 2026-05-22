@@ -104,3 +104,4 @@ backup-*.json
 .turbo
 
 .coze-logs
+.cozeproj/reduction
