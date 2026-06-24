@@ -108,3 +108,4 @@ backup-*.json
 
 # Preview files
 .preview
+.codegraph
