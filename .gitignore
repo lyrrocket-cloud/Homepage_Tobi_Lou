@@ -105,3 +105,6 @@ backup-*.json
 
 .coze-logs
 .cozeproj/reduction
+
+# Preview files
+.preview
