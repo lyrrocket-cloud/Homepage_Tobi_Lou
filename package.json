@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start -p 5000",
     "lint": "eslint",
-    "ts-check": "tsc -p tsconfig.json"
+    "ts-check": "tsc -p tsconfig.json",
+    "lint:build": "eslint . --quiet",
+    "validate": "pnpm run --parallel '/^(ts-check|lint:build)$/'"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
