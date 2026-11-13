@@ -3,6 +3,7 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { MapPin, Calendar } from 'lucide-react';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 // 照片类型定义（从 gallery_photos 获取）
 interface PhotoVisit {
@@ -29,9 +30,17 @@ interface VisitListProps {
 }
 
 export function VisitList({ regionId, regionName, onRefresh }: VisitListProps) {
+  const router = useRouter();
   const [visits, setVisits] = useState<PhotoVisit[]>([]);
   const [loading, setLoading] = useState(true);
   const onRefreshRef = useRef(onRefresh);
+
+  // 处理点击事件
+  const handleClick = (url?: string) => {
+    if (url) {
+      window.open(url, '_blank');
+    }
+  };
 
   // 更新 onRefresh 的引用
   useEffect(() => {
@@ -111,7 +120,11 @@ export function VisitList({ regionId, regionName, onRefresh }: VisitListProps) {
       ) : (
         <div className="flex-1 overflow-y-auto space-y-3 pr-2">
           {visits.map((visit) => (
-            <div key={visit.id} className="bg-black/40 border border-[#CEA472]/10 hover:border-[#CEA472]/30 rounded-lg overflow-hidden transition-all duration-300 hover:bg-black/60 flex">
+            <div
+              key={visit.id}
+              onClick={() => handleClick(visit.url)}
+              className={`bg-black/40 border border-[#CEA472]/10 hover:border-[#CEA472]/30 rounded-lg overflow-hidden transition-all duration-300 hover:bg-black/60 flex ${visit.url ? 'cursor-pointer' : ''}`}
+            >
               {/* 左侧：文字信息 */}
               <div className="flex-1 p-3 flex flex-col justify-center">
                 <div className="flex items-center gap-2 mb-2">
