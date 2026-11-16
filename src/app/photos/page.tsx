@@ -8,7 +8,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Plus, MapPin, Calendar, ChevronRight, Camera, Upload, Loader2, Check, Lock, Settings, Trash2, Edit, Home, ChevronLeft, Menu } from 'lucide-react';
+import { Plus, MapPin, Calendar, ChevronRight, Camera, Upload, Loader2, Check, Lock, Settings, Trash2, Edit, ChevronLeft, Menu } from 'lucide-react';
 import { UnifiedPhotoManager } from '@/components/unified-photo-manager';
 import React from 'react';
 
@@ -534,31 +534,6 @@ function PhotoGalleryContent() {
           </div>
         </nav>
 
-        {/* 顶部导航 */}
-        <header className="sticky top-14 z-50 border-b border-[#CEA472]/10 bg-[#0a0a0f]/80 backdrop-blur-md">
-          <div className="px-6 py-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                {/* 返回主页按钮 */}
-                <button
-                  onClick={() => window.location.href = '/'}
-                  className="p-1.5 rounded-md text-[#CEA472] hover:bg-[#CEA472]/20 transition-colors"
-                  title="返回主页"
-                >
-                  <Home className="w-5 h-5" />
-                </button>
-                <span className="text-[#CEA472]/30">|</span>
-                <div className="flex items-center gap-3">
-                  <Camera className="w-6 h-6 text-[#CEA472]" />
-                  <h1 className="text-2xl font-bold text-white tracking-wide">照片集</h1>
-                </div>
-              </div>
-              {/* 管理按钮 */}
-              <UnifiedPhotoManager onPhotoAdded={loadPhotos} />
-            </div>
-          </div>
-        </header>
-
         <div className="flex relative">
           {/* 时间轴切换按钮 - 移动端 */}
           {!isTimelineVisible && (
@@ -572,7 +547,7 @@ function PhotoGalleryContent() {
           )}
 
           {/* 左侧时间轴 */}
-          <aside className={`min-h-[calc(100vh-125px)] sticky top-[125px] self-start transition-all duration-300 overflow-hidden ${
+          <aside className={`min-h-[calc(100vh-65px)] sticky top-[65px] self-start transition-all duration-300 overflow-hidden ${
             isTimelineVisible ? 'w-48' : 'w-0 lg:w-48'
           }`}>
             <div className={`relative h-full py-6 w-48 ${isTimelineVisible ? 'opacity-100' : 'opacity-0 lg:opacity-100'} transition-opacity duration-300`}>
@@ -710,8 +685,8 @@ function PhotoGalleryContent() {
               })}
             </div>
 
-            {/* 标题 */}
-            <div className="mb-6">
+            {/* 标题 + 管理按钮 */}
+            <div className="mb-6 flex items-center justify-between">
               <h2 className="text-xl font-semibold text-white flex items-center gap-2">
                 {selectedYear === 'all' ? '全部照片' : 
                   typeof selectedYear === 'number' ? `${selectedYear}年` :
@@ -723,6 +698,7 @@ function PhotoGalleryContent() {
                   </span>
                 )}
               </h2>
+              <UnifiedPhotoManager onPhotoAdded={loadPhotos} />
             </div>
 
             {/* 照片网格 */}
