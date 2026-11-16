@@ -6,30 +6,15 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {
-  Wrench,
-  ChevronRight,
   MapPin,
   Calendar,
-  Wallet,
-  Car,
-  Plus,
-  Sparkles,
-  MapPin as MapPinIcon,
-  Calendar as CalendarIcon,
   Globe,
-  Plane,
-  Compass,
-  Heart,
-  Star,
-  Gift,
   Settings,
   RefreshCw,
   ArrowUp,
 } from 'lucide-react';
-import { ToolManager } from '@/components/tool-manager';
 import { OptimizedImage } from '@/components/OptimizedImage';
 import { RegionMap } from '@/components/visit-map';
-import { Tool } from '@/app/api/tools/route';
 import { Region } from '@/app/api/regions/route';
 
 // 格式化日期：将 '2025.01' 转换为 '2025年01月'
@@ -69,60 +54,6 @@ const WorldMap = dynamic(() => import('@/components/world-map').then(mod => ({ d
 const VisitList = dynamic(() => import('@/components/visit-list').then(mod => ({ default: mod.VisitList })), {
   ssr: false
 });
-
-// 图标映射
-const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
-  Wallet,
-  Car,
-  Sparkles,
-  MapPin: MapPinIcon,
-  Calendar: CalendarIcon,
-  Wrench,
-  Globe,
-  Plane,
-  Compass,
-  Heart,
-  Star,
-  Gift,
-  Plus,
-};
-
-// 默认工具数据
-const defaultTools: Tool[] = [
-  {
-    id: 1,
-    name: '旅行记账',
-    description: '记录旅途中的每一笔开支',
-    icon: 'Wallet',
-    url: 'https://pvs6b4k729.coze.site',
-    order: 1,
-  },
-  {
-    id: 2,
-    name: '今天谁开车',
-    description: '轮流开车，公平分配',
-    icon: 'Car',
-    url: 'https://s864znmf32.coze.site',
-    order: 2,
-  },
-  {
-    id: 3,
-    name: '旅行许愿池',
-    description: '许下你的旅行心愿',
-    icon: 'Sparkles',
-    url: 'https://np9wpj8cx5.coze.site/',
-    order: 3,
-  },
-  {
-    id: 4,
-    name: '更多工具',
-    description: '敬请期待',
-    icon: 'Plus',
-    url: '',
-    order: 4,
-    isEmpty: true,
-  },
-];
 
 // 世界地图打卡组件
 function WorldTracker() {
@@ -386,24 +317,7 @@ function VisitTracker() {
 }
 
 export default function Home() {
-  const [tools, setTools] = useState<Tool[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-
-  // 从API获取工具数据
-  useEffect(() => {
-    const fetchTools = async () => {
-      try {
-        const response = await fetch('/api/tools');
-        const result = await response.json();
-        if (result.success && result.data) {
-          setTools(result.data);
-        }
-      } catch (error) {
-        console.error('Failed to fetch tools:', error);
-      }
-    };
-    fetchTools();
-  }, []);
 
   return (
     <div className="min-h-screen bg-transparent text-white relative font-sans">
@@ -491,82 +405,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 工具箱区域 */}
-      <section id="tools" className="relative py-20 px-4">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex items-center gap-3 mb-12 relative">
-            <Wrench className="w-8 h-8 text-[#CEA472]" />
-            <h3 className="text-4xl font-bold text-[#CEA472]">
-              工具箱
-            </h3>
-            {/* 管理按钮和回顶端按钮放在右侧 */}
-            <div className="ml-auto flex items-center gap-2">
-              <ToolManager 
-                tools={tools} 
-                onToolsUpdate={(updatedTools) => setTools(updatedTools)} 
-              />
-              <button
-                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                className="p-2 rounded-md bg-black/40 border border-[#CEA472]/30 hover:border-[#CEA472]/50 hover:bg-[#CEA472]/20 transition-all"
-                title="回到顶端"
-              >
-                <ArrowUp className="w-4 h-4 text-[#CEA472]" />
-              </button>
-            </div>
-          </div>
-
-          {/* 工具网格 */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {tools.map((tool) => {
-              const IconComponent = iconMap[tool.icon] || Wrench;
-              return (
-                <Card
-                  key={tool.id}
-                  className={`group border border-[#CEA472]/10 bg-black/40 backdrop-blur-sm hover:border-[#CEA472]/50 hover:bg-black/60 transition-all duration-500 cursor-pointer overflow-hidden ${
-                    tool.isEmpty ? 'flex items-center justify-center' : ''
-                  }`}
-                  onClick={() => {
-                    if (tool.url && !tool.isEmpty) {
-                      window.open(tool.url, '_blank');
-                    }
-                  }}
-                >
-                  {tool.isEmpty ? (
-                    <CardContent className="p-6 flex flex-col items-center justify-center min-h-[200px]">
-                      <IconComponent className="w-12 h-12 text-[#CEA472]/50 group-hover:text-[#CEA472] transition-colors mb-3" />
-                      <p className="text-sm text-[#CEA472]/50 group-hover:text-[#CEA472] transition-colors">
-                        敬请期待
-                      </p>
-                    </CardContent>
-                  ) : (
-                    <CardContent className="p-6">
-                      <IconComponent className="w-10 h-10 text-[#CEA472] mb-4" />
-                      <h4 className="font-bold text-[#FFFFFF] mb-2 group-hover:text-[#CEA472] transition-colors">
-                        {tool.name}
-                      </h4>
-                      <p className="text-sm text-[#FFFFFF]/60 mb-4">{tool.description}</p>
-                      <Button
-                        variant="ghost"
-                        className="w-full justify-between group-hover:bg-[#CEA472]/10 text-[#CEA472] transition-all"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          if (tool.url) {
-                            window.open(tool.url, '_blank');
-                          }
-                        }}
-                      >
-                        <span>立即使用</span>
-                        <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                      </Button>
-                    </CardContent>
-                  )}
-                </Card>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
       {/* Footer */}
       <footer className="relative py-12 px-4 bg-black/60 backdrop-blur-sm border-t border-[#CEA472]/10">
         <div className="max-w-7xl mx-auto text-center">
@@ -590,9 +428,6 @@ export default function Home() {
             </a>
             <a href="https://lyrrocket.quickconnect.cn/mo/sharing/7xLwl056X" target="_blank" rel="noopener noreferrer" className="hover:text-[#CEA472] transition-colors">
               视频集
-            </a>
-            <a href="#tools" className="hover:text-[#CEA472] transition-colors">
-              工具箱
             </a>
           </div>
           <div className="mt-8 pt-8 border-t border-[#CEA472]/10 text-sm text-[#FFFFFF]/40">
