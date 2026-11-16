@@ -10,12 +10,12 @@ import {
   Calendar,
   Globe,
   Settings,
-  RefreshCw,
   ArrowUp,
 } from 'lucide-react';
 import { OptimizedImage } from '@/components/OptimizedImage';
 import { RegionMap } from '@/components/visit-map';
 import { Region } from '@/app/api/regions/route';
+import { PhotoCarousel } from '@/components/photo-carousel';
 
 // 格式化日期：将 '2025.01' 转换为 '2025年01月'
 function formatDate(dateStr: string): string {
@@ -23,6 +23,19 @@ function formatDate(dateStr: string): string {
   const [year, month] = dateStr.split('.');
   if (!year || !month) return dateStr;
   return `${year}年${month}月`;
+}
+
+// 照片接口定义
+interface Photo {
+  id: number;
+  title: string;
+  location: string;
+  date: string;
+  image: string;
+  url: string;
+  region_id?: number;
+  category?: string;
+  is_yearly?: boolean;
 }
 
 // 动态导入地图组件（SSR: false）
@@ -318,18 +331,34 @@ function VisitTracker() {
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
+  const [carouselPhotos, setCarouselPhotos] = useState<Photo[]>([]);
+
+  // 获取最新的9张照片用于轮播
+  useEffect(() => {
+    const fetchCarouselPhotos = async () => {
+      try {
+        const response = await fetch('/api/gallery/photos');
+        const result = await response.json();
+        if (result.photos) {
+          // 按日期降序排列，取最新的9张
+          const latestPhotos = result.photos
+            .filter((photo: Photo) => photo.image && !photo.is_yearly)
+            .sort((a: Photo, b: Photo) => b.date.localeCompare(a.date))
+            .slice(0, 9);
+          setCarouselPhotos(latestPhotos);
+        }
+      } catch (error) {
+        console.error('[Home] Failed to fetch carousel photos:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchCarouselPhotos();
+  }, []);
 
   return (
     <div className="min-h-screen bg-transparent text-white relative font-sans">
-      {/* 右上角同步图标 */}
-      <a
-        href="/admin/sync"
-        className="fixed top-20 right-4 z-[100] p-2 rounded-md bg-black/40 backdrop-blur-md border border-[#CEA472]/30 hover:border-[#CEA472]/50 hover:bg-[#CEA472]/20 transition-all duration-300"
-        title="数据同步"
-      >
-        <RefreshCw className="w-4 h-4 text-[#CEA472]" />
-      </a>
-
       {/* Hero 区域 */}
       <section className="relative py-20 pt-32 px-4">
         <div className="max-w-7xl mx-auto">
@@ -367,6 +396,19 @@ export default function Home() {
               </p>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* 照片轮播区域 */}
+      <section className="relative py-12 px-4">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex items-center gap-3 mb-6">
+            <Calendar className="w-8 h-8 text-[#CEA472]" />
+            <h3 className="text-4xl font-bold text-[#CEA472]">
+              最新相册
+            </h3>
+          </div>
+          <PhotoCarousel photos={carouselPhotos} />
         </div>
       </section>
 
