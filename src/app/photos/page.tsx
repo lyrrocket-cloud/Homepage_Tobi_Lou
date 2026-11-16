@@ -506,8 +506,36 @@ function PhotoGalleryContent() {
 
       {/* 主内容区 */}
       <div className="relative z-10">
+        {/* 毛玻璃导航栏 */}
+        <nav className="fixed top-0 left-0 right-0 z-[100] bg-black/20 backdrop-blur-md">
+          <div className="max-w-7xl mx-auto px-4 py-3">
+            <div className="flex items-center justify-center gap-8">
+              <a
+                href="/"
+                className="text-[#FFFFFF]/80 hover:text-[#CEA472] transition-colors text-sm font-medium"
+              >
+                首页
+              </a>
+              <a
+                href="/photos"
+                className="text-[#CEA472] text-sm font-medium"
+              >
+                照片集
+              </a>
+              <a
+                href="https://lyrrocket.quickconnect.cn/mo/sharing/7xLwl056X"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[#FFFFFF]/80 hover:text-[#CEA472] transition-colors text-sm font-medium"
+              >
+                视频集
+              </a>
+            </div>
+          </div>
+        </nav>
+
         {/* 顶部导航 */}
-        <header className="sticky top-0 z-50 border-b border-[#CEA472]/10 bg-[#0a0a0f]/80 backdrop-blur-md">
+        <header className="sticky top-14 z-50 border-b border-[#CEA472]/10 bg-[#0a0a0f]/80 backdrop-blur-md">
           <div className="px-6 py-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -544,7 +572,7 @@ function PhotoGalleryContent() {
           )}
 
           {/* 左侧时间轴 */}
-          <aside className={`min-h-[calc(100vh-73px)] sticky top-[73px] self-start transition-all duration-300 overflow-hidden ${
+          <aside className={`min-h-[calc(100vh-125px)] sticky top-[125px] self-start transition-all duration-300 overflow-hidden ${
             isTimelineVisible ? 'w-48' : 'w-0 lg:w-48'
           }`}>
             <div className={`relative h-full py-6 w-48 ${isTimelineVisible ? 'opacity-100' : 'opacity-0 lg:opacity-100'} transition-opacity duration-300`}>
