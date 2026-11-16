@@ -31,7 +31,7 @@ interface Photo {
   title: string;
   location: string;
   date: string;
-  image: string;
+  image_url: string;
   url: string;
   region_id?: number;
   category?: string;
@@ -342,7 +342,7 @@ export default function Home() {
         if (result.photos) {
           // 按日期降序排列，取最新的9张
           const latestPhotos = result.photos
-            .filter((photo: Photo) => photo.image && !photo.is_yearly)
+            .filter((photo: Photo) => photo.image_url && !photo.is_yearly)
             .sort((a: Photo, b: Photo) => b.date.localeCompare(a.date))
             .slice(0, 9);
           setCarouselPhotos(latestPhotos);

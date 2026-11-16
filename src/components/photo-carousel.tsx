@@ -10,7 +10,7 @@ interface Photo {
   title: string;
   location: string;
   date: string;
-  image: string;
+  image_url: string;
   url: string;
   region_id?: number;
   category?: string;
@@ -76,7 +76,7 @@ export function PhotoCarousel({ photos }: PhotoCarouselProps) {
               className="block w-full h-full"
             >
               <Image
-                src={photo.image}
+                src={photo.image_url}
                 alt={photo.title}
                 fill
                 className="object-cover"
