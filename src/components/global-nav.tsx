@@ -17,13 +17,15 @@ interface Tool {
  * 全局毛玻璃导航栏
  * 在 layout 中全局渲染，路由切换时不会重新渲染。
  * 根据当前路径自动高亮对应导航项。
- * 工具箱支持下拉菜单，悬停显示工具列表。
+ * 工具箱支持下拉菜单，实现苹果风格的丝滑展开/收起动画。
  */
 export function GlobalNav() {
   const pathname = usePathname();
   const [tools, setTools] = useState<Tool[]>([]);
   const [showTools, setShowTools] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
   const toolsRef = useRef<HTMLDivElement>(null);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // 获取工具列表
   useEffect(() => {
@@ -51,6 +53,46 @@ export function GlobalNav() {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  // 鼠标进入时清除定时器
+  const handleMouseEnter = () => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+    setShowTools(true);
+    setIsAnimating(true);
+  };
+
+  // 鼠标离开时延迟关闭，给用户移动到菜单上的时间
+  const handleMouseLeave = () => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    timeoutRef.current = setTimeout(() => {
+      setShowTools(false);
+      setIsAnimating(false);
+    }, 150);
+  };
+
+  // 菜单项鼠标进入
+  const handleMenuMouseEnter = () => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+  };
+
+  // 菜单项鼠标离开
+  const handleMenuMouseLeave = () => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    timeoutRef.current = setTimeout(() => {
+      setShowTools(false);
+      setIsAnimating(false);
+    }, 150);
+  };
 
   const links = [
     { href: '/', label: '首页', external: false },
@@ -94,35 +136,70 @@ export function GlobalNav() {
             );
           })}
 
-          {/* 工具箱下拉菜单 */}
-          <div className="relative" ref={toolsRef}>
+          {/* 工具箱下拉菜单 - 苹果风格动画 */}
+          <div
+            className="relative"
+            ref={toolsRef}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+          >
             <button
-              onClick={() => setShowTools(!showTools)}
-              onMouseEnter={() => setShowTools(true)}
-              className="text-[#FFFFFF]/80 hover:text-[#CEA472] transition-colors text-sm font-medium"
+              className="text-[#FFFFFF]/80 hover:text-[#CEA472] transition-colors text-sm font-medium flex items-center gap-1"
             >
               工具箱
+              {/* 下拉箭头 */}
+              <svg
+                className={`w-3 h-3 transition-transform duration-300 ${
+                  showTools ? 'rotate-180' : ''
+                }`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
             </button>
 
-            {/* 下拉菜单 */}
-            {showTools && (
-              <div
-                className="absolute top-full left-1/2 -translate-x-1/2 mt-2 min-w-[200px] bg-[#0a0a0f]/90 backdrop-blur-md rounded-lg shadow-xl overflow-hidden"
-                onMouseLeave={() => setShowTools(false)}
-              >
+            {/* 下拉菜单容器 - 使用 CSS Grid 实现高度动画 */}
+            <div
+              className={`absolute top-full left-1/2 -translate-x-1/2 mt-2 min-w-[220px] overflow-hidden transition-all duration-300 ease-out ${
+                showTools
+                  ? 'opacity-100 visible translate-y-0'
+                  : 'opacity-0 invisible -translate-y-2'
+              }`}
+              style={{
+                transitionProperty: 'opacity, visibility, transform',
+              }}
+            >
+              {/* 背景模糊层 */}
+              <div className="absolute inset-0 bg-[#0a0a0f]/80 backdrop-blur-xl rounded-lg shadow-xl" />
+
+              {/* 内容层 */}
+              <div className="relative">
                 {tools.length > 0 ? (
-                  tools.map((tool) => (
+                  tools.map((tool, index) => (
                     <a
                       key={tool.id}
                       href={tool.url || '#'}
                       target={tool.url ? '_blank' : undefined}
                       rel={tool.url ? 'noopener noreferrer' : undefined}
                       onClick={!tool.url ? (e) => e.preventDefault() : undefined}
-                      className={`block px-4 py-3 transition-colors ${
+                      className={`block px-4 py-3 transition-all duration-200 ${
                         tool.isEmpty || !tool.url
                           ? 'opacity-50 cursor-default'
-                          : 'hover:bg-[#CEA472]/10'
-                      }`}
+                          : 'hover:bg-[#CEA472]/10 hover:pl-5'
+                      } ${isAnimating ? 'animate-fadeIn' : ''}`}
+                      style={{
+                        animationDelay: `${index * 30}ms`,
+                        animationFillMode: 'backwards',
+                      }}
+                      onMouseEnter={handleMenuMouseEnter}
+                      onMouseLeave={handleMenuMouseLeave}
                     >
                       <div className="text-[#FFFFFF] text-sm font-medium">
                         {tool.name}
@@ -138,7 +215,7 @@ export function GlobalNav() {
                   </div>
                 )}
               </div>
-            )}
+            </div>
           </div>
         </div>
       </div>
