@@ -490,50 +490,9 @@ function PhotoGalleryContent() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f] relative overflow-hidden">
-      {/* 背景图 */}
-      <div className="fixed inset-0 z-0">
-        <Image
-          src="/assets/background.jpg"
-          alt="背景"
-          fill
-          className="object-cover"
-          priority
-        />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#0a0a0f] via-[#0a0a0f]/95 to-[#0a0a0f]/80" />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0f]/60 via-transparent to-[#0a0a0f]" />
-      </div>
-
+    <div className="min-h-screen bg-transparent relative overflow-hidden">
       {/* 主内容区 */}
       <div className="relative z-10 pt-14">
-        {/* 毛玻璃导航栏 */}
-        <nav className="fixed top-0 left-0 right-0 z-[100] bg-black/20 backdrop-blur-md">
-          <div className="max-w-7xl mx-auto px-4 py-3">
-            <div className="flex items-center justify-center gap-8">
-              <a
-                href="/"
-                className="text-[#FFFFFF]/80 hover:text-[#CEA472] transition-colors text-sm font-medium"
-              >
-                首页
-              </a>
-              <a
-                href="/photos"
-                className="text-[#CEA472] text-sm font-medium"
-              >
-                照片集
-              </a>
-              <a
-                href="https://lyrrocket.quickconnect.cn/mo/sharing/7xLwl056X"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-[#FFFFFF]/80 hover:text-[#CEA472] transition-colors text-sm font-medium"
-              >
-                视频集
-              </a>
-            </div>
-          </div>
-        </nav>
-
         <div className="flex relative">
           {/* 时间轴切换按钮 - 移动端 */}
           {!isTimelineVisible && (

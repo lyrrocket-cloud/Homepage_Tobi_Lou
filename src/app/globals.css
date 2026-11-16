@@ -142,6 +142,8 @@
   }
   body {
     @apply bg-background text-foreground;
+    /* 全局背景色兜底（配合 layout 中的全局背景图） */
+    background-color: #0a0a0f;
   }
 }
 
