@@ -6,8 +6,6 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {
-  Camera,
-  Video,
   Wrench,
   ChevronRight,
   MapPin,
@@ -18,7 +16,6 @@ import {
   Sparkles,
   MapPin as MapPinIcon,
   Calendar as CalendarIcon,
-  Video as VideoIcon,
   Globe,
   Plane,
   Compass,
@@ -80,8 +77,6 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   Sparkles,
   MapPin: MapPinIcon,
   Calendar: CalendarIcon,
-  Camera,
-  Video: VideoIcon,
   Wrench,
   Globe,
   Plane,
@@ -412,15 +407,54 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-[#0a0a0f] text-white relative font-sans">
-      {/* 右上角同步图标 - 固定在页面顶端，滚动后消失 */}
+      {/* 毛玻璃导航栏 */}
+      <nav className="fixed top-0 left-0 right-0 z-[100] bg-black/40 backdrop-blur-md border-b border-[#CEA472]/20">
+        <div className="max-w-7xl mx-auto px-4 py-3">
+          <div className="flex items-center justify-between">
+            {/* 左侧：首页链接 */}
+            <a
+              href="/"
+              className="text-lg font-semibold text-[#CEA472] hover:text-[#CEA472]/80 transition-colors"
+            >
+              Tobi Lou
+            </a>
+
+            {/* 右侧：导航链接 */}
+            <div className="flex items-center gap-6">
+              <a
+                href="/"
+                className="text-[#FFFFFF]/80 hover:text-[#CEA472] transition-colors text-sm font-medium"
+              >
+                首页
+              </a>
+              <a
+                href="/photos"
+                className="text-[#FFFFFF]/80 hover:text-[#CEA472] transition-colors text-sm font-medium"
+              >
+                照片集
+              </a>
+              <a
+                href="https://lyrrocket.quickconnect.cn/mo/sharing/7xLwl056X"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[#FFFFFF]/80 hover:text-[#CEA472] transition-colors text-sm font-medium"
+              >
+                视频集
+              </a>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      {/* 右上角同步图标 */}
       <a
         href="/admin/sync"
-        className="absolute top-4 right-4 z-[100] p-2 rounded-md bg-black/40 backdrop-blur-md border border-[#CEA472]/30 hover:border-[#CEA472]/50 hover:bg-[#CEA472]/20 transition-all duration-300"
+        className="fixed top-20 right-4 z-[100] p-2 rounded-md bg-black/40 backdrop-blur-md border border-[#CEA472]/30 hover:border-[#CEA472]/50 hover:bg-[#CEA472]/20 transition-all duration-300"
         title="数据同步"
       >
         <RefreshCw className="w-4 h-4 text-[#CEA472]" />
       </a>
-      
+
       {/* 背景图片 */}
       <div className="fixed inset-0 z-0 overflow-hidden">
         <Image
@@ -467,37 +501,9 @@ export default function Home() {
                 <span className="text-[#CEA472]">Tobi Lou</span>
               </h2>
               
-              <p className="text-lg md:text-xl text-[#FFFFFF]/70 max-w-2xl mx-auto mb-10 leading-relaxed">
+              <p className="text-lg md:text-xl text-[#FFFFFF]/70 max-w-2xl mx-auto leading-relaxed">
                 志之所趋，无远弗届
               </p>
-              
-              <div className="flex flex-wrap justify-center gap-4">
-                <Button
-                  size="lg"
-                  className="gap-2 bg-[#CEA472] hover:bg-[#CEA472]/80 text-[#0a0a0f] shadow-lg font-semibold px-8 border-0"
-                  onClick={() => window.location.href = '/photos'}
-                >
-                  <Camera className="w-5 h-5" />
-                  照片集
-                </Button>
-                <Button
-                  size="lg"
-                  className="gap-2 bg-[#CEA472] hover:bg-[#CEA472]/80 text-[#0a0a0f] shadow-lg font-semibold px-8 border-0"
-                  onClick={() => window.open('https://lyrrocket.quickconnect.cn/mo/sharing/7xLwl056X', '_blank')}
-                >
-                  <Video className="w-5 h-5" />
-                  视频集
-                </Button>
-                <a href="#tools">
-                  <Button
-                    size="lg"
-                    className="gap-2 bg-[#CEA472] hover:bg-[#CEA472]/80 text-[#0a0a0f] shadow-lg font-semibold px-8 border-0"
-                  >
-                    <Wrench className="w-5 h-5" />
-                    工具箱
-                  </Button>
-                </a>
-              </div>
             </div>
           </div>
         </div>
