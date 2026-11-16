@@ -74,8 +74,8 @@ function PhotoGalleryLoading() {
           className="object-cover"
           priority
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#0a0a0f] via-[#0a0a0f]/95 to-[#0a0a0f]/80" />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0f]/60 via-transparent to-[#0a0a0f]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/80 to-black/90" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-transparent to-black/60" />
       </div>
       <div className="relative z-10 flex items-center justify-center min-h-screen">
         <Loader2 className="w-8 h-8 text-[#CEA472] animate-spin" />
@@ -505,7 +505,7 @@ function PhotoGalleryContent() {
       </div>
 
       {/* 主内容区 */}
-      <div className="relative z-10">
+      <div className="relative z-10 pt-14">
         {/* 毛玻璃导航栏 */}
         <nav className="fixed top-0 left-0 right-0 z-[100] bg-black/20 backdrop-blur-md">
           <div className="max-w-7xl mx-auto px-4 py-3">
