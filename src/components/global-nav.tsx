@@ -33,8 +33,8 @@ export function GlobalNav() {
       try {
         const response = await fetch('/api/tools');
         const result = await response.json();
-        if (result.tools && result.tools.length > 0) {
-          setTools(result.tools);
+        if (result.success && result.data && result.data.length > 0) {
+          setTools(result.data);
         }
       } catch (error) {
         console.error('Failed to fetch tools:', error);
