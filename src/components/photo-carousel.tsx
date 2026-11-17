@@ -20,53 +20,49 @@ interface PhotoCarouselProps {
   isLoading?: boolean;
 }
 
-type Direction = 'next' | 'prev';
-
-const ANIM_MS = 700;
+/**
+ * 计算某张图相对当前索引的位置：0 = 居中，+1 = 右侧一张，-1 = 左侧一张…
+ * 采用居中取模，首尾可以无缝循环。
+ */
+function getSlideOffset(index: number, current: number, total: number) {
+  if (total === 0) return 0;
+  const half = Math.floor(total / 2);
+  let offset = (index - current + half) % total;
+  if (offset < 0) offset += total;
+  return offset - half;
+}
 
 export function PhotoCarousel({ photos, isLoading = false }: PhotoCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [prevIndex, setPrevIndex] = useState(0);
-  const [direction, setDirection] = useState<Direction>('next');
-  const [animSeq, setAnimSeq] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+
+  // 触摸滑动
   const touchStartX = useRef<number | null>(null);
   const touchDeltaX = useRef(0);
 
-  const isAnimating = prevIndex !== currentIndex;
-
-  const step = (dir: Direction) => {
-    if (photos.length <= 1) return;
-    setDirection(dir);
-    setPrevIndex(currentIndex);
-    setCurrentIndex((prev) =>
-      dir === 'next' ? (prev + 1) % photos.length : (prev - 1 + photos.length) % photos.length
-    );
-    setAnimSeq((seq) => seq + 1);
-  };
-
+  // 自动轮播
   useEffect(() => {
     if (!isAutoPlaying || photos.length <= 1) return;
-    const interval = setInterval(() => step('next'), 5000);
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % photos.length);
+    }, 5000);
     return () => clearInterval(interval);
-  });
-
-  // 动画结束后移除离场图层
-  useEffect(() => {
-    if (!isAnimating) return;
-    const timer = setTimeout(() => setPrevIndex(currentIndex), ANIM_MS);
-    return () => clearTimeout(timer);
-  }, [currentIndex, prevIndex, isAnimating]);
+  }, [isAutoPlaying, photos.length]);
 
   const goToSlide = (index: number) => {
-    if (index === currentIndex) return;
     setIsAutoPlaying(false);
-    setDirection(index > currentIndex ? 'next' : 'prev');
-    setPrevIndex(currentIndex);
     setCurrentIndex(index);
-    setAnimSeq((seq) => seq + 1);
+  };
+  const goNext = () => {
+    setIsAutoPlaying(false);
+    setCurrentIndex((prev) => (prev + 1) % photos.length);
+  };
+  const goPrev = () => {
+    setIsAutoPlaying(false);
+    setCurrentIndex((prev) => (prev - 1 + photos.length) % photos.length);
   };
 
+  // 触摸处理
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartX.current = e.touches[0].clientX;
     touchDeltaX.current = 0;
@@ -79,42 +75,60 @@ export function PhotoCarousel({ photos, isLoading = false }: PhotoCarouselProps)
     if (touchStartX.current === null) return;
     const delta = touchDeltaX.current;
     if (Math.abs(delta) > 50) {
-      setIsAutoPlaying(false);
-      step(delta < 0 ? 'next' : 'prev');
+      if (delta < 0) goNext();
+      else goPrev();
     }
     touchStartX.current = null;
     touchDeltaX.current = 0;
   };
 
-  /* ===== 骨架屏 ===== */
+  // 记住上一次渲染的偏移，用于判断是否为「一步」滑动（一步才做动画）
+  const prevOffsetsRef = useRef<number[]>([]);
+  useEffect(() => {
+    prevOffsetsRef.current = photos.map((_, i) =>
+      getSlideOffset(i, currentIndex, photos.length)
+    );
+  });
+
+  // ===== 骨架屏（full-bleed：两侧预览延伸到边缘，中间主图 3:2）=====
   if (isLoading) {
     return (
-      <div className="w-full">
-        <div className="flex flex-col md:flex-row md:items-stretch w-full overflow-hidden">
-          <div className="hidden md:block md:flex-1 md:min-w-0 md:relative">
-            <div className="absolute inset-0 skeleton-shimmer opacity-60" />
-            <div className="absolute inset-0 bg-black/30" />
-          </div>
-
-          <div className="relative w-full md:w-[min(900px,60vw)] md:shrink-0 aspect-[3/2]">
-            <div className="absolute inset-0 skeleton-shimmer" />
-            <div className="absolute bottom-0 left-0 right-0 p-4 md:p-8">
-              <div className="h-6 md:h-7 w-48 md:w-64 rounded-md skeleton-shimmer mb-2" />
-              <div className="h-3 md:h-4 w-36 md:w-48 rounded-md skeleton-shimmer opacity-80" />
+      <div className="carousel-content-enter">
+        {/* full-bleed 轮播区 */}
+        <div className="relative w-full overflow-hidden">
+          <div className="flex items-stretch w-full bg-black/40 backdrop-blur-md">
+            {/* 左预览骨架（延伸到页面左边缘） */}
+            <div className="hidden md:block flex-1 relative">
+              <div className="absolute inset-0 skeleton-shimmer opacity-60" />
+              <div className="absolute inset-0 bg-black/30" />
             </div>
-          </div>
 
-          <div className="hidden md:block md:flex-1 md:min-w-0 md:relative">
-            <div className="absolute inset-0 skeleton-shimmer opacity-60" />
-            <div className="absolute inset-0 bg-black/30" />
+            {/* 主图骨架 —— 3:2，有 max-width */}
+            <div className="relative aspect-[3/2] w-full md:w-auto md:shrink-0 md:max-w-[900px]">
+              <div className="absolute inset-0 skeleton-shimmer" />
+              {/* 底部信息条占位 */}
+              <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6">
+                <div className="h-6 md:h-7 w-48 md:w-64 rounded-md skeleton-shimmer mb-2" />
+                <div className="h-3 md:h-4 w-36 md:w-48 rounded-md skeleton-shimmer opacity-80" />
+              </div>
+            </div>
+
+            {/* 右预览骨架（延伸到页面右边缘） */}
+            <div className="hidden md:block flex-1 relative">
+              <div className="absolute inset-0 skeleton-shimmer opacity-60" />
+              <div className="absolute inset-0 bg-black/30" />
+            </div>
           </div>
         </div>
 
+        {/* 底部 dots —— 居中，不受 full-bleed 影响 */}
         <div className="flex justify-center gap-2 mt-4">
           {Array.from({ length: 5 }).map((_, i) => (
             <div
               key={i}
-              className={`rounded-full skeleton-shimmer ${i === 0 ? 'w-6 h-2' : 'w-2 h-2'}`}
+              className={`rounded-full skeleton-shimmer ${
+                i === 0 ? 'w-6 h-2' : 'w-2 h-2'
+              }`}
             />
           ))}
         </div>
@@ -124,102 +138,101 @@ export function PhotoCarousel({ photos, isLoading = false }: PhotoCarouselProps)
 
   if (photos.length === 0) return null;
 
-  const prevPhoto = photos[(currentIndex - 1 + photos.length) % photos.length];
-  const nextPhoto = photos[(currentIndex + 1) % photos.length];
-  const outgoingPhoto = photos[prevIndex];
-  const activePhoto = photos[currentIndex];
-
-  const inClass = direction === 'next' ? 'slide-in-right' : 'slide-in-left';
-  const outClass = direction === 'next' ? 'slide-out-left' : 'slide-out-right';
-
-  const renderLayer = (photo: Photo, index: number, extraClass: string, z: string, hidden = false) => (
-    <Link
-      key={`${photo.id}-${animSeq}`}
-      href={photo.url || `/photos?region=${photo.region_id}`}
-      onClick={() => setIsAutoPlaying(false)}
-      className={`absolute inset-0 block ${z} ${extraClass}`}
-      aria-hidden={hidden}
-    >
-      <Image
-        src={photo.image_url}
-        alt={photo.title}
-        fill
-        className="object-cover"
-        sizes="(max-width: 768px) 100vw, 900px"
-        loading={index === 0 ? 'eager' : 'lazy'}
-      />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-black/10" />
-      <div className="absolute bottom-0 left-0 right-0 p-4 md:p-8 text-left">
-        <h3 className="text-xl md:text-3xl font-bold text-white mb-1 md:mb-2 drop-shadow-md">
-          {photo.title}
-        </h3>
-        <div className="text-white/85 text-xs md:text-sm drop-shadow-md">
-          {photo.location} {photo.date}
-        </div>
-      </div>
-    </Link>
+  const offsets = photos.map((_, i) =>
+    getSlideOffset(i, currentIndex, photos.length)
   );
+  // 只有「一步」之内的位移才播放滑动动画，避免远距离跳转穿屏
+  const animateFlags = offsets.map((offset, i) => {
+    const prev = prevOffsetsRef.current[i];
+    return prev === undefined || Math.abs(offset - prev) <= 1;
+  });
 
   return (
-    <div className="w-full carousel-content-enter">
+    <div className="carousel-content-enter">
+      {/* 滑动轨道：每张卡片等宽，整排平移一格 —— 右侧卡片滑入中心，当前卡片滑向左侧 */}
       <div
-        className="flex flex-col md:flex-row md:items-stretch w-full overflow-hidden"
+        className="carousel-stage"
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
-        {/* 左侧上一张预览 —— 仅桌面 */}
+        {photos.map((photo, index) => {
+          const offset = offsets[index];
+          const isActive = offset === 0;
+          return (
+            <div
+              key={photo.id}
+              className={`carousel-slide ${
+                animateFlags[index] ? '' : 'carousel-slide-snap'
+              } ${isActive ? 'z-20' : 'z-10'}`}
+              style={{ transform: `translateX(calc(${offset} * var(--sw)))` }}
+            >
+              <Link
+                href={photo.url || `/photos?region=${photo.region_id}`}
+                className="relative block w-full h-full"
+                onClick={() => setIsAutoPlaying(false)}
+                tabIndex={isActive ? 0 : -1}
+                aria-hidden={!isActive}
+              >
+                <Image
+                  src={photo.image_url}
+                  alt={photo.title}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, min(900px, 60vw)"
+                  loading={index === 0 ? 'eager' : 'lazy'}
+                />
+                {/* 渐变遮罩 */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-black/10" />
+                {/* 非当前图的压暗遮罩 */}
+                <div
+                  className={`absolute inset-0 bg-black/45 transition-opacity duration-500 ${
+                    isActive ? 'opacity-0' : 'opacity-100'
+                  }`}
+                />
+
+                {/* 照片信息 —— 仅当前图显示 */}
+                <div
+                  className={`absolute bottom-0 left-0 right-0 p-4 md:p-8 text-left transition-opacity duration-300 ${
+                    isActive ? 'opacity-100' : 'opacity-0'
+                  }`}
+                >
+                  <h3 className="text-xl md:text-3xl font-bold text-white mb-1 md:mb-2 drop-shadow-md">
+                    {photo.title}
+                  </h3>
+                  <div className="text-white/85 text-xs md:text-sm drop-shadow-md">
+                    {photo.location} {photo.date}
+                  </div>
+                </div>
+              </Link>
+            </div>
+          );
+        })}
+
+        {/* 左右点击热区（桌面端）：位于两侧预览之上 */}
         <div
-          className="hidden md:block md:relative md:flex-1 md:min-w-0 cursor-pointer group"
-          onClick={() => {
-            setIsAutoPlaying(false);
-            step('prev');
-          }}
+          className="hidden md:block absolute inset-y-0 left-0 z-30 cursor-pointer group"
+          style={{ width: 'calc((100% - var(--sw)) / 2)' }}
+          onClick={goPrev}
+          aria-label="上一张"
         >
-          <Image
-            src={prevPhoto.image_url}
-            alt={prevPhoto.title}
-            fill
-            className="object-cover"
-            sizes="(min-width: 768px) 25vw"
-            loading="lazy"
-          />
-          <div className="absolute inset-0 bg-black/45 transition-colors group-hover:bg-black/30" />
           <div className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40 group-hover:text-[#CEA472] transition-colors text-xs font-medium tracking-wider">
             ← PREV
           </div>
         </div>
-
-        {/* 中间主图 —— 3:2，翻页时右侧图片滑入、当前图片滑向左 */}
-        <div className="relative w-full md:w-[min(900px,60vw)] md:shrink-0 aspect-[3/2] overflow-hidden">
-          {isAnimating && renderLayer(outgoingPhoto, prevIndex, outClass, 'z-10', true)}
-          {renderLayer(activePhoto, currentIndex, isAnimating ? `${inClass} z-20` : '', 'z-20')}
-        </div>
-
-        {/* 右侧下一张预览 —— 仅桌面 */}
         <div
-          className="hidden md:block md:relative md:flex-1 md:min-w-0 cursor-pointer group"
-          onClick={() => {
-            setIsAutoPlaying(false);
-            step('next');
-          }}
+          className="hidden md:block absolute inset-y-0 right-0 z-30 cursor-pointer group"
+          style={{ width: 'calc((100% - var(--sw)) / 2)' }}
+          onClick={goNext}
+          aria-label="下一张"
         >
-          <Image
-            src={nextPhoto.image_url}
-            alt={nextPhoto.title}
-            fill
-            className="object-cover"
-            sizes="(min-width: 768px) 25vw"
-            loading="lazy"
-          />
-          <div className="absolute inset-0 bg-black/45 transition-colors group-hover:bg-black/30" />
           <div className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 group-hover:text-[#CEA472] transition-colors text-xs font-medium tracking-wider">
             NEXT →
           </div>
         </div>
       </div>
 
-      {/* dots */}
+      {/* 底部指示器 —— 居中显示，不受轮播 full-bleed 影响 */}
       <div className="flex justify-center gap-2 mt-4">
         {photos.map((_, index) => (
           <button

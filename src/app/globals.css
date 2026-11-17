@@ -425,24 +425,36 @@ html {
   animation: content-fade-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
-/* 相册翻页滑动：右侧图片滑入 / 当前图片滑向左 */
-@keyframes slide-in-right {
-  from { transform: translateX(100%); }
-  to   { transform: translateX(0); }
+/* ===== 相册横向滑动轨道 =====
+   --sw: 单张卡片宽度（桌面 min(900px,60vw)，手机 100%）
+   相邻卡片间距等于卡片宽度，因此整排左移一格时，
+   右侧卡片正好滑入中心，当前卡片滑向左侧。 */
+.carousel-stage {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  --sw: 100%;
+  aspect-ratio: 3 / 2;
 }
-@keyframes slide-in-left {
-  from { transform: translateX(-100%); }
-  to   { transform: translateX(0); }
+
+@media (min-width: 768px) {
+  .carousel-stage {
+    --sw: min(900px, 60vw);
+    height: calc(var(--sw) * 2 / 3);
+    aspect-ratio: auto;
+  }
 }
-@keyframes slide-out-left {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-100%); }
+
+.carousel-slide {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: var(--sw);
+  left: calc(50% - var(--sw) / 2);
+  transition: transform 0.75s cubic-bezier(0.33, 1, 0.68, 1);
+  will-change: transform;
 }
-@keyframes slide-out-right {
-  from { transform: translateX(0); }
-  to   { transform: translateX(100%); }
+
+.carousel-slide-snap {
+  transition: none;
 }
-.slide-in-right  { animation: slide-in-right 0.7s cubic-bezier(0.22, 1, 0.36, 1) both; }
-.slide-in-left   { animation: slide-in-left 0.7s cubic-bezier(0.22, 1, 0.36, 1) both; }
-.slide-out-left  { animation: slide-out-left 0.7s cubic-bezier(0.22, 1, 0.36, 1) both; }
-.slide-out-right { animation: slide-out-right 0.7s cubic-bezier(0.22, 1, 0.36, 1) both; }
