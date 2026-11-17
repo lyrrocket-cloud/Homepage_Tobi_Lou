@@ -383,12 +383,21 @@ html {
 .skeleton-shimmer {
   background: linear-gradient(
     90deg,
-    rgba(206, 164, 114, 0.04) 0%,
-    rgba(206, 164, 114, 0.14) 40%,
-    rgba(206, 164, 114, 0.04) 80%
+    rgba(206, 164, 114, 0.06) 0%,
+    rgba(206, 164, 114, 0.20) 42%,
+    rgba(206, 164, 114, 0.06) 80%
   );
   background-size: 800px 100%;
   animation: skeleton-shimmer 1.6s ease-in-out infinite;
+}
+
+/* 骨架屏整体呼吸：即使 shimmer 扫过也要让人看出"正在加载" */
+@keyframes skeleton-breathe {
+  0%, 100% { opacity: 0.5; }
+  50%      { opacity: 1; }
+}
+.skeleton-breathe {
+  animation: skeleton-breathe 2.4s ease-in-out infinite;
 }
 
 /* ===== 访问记录列表：卡片错峰入场 ===== */
@@ -439,6 +448,23 @@ html {
 
 @media (min-width: 768px) {
   .carousel-stage {
+    --sw: min(900px, 60vw);
+    height: calc(var(--sw) * 2 / 3);
+    aspect-ratio: auto;
+  }
+}
+
+/* 骨架屏占位容器：尺寸与真实舞台完全一致，避免加载时高度塌陷 */
+.carousel-skeleton {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  --sw: 100%;
+  aspect-ratio: 3 / 2;
+}
+
+@media (min-width: 768px) {
+  .carousel-skeleton {
     --sw: min(900px, 60vw);
     height: calc(var(--sw) * 2 / 3);
     aspect-ratio: auto;

@@ -94,34 +94,33 @@ export function PhotoCarousel({ photos, isLoading = false }: PhotoCarouselProps)
   if (isLoading) {
     return (
       <div className="carousel-content-enter">
-        {/* full-bleed 轮播区 */}
-        <div className="relative w-full overflow-hidden">
-          <div className="flex items-stretch w-full bg-black/40 backdrop-blur-md">
-            {/* 左预览骨架（延伸到页面左边缘） */}
-            <div className="hidden md:block flex-1 relative">
-              <div className="absolute inset-0 skeleton-shimmer opacity-60" />
-              <div className="absolute inset-0 bg-black/30" />
-            </div>
+        {/* 占位容器尺寸与真实舞台一致，加载时不会塌陷 */}
+        <div className="carousel-skeleton skeleton-breathe flex items-stretch bg-black/30">
+          {/* 左预览骨架（延伸到页面左边缘） */}
+          <div className="hidden md:block flex-1 relative">
+            <div className="absolute inset-0 skeleton-shimmer opacity-70" />
+            <div className="absolute inset-0 bg-black/40" />
+          </div>
 
-            {/* 主图骨架 —— 3:2，有 max-width */}
-            <div className="relative aspect-[3/2] w-full md:w-auto md:shrink-0 md:max-w-[900px]">
-              <div className="absolute inset-0 skeleton-shimmer" />
-              {/* 底部信息条占位 */}
-              <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6">
-                <div className="h-6 md:h-7 w-48 md:w-64 rounded-md skeleton-shimmer mb-2" />
-                <div className="h-3 md:h-4 w-36 md:w-48 rounded-md skeleton-shimmer opacity-80" />
-              </div>
+          {/* 主图骨架 —— 3:2 */}
+          <div className="relative w-full md:w-[var(--sw)] md:shrink-0">
+            <div className="absolute inset-0 skeleton-shimmer" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+            {/* 底部信息条占位 */}
+            <div className="absolute bottom-0 left-0 right-0 p-4 md:p-8">
+              <div className="h-6 md:h-8 w-48 md:w-64 rounded-md skeleton-shimmer mb-2 md:mb-3" />
+              <div className="h-3 md:h-4 w-32 md:w-44 rounded-md skeleton-shimmer" />
             </div>
+          </div>
 
-            {/* 右预览骨架（延伸到页面右边缘） */}
-            <div className="hidden md:block flex-1 relative">
-              <div className="absolute inset-0 skeleton-shimmer opacity-60" />
-              <div className="absolute inset-0 bg-black/30" />
-            </div>
+          {/* 右预览骨架（延伸到页面右边缘） */}
+          <div className="hidden md:block flex-1 relative">
+            <div className="absolute inset-0 skeleton-shimmer opacity-70" />
+            <div className="absolute inset-0 bg-black/40" />
           </div>
         </div>
 
-        {/* 底部 dots —— 居中，不受 full-bleed 影响 */}
+        {/* 底部 dots 占位 */}
         <div className="flex justify-center gap-2 mt-4">
           {Array.from({ length: 5 }).map((_, i) => (
             <div
