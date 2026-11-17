@@ -406,3 +406,25 @@ html {
 .carousel-content-enter {
   animation: content-fade-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
+
+/* 相册翻页滑动：右侧图片滑入 / 当前图片滑向左 */
+@keyframes slide-in-right {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
+}
+@keyframes slide-in-left {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(0); }
+}
+@keyframes slide-out-left {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-100%); }
+}
+@keyframes slide-out-right {
+  from { transform: translateX(0); }
+  to   { transform: translateX(100%); }
+}
+.slide-in-right  { animation: slide-in-right 0.7s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.slide-in-left   { animation: slide-in-left 0.7s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.slide-out-left  { animation: slide-out-left 0.7s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.slide-out-right { animation: slide-out-right 0.7s cubic-bezier(0.22, 1, 0.36, 1) both; }
