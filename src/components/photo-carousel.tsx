@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
@@ -23,6 +23,8 @@ interface PhotoCarouselProps {
 export function PhotoCarousel({ photos }: PhotoCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const [loadedImages, setLoadedImages] = useState<Set<number>>(new Set());
+  const [imageErrors, setImageErrors] = useState<Set<number>>(new Set());
 
   // 自动轮播
   useEffect(() => {
@@ -30,10 +32,20 @@ export function PhotoCarousel({ photos }: PhotoCarouselProps) {
 
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % photos.length);
-    }, 5000); // 5秒切换
+    }, 5000);
 
     return () => clearInterval(interval);
   }, [isAutoPlaying, photos.length]);
+
+  // 图片加载完成
+  const handleImageLoad = (index: number) => {
+    setLoadedImages((prev) => new Set(prev).add(index));
+  };
+
+  // 图片加载失败
+  const handleImageError = (index: number) => {
+    setImageErrors((prev) => new Set(prev).add(index));
+  };
 
   // 上一张
   const goToPrevious = () => {
@@ -58,65 +70,115 @@ export function PhotoCarousel({ photos }: PhotoCarouselProps) {
   }
 
   const currentPhoto = photos[currentIndex];
+  const prevPhoto = photos[(currentIndex - 1 + photos.length) % photos.length];
+  const nextPhoto = photos[(currentIndex + 1) % photos.length];
 
   return (
-    <div className="relative w-full max-w-5xl mx-auto">
+    <div className="relative w-full">
       {/* 轮播容器 */}
-      <div className="relative aspect-[16/9] rounded-2xl overflow-hidden bg-black/40 backdrop-blur-md border border-[#CEA472]/20">
-        {/* 照片 */}
-        {photos.map((photo, index) => (
-          <div
-            key={photo.id}
-            className={`absolute inset-0 transition-opacity duration-700 ${
-              index === currentIndex ? 'opacity-100 z-10' : 'opacity-0 z-0'
-            }`}
-          >
-            <Link
-              href={photo.url || `/photos?region=${photo.region_id}`}
-              className="block w-full h-full"
-            >
-              <Image
-                src={photo.image_url}
-                alt={photo.title}
-                fill
-                className="object-cover"
-                priority={index === 0}
-                sizes="(max-width: 1200px) 100vw, 1200px"
-              />
-              {/* 渐变遮罩 */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-              
-              {/* 照片信息 */}
-              <div className="absolute bottom-0 left-0 right-0 p-6 text-left">
-                <h3 className="text-2xl font-bold text-white mb-2">
-                  {photo.title}
-                </h3>
-                <div className="flex items-center gap-4 text-white/80 text-sm">
-                  <span>{photo.location}</span>
-                  <span>·</span>
-                  <span>{photo.date}</span>
-                </div>
-              </div>
-            </Link>
+      <div className="relative w-full aspect-[16/9] max-h-[600px] overflow-hidden rounded-2xl bg-black/40 backdrop-blur-md border border-[#CEA472]/20">
+        {/* 左侧上一张预览 */}
+        {prevPhoto && (
+          <div className="absolute left-0 top-0 w-1/5 h-full opacity-60 transition-opacity hover:opacity-80">
+            <Image
+              src={prevPhoto.image_url}
+              alt={prevPhoto.title}
+              fill
+              className="object-cover"
+              sizes="20vw"
+              loading="lazy"
+            />
+            <div className="absolute inset-0 bg-black/40" />
           </div>
-        ))}
+        )}
 
-        {/* 左箭头 */}
+        {/* 右侧下一张预览 */}
+        {nextPhoto && (
+          <div className="absolute right-0 top-0 w-1/5 h-full opacity-60 transition-opacity hover:opacity-80">
+            <Image
+              src={nextPhoto.image_url}
+              alt={nextPhoto.title}
+              fill
+              className="object-cover"
+              sizes="20vw"
+              loading="lazy"
+            />
+            <div className="absolute inset-0 bg-black/40" />
+          </div>
+        )}
+
+        {/* 中间当前照片 */}
+        <div className="absolute left-1/5 right-1/5 top-0 bottom-0">
+          {photos.map((photo, index) => (
+            <div
+              key={photo.id}
+              className={`absolute inset-0 transition-opacity duration-700 ${
+                index === currentIndex ? 'opacity-100 z-10' : 'opacity-0 z-0'
+              }`}
+            >
+              <Link
+                href={photo.url || `/photos?region=${photo.region_id}`}
+                className="block w-full h-full"
+              >
+                <Image
+                  src={photo.image_url}
+                  alt={photo.title}
+                  fill
+                  className="object-cover"
+                  sizes="60vw"
+                  loading={index === 0 ? 'eager' : 'lazy'}
+                  onLoad={() => handleImageLoad(index)}
+                  onError={() => handleImageError(index)}
+                />
+                {/* 渐变遮罩 */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+
+                {/* 照片信息 - 左对齐 */}
+                <div className="absolute bottom-0 left-0 right-0 p-6 text-left">
+                  <h3 className="text-2xl font-bold text-white mb-2">
+                    {photo.title}
+                  </h3>
+                  <div className="text-white/80 text-sm">
+                    {photo.location} {photo.date}
+                  </div>
+                </div>
+              </Link>
+            </div>
+          ))}
+        </div>
+
+        {/* 加载指示器 */}
+        {loadedImages.size < photos.length && (
+          <div className="absolute inset-0 flex items-center justify-center z-30 bg-black/60 backdrop-blur-sm">
+            <div className="text-center">
+              <div className="w-8 h-8 border-2 border-[#CEA472]/30 border-t-[#CEA472] rounded-full animate-spin mx-auto mb-2" />
+              <p className="text-white/60 text-sm">
+                加载中... {loadedImages.size}/{photos.length}
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* 左箭头 - 移到左右两侧 */}
         <button
           onClick={goToPrevious}
-          className="absolute left-4 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full bg-black/40 backdrop-blur-md border border-[#CEA472]/30 hover:border-[#CEA472]/50 hover:bg-[#CEA472]/20 transition-all duration-300"
+          className="absolute left-0 top-0 bottom-0 w-1/5 z-20 flex items-center justify-center group hover:bg-black/20 transition-colors"
           aria-label="上一张"
         >
-          <ChevronLeft className="w-5 h-5 text-[#CEA472]" />
+          <div className="p-3 rounded-full bg-black/60 backdrop-blur-md border border-[#CEA472]/30 hover:border-[#CEA472]/50 hover:bg-[#CEA472]/20 transition-all duration-300 group-hover:scale-110">
+            <ChevronLeft className="w-6 h-6 text-[#CEA472]" />
+          </div>
         </button>
 
-        {/* 右箭头 */}
+        {/* 右箭头 - 移到左右两侧 */}
         <button
           onClick={goToNext}
-          className="absolute right-4 top-1/2 -translate-y-1/2 z-10 p-3 rounded-full bg-black/40 backdrop-blur-md border border-[#CEA472]/30 hover:border-[#CEA472]/50 hover:bg-[#CEA472]/20 transition-all duration-300"
+          className="absolute right-0 top-0 bottom-0 w-1/5 z-20 flex items-center justify-center group hover:bg-black/20 transition-colors"
           aria-label="下一张"
         >
-          <ChevronRight className="w-5 h-5 text-[#CEA472]" />
+          <div className="p-3 rounded-full bg-black/60 backdrop-blur-md border border-[#CEA472]/30 hover:border-[#CEA472]/50 hover:bg-[#CEA472]/20 transition-all duration-300 group-hover:scale-110">
+            <ChevronRight className="w-6 h-6 text-[#CEA472]" />
+          </div>
         </button>
       </div>
 
