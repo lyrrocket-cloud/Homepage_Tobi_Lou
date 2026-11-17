@@ -70,7 +70,7 @@ export function PhotoCarousel({ photos, isLoading = false }: PhotoCarouselProps)
   if (isLoading) {
     return (
       <div className="w-full">
-        <div className="flex flex-col md:flex-row md:items-stretch w-full overflow-hidden bg-black/40 backdrop-blur-md">
+        <div className="flex flex-col md:flex-row md:items-stretch w-full overflow-hidden bg-transparent">
           {/* 左预览骨架（仅桌面） */}
           <div className="hidden md:block md:flex-1 md:min-w-0 md:relative">
             <div className="absolute inset-0 skeleton-shimmer opacity-60" />
@@ -114,7 +114,7 @@ export function PhotoCarousel({ photos, isLoading = false }: PhotoCarouselProps)
     <div className="w-full carousel-content-enter">
       {/* 手机：竖向单列；桌面：横向三栏，中间主图决定整体高度 */}
       <div
-        className="flex flex-col md:flex-row md:items-stretch w-full overflow-hidden bg-black/40 backdrop-blur-md"
+        className="flex flex-col md:flex-row md:items-stretch w-full overflow-hidden bg-transparent"
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}

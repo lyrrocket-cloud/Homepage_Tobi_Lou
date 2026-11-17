@@ -465,7 +465,7 @@ export default function Home() {
       {/* 照片轮播区域 */}
       <section
         ref={carousel.ref}
-        className={`relative py-12 reveal ${carousel.onceVisible ? 'is-visible' : ''}`}
+        className={`relative py-12 bg-black/40 backdrop-blur-md reveal ${carousel.onceVisible ? 'is-visible' : ''}`}
       >
         <PhotoCarousel photos={carouselPhotos} isLoading={isLoading} />
       </section>
