@@ -467,16 +467,6 @@ export default function Home() {
         ref={carousel.ref}
         className={`relative py-12 reveal ${carousel.onceVisible ? 'is-visible' : ''}`}
       >
-        <div className="px-4">
-          <div className="max-w-7xl mx-auto">
-            <div className="flex items-center gap-3 mb-6">
-              <Calendar className="w-8 h-8 text-[#CEA472]" />
-              <h3 className="text-4xl font-bold text-[#CEA472]">
-                最新相册
-              </h3>
-            </div>
-          </div>
-        </div>
         <PhotoCarousel photos={carouselPhotos} isLoading={isLoading} />
       </section>
 
@@ -487,14 +477,6 @@ export default function Home() {
         className={`relative py-20 px-4 reveal ${visits.onceVisible ? 'is-visible' : ''}`}
       >
         <div className="max-w-7xl mx-auto space-y-8">
-          {/* 标题区域 */}
-          <div className="flex items-center gap-3">
-            <Globe className="w-8 h-8 text-[#CEA472]" />
-            <h3 className="text-4xl font-bold text-[#CEA472]">
-              旅行打卡
-            </h3>
-          </div>
-
           {/* 图例 - 两幅地图共用 */}
           <div ref={visitsLegend.ref} className={`flex items-center gap-6 text-sm reveal reveal-delayed-1 ${visitsLegend.onceVisible ? 'is-visible' : ''}`}>
             <div className="flex items-center gap-2">
