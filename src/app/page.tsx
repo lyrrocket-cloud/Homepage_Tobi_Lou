@@ -212,10 +212,10 @@ function WorldVisitList({ regionId, regionName, onRefresh }: { regionId: number 
   return (
     <div className="bg-gradient-to-br from-[#CEA472]/5 to-black/40 rounded-lg border border-[#CEA472]/10 p-4 flex flex-col h-[480px]">
       <div className="flex items-center justify-between mb-4 flex-shrink-0">
-        <h3 className="text-2xl font-bold text-[#CEA472]">
+        <h3 className="text-lg font-bold text-[#CEA472]">
           {regionName ? regionName : '全部访问记录'}
         </h3>
-        <span className="text-sm text-[#CEA472]/60">
+        <span className="text-xs text-[#CEA472]/60">
           共 {visits.length} 条记录
         </span>
       </div>
@@ -241,7 +241,7 @@ function WorldVisitList({ regionId, regionName, onRefresh }: { regionId: number 
               <div className="flex-1 p-3 flex flex-col justify-center">
                 <div className="flex items-center gap-2 mb-2">
                   <MapPin className="w-4 h-4 text-[#CEA472]/70 flex-shrink-0" />
-                  <span className="text-[#FFFFFF] text-base font-medium truncate">
+                  <span className="text-[#FFFFFF] text-sm font-medium truncate">
                     {!regionId && visit.region?.name ? visit.region.name : visit.title}
                   </span>
                 </div>
