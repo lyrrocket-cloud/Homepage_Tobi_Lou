@@ -402,7 +402,7 @@ export default function Home() {
       {/* 同步数据按钮 - 固定在最右上角 */}
       <a
         href="/admin/sync"
-        className="fixed top-4 right-4 z-50 p-2 rounded-md bg-black/40 backdrop-blur-md hover:bg-[#CEA472]/20 transition-all duration-300"
+        className="fixed top-4 right-4 z-[110] p-2 rounded-md bg-black/40 backdrop-blur-md hover:bg-[#CEA472]/20 transition-all duration-300"
         title="数据同步"
       >
         <svg
