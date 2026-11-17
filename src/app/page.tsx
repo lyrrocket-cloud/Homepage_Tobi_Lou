@@ -477,7 +477,7 @@ export default function Home() {
             </div>
           </div>
         </div>
-        <PhotoCarousel photos={carouselPhotos} />
+        <PhotoCarousel photos={carouselPhotos} isLoading={isLoading} />
       </section>
 
       {/* 旅行打卡区域 */}

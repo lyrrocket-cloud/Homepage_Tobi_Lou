@@ -17,9 +17,10 @@ interface Photo {
 
 interface PhotoCarouselProps {
   photos: Photo[];
+  isLoading?: boolean;
 }
 
-export function PhotoCarousel({ photos }: PhotoCarouselProps) {
+export function PhotoCarousel({ photos, isLoading = false }: PhotoCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
 
@@ -70,6 +71,47 @@ export function PhotoCarousel({ photos }: PhotoCarouselProps) {
     touchDeltaX.current = 0;
   };
 
+  // ===== 骨架屏（加载时占住位置 + shimmer 动效）=====
+  if (isLoading) {
+    return (
+      <div className="relative w-full px-4">
+        <div className="max-w-7xl mx-auto">
+          {/* 轮播骨架 —— 和真实容器完全相同的比例与圆角 */}
+          <div
+            className="relative w-full aspect-[3/2] md:aspect-[16/9] overflow-hidden rounded-lg border border-[#CEA472]/10"
+            aria-busy="true"
+            aria-label="相册加载中"
+          >
+            {/* 主图区域 shimmer */}
+            <div className="absolute inset-0 skeleton-shimmer" />
+
+            {/* 桌面端左右预览骨架 */}
+            <div className="hidden md:block absolute left-0 top-0 w-1/5 h-full skeleton-shimmer opacity-70 border-r border-black/30" />
+            <div className="hidden md:block absolute right-0 top-0 w-1/5 h-full skeleton-shimmer opacity-70 border-l border-black/30" />
+
+            {/* 底部信息条骨架（标题 + 日期占位条） */}
+            <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6">
+              <div className="h-6 md:h-7 w-48 md:w-64 rounded-md skeleton-shimmer mb-2" />
+              <div className="h-3 md:h-4 w-36 md:w-48 rounded-md skeleton-shimmer opacity-80" />
+            </div>
+          </div>
+
+          {/* 底部 dots 骨架 */}
+          <div className="flex justify-center gap-2 mt-4">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div
+                key={i}
+                className={`rounded-full skeleton-shimmer ${
+                  i === 0 ? 'w-6 h-2' : 'w-2 h-2'
+                }`}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (photos.length === 0) return null;
 
   const currentPhoto = photos[currentIndex];
@@ -77,7 +119,7 @@ export function PhotoCarousel({ photos }: PhotoCarouselProps) {
   const nextPhoto = photos[(currentIndex + 1) % photos.length];
 
   return (
-    <div className="relative w-full px-4">
+    <div className="relative w-full px-4 carousel-content-enter">
       <div className="max-w-7xl mx-auto">
         {/* 轮播容器 —— 手机 3:2，桌面 16:9 */}
         <div
