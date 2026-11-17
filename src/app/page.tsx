@@ -400,16 +400,18 @@ export default function Home() {
       </section>
 
       {/* 照片轮播区域 */}
-      <section className="relative py-12 px-4">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex items-center gap-3 mb-6">
-            <Calendar className="w-8 h-8 text-[#CEA472]" />
-            <h3 className="text-4xl font-bold text-[#CEA472]">
-              最新相册
-            </h3>
+      <section className="relative py-12">
+        <div className="px-4">
+          <div className="max-w-7xl mx-auto">
+            <div className="flex items-center gap-3 mb-6">
+              <Calendar className="w-8 h-8 text-[#CEA472]" />
+              <h3 className="text-4xl font-bold text-[#CEA472]">
+                最新相册
+              </h3>
+            </div>
           </div>
-          <PhotoCarousel photos={carouselPhotos} />
         </div>
+        <PhotoCarousel photos={carouselPhotos} />
       </section>
 
       {/* 旅行打卡区域 */}
