@@ -141,35 +141,49 @@ export function PhotoCarousel({ photos, isLoading = false }: PhotoCarouselProps)
         )}
 
         {/* 中间主图 —— 3:2，桌面端有明确宽度 */}
-        <div className="relative w-full md:w-[900px] md:max-w-[60vw] md:shrink-0 aspect-[3/2]">
-          {photos.map((photo, index) => (
-            <Link
-              key={photo.id}
-              href={photo.url || `/photos?region=${photo.region_id}`}
-              onClick={() => setIsAutoPlaying(false)}
-              className={`absolute inset-0 block transition-opacity duration-700 ${
-                index === currentIndex ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'
-              }`}
-            >
-              <Image
-                src={photo.image_url}
-                alt={photo.title}
-                fill
-                className="object-cover"
-                sizes="(max-width: 768px) 100vw, 900px"
-                loading={index === 0 ? 'eager' : 'lazy'}
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-black/10" />
-              <div className="absolute bottom-0 left-0 right-0 p-4 md:p-8 text-left">
-                <h3 className="text-xl md:text-3xl font-bold text-white mb-1 md:mb-2 drop-shadow-md">
-                  {photo.title}
-                </h3>
-                <div className="text-white/85 text-xs md:text-sm drop-shadow-md">
-                  {photo.location} {photo.date}
+        <div className="relative w-full md:w-[900px] md:max-w-[60vw] md:shrink-0 aspect-[3/2] overflow-hidden">
+          {photos.map((photo, index) => {
+            // 相对当前位置的偏移（处理循环首尾）
+            const count = photos.length;
+            let offset = index - currentIndex;
+            if (offset > count / 2) offset -= count;
+            if (offset < -count / 2) offset += count;
+
+            const isActive = offset === 0;
+            // 下一张从右侧滑入，上一张从左侧滑入
+            const translateX = offset > 0 ? '100%' : offset < 0 ? '-100%' : '0%';
+
+            return (
+              <Link
+                key={photo.id}
+                href={photo.url || `/photos?region=${photo.region_id}`}
+                onClick={() => setIsAutoPlaying(false)}
+                style={{ transform: `translateX(${translateX})` }}
+                className={`absolute inset-0 block transition-transform duration-700 ease-out ${
+                  isActive ? 'z-10' : 'z-0 pointer-events-none'
+                }`}
+                aria-hidden={!isActive}
+              >
+                <Image
+                  src={photo.image_url}
+                  alt={photo.title}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 900px"
+                  loading={index === 0 ? 'eager' : 'lazy'}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-black/10" />
+                <div className="absolute bottom-0 left-0 right-0 p-4 md:p-8 text-left">
+                  <h3 className="text-xl md:text-3xl font-bold text-white mb-1 md:mb-2 drop-shadow-md">
+                    {photo.title}
+                  </h3>
+                  <div className="text-white/85 text-xs md:text-sm drop-shadow-md">
+                    {photo.location} {photo.date}
+                  </div>
                 </div>
-              </div>
-            </Link>
-          ))}
+              </Link>
+            );
+          })}
         </div>
 
         {/* 右侧下一张预览 —— 仅桌面 */}
