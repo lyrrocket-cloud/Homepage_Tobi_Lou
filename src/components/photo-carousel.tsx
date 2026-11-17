@@ -41,7 +41,6 @@ export function PhotoCarousel({ photos, isLoading = false }: PhotoCarouselProps)
     setIsAutoPlaying(false);
     setCurrentIndex(index);
   };
-
   const goNext = () => {
     setIsAutoPlaying(false);
     setCurrentIndex((prev) => (prev + 1) % photos.length);
@@ -71,42 +70,47 @@ export function PhotoCarousel({ photos, isLoading = false }: PhotoCarouselProps)
     touchDeltaX.current = 0;
   };
 
-  // ===== 骨架屏（加载时占住位置 + shimmer 动效）=====
+  // ===== 骨架屏（full-bleed：两侧预览延伸到边缘，中间主图 3:2）=====
   if (isLoading) {
     return (
-      <div className="relative w-full px-4">
-        <div className="max-w-7xl mx-auto">
-          {/* 轮播骨架 —— 和真实容器完全相同的比例与圆角 */}
-          <div
-            className="relative w-full aspect-[3/2] md:aspect-[16/9] overflow-hidden rounded-lg border border-[#CEA472]/10"
-            aria-busy="true"
-            aria-label="相册加载中"
-          >
-            {/* 主图区域 shimmer */}
-            <div className="absolute inset-0 skeleton-shimmer" />
+      <div className="carousel-content-enter">
+        {/* full-bleed 轮播区 */}
+        <div className="relative w-full overflow-hidden">
+          <div className="flex items-stretch w-full bg-black/40 backdrop-blur-md">
+            {/* 左预览骨架（延伸到页面左边缘） */}
+            <div className="hidden md:block flex-1 relative">
+              <div className="absolute inset-0 skeleton-shimmer opacity-60" />
+              <div className="absolute inset-0 bg-black/30" />
+            </div>
 
-            {/* 桌面端左右预览骨架 */}
-            <div className="hidden md:block absolute left-0 top-0 w-1/5 h-full skeleton-shimmer opacity-70 border-r border-black/30" />
-            <div className="hidden md:block absolute right-0 top-0 w-1/5 h-full skeleton-shimmer opacity-70 border-l border-black/30" />
+            {/* 主图骨架 —— 3:2，有 max-width */}
+            <div className="relative aspect-[3/2] w-full md:w-auto md:shrink-0 md:max-w-[900px]">
+              <div className="absolute inset-0 skeleton-shimmer" />
+              {/* 底部信息条占位 */}
+              <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6">
+                <div className="h-6 md:h-7 w-48 md:w-64 rounded-md skeleton-shimmer mb-2" />
+                <div className="h-3 md:h-4 w-36 md:w-48 rounded-md skeleton-shimmer opacity-80" />
+              </div>
+            </div>
 
-            {/* 底部信息条骨架（标题 + 日期占位条） */}
-            <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6">
-              <div className="h-6 md:h-7 w-48 md:w-64 rounded-md skeleton-shimmer mb-2" />
-              <div className="h-3 md:h-4 w-36 md:w-48 rounded-md skeleton-shimmer opacity-80" />
+            {/* 右预览骨架（延伸到页面右边缘） */}
+            <div className="hidden md:block flex-1 relative">
+              <div className="absolute inset-0 skeleton-shimmer opacity-60" />
+              <div className="absolute inset-0 bg-black/30" />
             </div>
           </div>
+        </div>
 
-          {/* 底部 dots 骨架 */}
-          <div className="flex justify-center gap-2 mt-4">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <div
-                key={i}
-                className={`rounded-full skeleton-shimmer ${
-                  i === 0 ? 'w-6 h-2' : 'w-2 h-2'
-                }`}
-              />
-            ))}
-          </div>
+        {/* 底部 dots —— 居中，不受 full-bleed 影响 */}
+        <div className="flex justify-center gap-2 mt-4">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <div
+              key={i}
+              className={`rounded-full skeleton-shimmer ${
+                i === 0 ? 'w-6 h-2' : 'w-2 h-2'
+              }`}
+            />
+          ))}
         </div>
       </div>
     );
@@ -119,49 +123,39 @@ export function PhotoCarousel({ photos, isLoading = false }: PhotoCarouselProps)
   const nextPhoto = photos[(currentIndex + 1) % photos.length];
 
   return (
-    <div className="relative w-full px-4 carousel-content-enter">
-      <div className="max-w-7xl mx-auto">
-        {/* 轮播容器 —— 手机 3:2，桌面 16:9 */}
-        <div
-          className="relative w-full aspect-[3/2] md:aspect-[16/9] overflow-hidden bg-black/40 backdrop-blur-md rounded-lg border border-[#CEA472]/10"
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
-        >
-          {/* 桌面端左侧上一张预览（手机隐藏） */}
+    <div className="carousel-content-enter">
+      {/* full-bleed 轮播区：左预览 flex-1 + 主图 3:2 + 右预览 flex-1 */}
+      <div
+        className="relative w-full overflow-hidden"
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+      >
+        <div className="flex items-stretch w-full bg-black/40 backdrop-blur-md">
+          {/* 左侧上一张预览 —— hidden 在手机端，桌面端延伸到页面左边缘 */}
           {prevPhoto && (
-            <div className="hidden md:block absolute left-0 top-0 w-1/5 h-full opacity-60 transition-opacity hover:opacity-90 cursor-pointer z-10"
-                 onClick={goPrev}>
+            <div
+              className="hidden md:flex-1 md:block relative cursor-pointer group"
+              onClick={goPrev}
+            >
               <Image
                 src={prevPhoto.image_url}
                 alt={prevPhoto.title}
                 fill
-                className="object-cover"
-                sizes="20vw"
+                className="object-cover transition-transform duration-500 group-hover:scale-105"
+                sizes="(min-width: 768px) 25vw"
                 loading="lazy"
               />
-              <div className="absolute inset-0 bg-black/40" />
+              <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-black/30 to-black/50 group-hover:from-black/30 group-hover:to-black/30 transition-colors" />
+              {/* 方向箭头提示 */}
+              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-white/40 group-hover:text-[#CEA472] transition-colors text-xs font-medium tracking-wider">
+                ← PREV
+              </div>
             </div>
           )}
 
-          {/* 桌面端右侧下一张预览（手机隐藏） */}
-          {nextPhoto && (
-            <div className="hidden md:block absolute right-0 top-0 w-1/5 h-full opacity-60 transition-opacity hover:opacity-90 cursor-pointer z-10"
-                 onClick={goNext}>
-              <Image
-                src={nextPhoto.image_url}
-                alt={nextPhoto.title}
-                fill
-                className="object-cover"
-                sizes="20vw"
-                loading="lazy"
-              />
-              <div className="absolute inset-0 bg-black/40" />
-            </div>
-          )}
-
-          {/* 中间当前照片 —— 手机占满全宽，桌面占中间 3/5 */}
-          <div className="absolute inset-0 md:left-1/5 md:right-1/5">
+          {/* 中间主图 —— aspect-[3/2] 决定整体高度，有 max-width 限制 */}
+          <div className="relative aspect-[3/2] w-full md:w-auto md:shrink-0 md:max-w-[900px]">
             {photos.map((photo, index) => (
               <div
                 key={photo.id}
@@ -179,15 +173,15 @@ export function PhotoCarousel({ photos, isLoading = false }: PhotoCarouselProps)
                     alt={photo.title}
                     fill
                     className="object-cover"
-                    sizes="(max-width: 768px) 100vw, 60vw"
+                    sizes="(max-width: 768px) 100vw, 900px"
                     loading={index === 0 ? 'eager' : 'lazy'}
                   />
                   {/* 渐变遮罩 */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-black/10" />
 
                   {/* 照片信息 */}
-                  <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6 text-left">
-                    <h3 className="text-xl md:text-2xl font-bold text-white mb-1 md:mb-2 drop-shadow-md">
+                  <div className="absolute bottom-0 left-0 right-0 p-4 md:p-8 text-left">
+                    <h3 className="text-xl md:text-3xl font-bold text-white mb-1 md:mb-2 drop-shadow-md">
                       {photo.title}
                     </h3>
                     <div className="text-white/85 text-xs md:text-sm drop-shadow-md">
@@ -198,23 +192,45 @@ export function PhotoCarousel({ photos, isLoading = false }: PhotoCarouselProps)
               </div>
             ))}
           </div>
-        </div>
 
-        {/* 底部指示器（保留） */}
-        <div className="flex justify-center gap-2 mt-4">
-          {photos.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => goToSlide(index)}
-              className={`transition-all duration-300 ${
-                index === currentIndex
-                  ? 'bg-[#CEA472] w-6 h-2 rounded-full'
-                  : 'bg-[#CEA472]/30 w-2 h-2 rounded-full hover:bg-[#CEA472]/50'
-              }`}
-              aria-label={`跳转到第 ${index + 1} 张`}
-            />
-          ))}
+          {/* 右侧下一张预览 —— hidden 在手机端，桌面端延伸到页面右边缘 */}
+          {nextPhoto && (
+            <div
+              className="hidden md:flex-1 md:block relative cursor-pointer group"
+              onClick={goNext}
+            >
+              <Image
+                src={nextPhoto.image_url}
+                alt={nextPhoto.title}
+                fill
+                className="object-cover transition-transform duration-500 group-hover:scale-105"
+                sizes="(min-width: 768px) 25vw"
+                loading="lazy"
+              />
+              <div className="absolute inset-0 bg-gradient-to-l from-black/50 via-black/30 to-black/50 group-hover:from-black/30 group-hover:to-black/30 transition-colors" />
+              {/* 方向箭头提示 */}
+              <div className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 group-hover:text-[#CEA472] transition-colors text-xs font-medium tracking-wider">
+                NEXT →
+              </div>
+            </div>
+          )}
         </div>
+      </div>
+
+      {/* 底部指示器 —— 居中显示，不受轮播 full-bleed 影响 */}
+      <div className="flex justify-center gap-2 mt-4">
+        {photos.map((_, index) => (
+          <button
+            key={index}
+            onClick={() => goToSlide(index)}
+            className={`transition-all duration-300 ${
+              index === currentIndex
+                ? 'bg-[#CEA472] w-6 h-2 rounded-full'
+                : 'bg-[#CEA472]/30 w-2 h-2 rounded-full hover:bg-[#CEA472]/50'
+            }`}
+            aria-label={`跳转到第 ${index + 1} 张`}
+          />
+        ))}
       </div>
     </div>
   );
