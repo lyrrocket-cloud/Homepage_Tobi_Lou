@@ -511,7 +511,7 @@ export default function Home() {
       {/* Footer */}
       <footer
         ref={footer.ref}
-        className={`relative py-12 px-4 bg-black/60 backdrop-blur-sm border-t border-[#CEA472]/10 reveal reveal-delayed-2 ${footer.onceVisible ? 'is-visible' : ''}`}
+        className={`relative py-12 px-4 bg-black/40 backdrop-blur-sm reveal reveal-delayed-2 ${footer.onceVisible ? 'is-visible' : ''}`}
       >
         <div className="max-w-7xl mx-auto text-center">
           <div className="flex items-center justify-center gap-3 mb-4">
