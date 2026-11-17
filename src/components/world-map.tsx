@@ -411,6 +411,7 @@ export function WorldMap({ onRegionClick, selectedRegion, visitedRegions = new S
                   <Geography
                     key={geo.rsmKey}
                     geography={geo}
+                    className={isVisited ? 'visited-glow' : undefined}
                     onClick={() => handleClick(geo)}
                     onMouseEnter={(e) => handleMouseEnter(geo, e)}
                     onMouseLeave={handleMouseLeave}
@@ -423,6 +424,7 @@ export function WorldMap({ onRegionClick, selectedRegion, visitedRegions = new S
                         outline: 'none',
                         transition: 'all 0.3s ease',
                         cursor: regionId > 0 ? 'pointer' : 'default',
+                        filter: isVisited ? 'drop-shadow(0 0 3px rgba(206, 164, 114, 0.7))' : 'none',
                       },
                       hover: {
                         fill: isHome ? '#003d36' : '#CEA472',
@@ -431,6 +433,7 @@ export function WorldMap({ onRegionClick, selectedRegion, visitedRegions = new S
                         strokeWidth: regionId > 0 ? 0.8 : 0.3,
                         outline: 'none',
                         cursor: regionId > 0 ? 'pointer' : 'default',
+                        filter: isVisited ? 'drop-shadow(0 0 9px rgba(206, 164, 114, 1))' : 'drop-shadow(0 0 4px rgba(206, 164, 114, 0.5))',
                       },
                       pressed: {
                         fill: isHome ? '#001f1c' : '#CEA472',
