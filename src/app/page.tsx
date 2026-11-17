@@ -525,15 +525,7 @@ export default function Home() {
             <span className="text-xl font-bold text-[#CEA472]">Tobi Lou</span>
           </div>
           <p className="text-[#FFFFFF]/60 mb-6">志之所趋，无远弗届</p>
-          <div className="flex justify-center gap-8 text-sm text-[#FFFFFF]/50">
-            <a href="/photos" className="hover:text-[#CEA472] transition-colors">
-              照片集
-            </a>
-            <a href="https://lyrrocket.quickconnect.cn/mo/sharing/7xLwl056X" target="_blank" rel="noopener noreferrer" className="hover:text-[#CEA472] transition-colors">
-              视频集
-            </a>
-          </div>
-          <div className="mt-8 pt-8 border-t border-[#CEA472]/10 text-sm text-[#FFFFFF]/40">
+          <div className="text-sm text-[#FFFFFF]/40">
             <p>© 2024 Tobi Lou. All rights reserved.</p>
             <p className="mt-2">
               <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer" className="hover:text-[#CEA472] transition-colors">
