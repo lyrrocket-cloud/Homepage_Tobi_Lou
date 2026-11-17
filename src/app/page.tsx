@@ -474,9 +474,12 @@ export default function Home() {
       <section
         id="visits"
         ref={visits.ref}
-        className={`relative py-20 px-4 reveal ${visits.onceVisible ? 'is-visible' : ''}`}
+        className={`relative py-20 reveal ${visits.onceVisible ? 'is-visible' : ''}`}
       >
-        <div className="max-w-7xl mx-auto space-y-8">
+        {/* full-bleed 背景层：横向占满整页 */}
+        <div className="absolute inset-0 bg-black/40 backdrop-blur-md" aria-hidden="true" />
+
+        <div className="relative max-w-7xl mx-auto px-4 space-y-8">
           {/* 图例 - 两幅地图共用 */}
           <div ref={visitsLegend.ref} className={`flex items-center gap-6 text-sm reveal reveal-delayed-1 ${visitsLegend.onceVisible ? 'is-visible' : ''}`}>
             <div className="flex items-center gap-2">
@@ -497,7 +500,7 @@ export default function Home() {
           <div ref={worldTracker.ref} className={`reveal reveal-delayed-2 ${worldTracker.onceVisible ? 'is-visible' : ''}`}>
             <WorldTracker />
           </div>
-          
+
           {/* 中国地图 */}
           <div ref={chinaTracker.ref} className={`reveal reveal-delayed-3 ${chinaTracker.onceVisible ? 'is-visible' : ''}`}>
             <VisitTracker />
