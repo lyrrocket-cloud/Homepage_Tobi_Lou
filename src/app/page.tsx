@@ -42,7 +42,7 @@ interface Photo {
 const ChinaMap = dynamic(() => import('@/components/china-map').then(mod => ({ default: mod.ChinaMap })), {
   ssr: false,
   loading: () => (
-    <div className="w-full h-[480px] bg-black/40 backdrop-blur-md rounded-lg border border-[#CEA472]/20 flex items-center justify-center">
+    <div className="w-full h-[480px] flex items-center justify-center">
       <div className="text-center">
         <div className="animate-spin rounded-full h-12 w-12 border-2 border-[#CEA472] border-t-transparent mx-auto mb-4"></div>
         <p className="text-white/60">加载中国地图中...</p>
@@ -54,7 +54,7 @@ const ChinaMap = dynamic(() => import('@/components/china-map').then(mod => ({ d
 const WorldMap = dynamic(() => import('@/components/world-map').then(mod => ({ default: mod.WorldMap })), {
   ssr: false,
   loading: () => (
-    <div className="w-full h-[480px] bg-black/40 backdrop-blur-md rounded-lg border border-[#CEA472]/20 flex items-center justify-center">
+    <div className="w-full h-[480px] flex items-center justify-center">
       <div className="text-center">
         <div className="animate-spin rounded-full h-12 w-12 border-2 border-[#CEA472] border-t-transparent mx-auto mb-4"></div>
         <p className="text-white/60">加载世界地图中...</p>
@@ -200,7 +200,7 @@ function WorldVisitList({ regionId, regionName, onRefresh }: { regionId: number 
 
   if (loading) {
     return (
-      <div className="w-full h-[480px] bg-black/40 backdrop-blur-md rounded-lg border border-[#CEA472]/20 flex items-center justify-center">
+      <div className="w-full h-[480px] flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-2 border-[#CEA472] border-t-transparent mx-auto mb-4"></div>
           <p className="text-white/60">加载中...</p>
@@ -465,7 +465,7 @@ export default function Home() {
       {/* 照片轮播区域 */}
       <section
         ref={carousel.ref}
-        className={`relative py-12 bg-black/40 backdrop-blur-md reveal ${carousel.onceVisible ? 'is-visible' : ''}`}
+        className={`relative py-12 reveal ${carousel.onceVisible ? 'is-visible' : ''}`}
       >
         <PhotoCarousel photos={carouselPhotos} isLoading={isLoading} />
       </section>
@@ -476,9 +476,6 @@ export default function Home() {
         ref={visits.ref}
         className={`relative py-20 reveal ${visits.onceVisible ? 'is-visible' : ''}`}
       >
-        {/* full-bleed 背景层：横向占满整页 */}
-        <div className="absolute inset-0 bg-black/40 backdrop-blur-md" aria-hidden="true" />
-
         <div className="relative max-w-7xl mx-auto px-4 space-y-8">
           {/* 图例 - 两幅地图共用 */}
           <div ref={visitsLegend.ref} className={`flex items-center gap-6 text-sm reveal reveal-delayed-1 ${visitsLegend.onceVisible ? 'is-visible' : ''}`}>
@@ -511,7 +508,7 @@ export default function Home() {
       {/* Footer */}
       <footer
         ref={footer.ref}
-        className={`relative py-12 px-4 bg-black/40 backdrop-blur-sm reveal reveal-delayed-2 ${footer.onceVisible ? 'is-visible' : ''}`}
+        className={`relative py-12 px-4 reveal reveal-delayed-2 ${footer.onceVisible ? 'is-visible' : ''}`}
       >
         <div className="max-w-7xl mx-auto text-center">
           <div className="flex items-center justify-center gap-3 mb-4">
