@@ -317,7 +317,7 @@ export function ChinaMap({ onRegionClick, selectedRegion, visitedRegions = new S
       {/* Tooltip - 固定在容器右上角 */}
       {tooltip.show && (
         <div
-          className="absolute top-3 right-3 pointer-events-none bg-black/80 backdrop-blur-sm text-white px-4 py-2 rounded-lg shadow-lg text-sm font-medium z-50 border border-[#CEA472]/30"
+          className="absolute top-3 right-3 pointer-events-none bg-black/80 backdrop-blur-sm text-white px-3 py-1.5 rounded-lg shadow-lg text-sm font-medium z-50"
         >
           {tooltip.content}
         </div>
