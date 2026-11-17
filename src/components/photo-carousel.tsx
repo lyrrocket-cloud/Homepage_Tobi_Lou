@@ -23,8 +23,6 @@ interface PhotoCarouselProps {
 export function PhotoCarousel({ photos }: PhotoCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
-  const [loadedImages, setLoadedImages] = useState<Set<number>>(new Set());
-  const [imageErrors, setImageErrors] = useState<Set<number>>(new Set());
 
   // 自动轮播
   useEffect(() => {
@@ -36,16 +34,6 @@ export function PhotoCarousel({ photos }: PhotoCarouselProps) {
 
     return () => clearInterval(interval);
   }, [isAutoPlaying, photos.length]);
-
-  // 图片加载完成
-  const handleImageLoad = (index: number) => {
-    setLoadedImages((prev) => new Set(prev).add(index));
-  };
-
-  // 图片加载失败
-  const handleImageError = (index: number) => {
-    setImageErrors((prev) => new Set(prev).add(index));
-  };
 
   // 上一张
   const goToPrevious = () => {
@@ -127,8 +115,6 @@ export function PhotoCarousel({ photos }: PhotoCarouselProps) {
                   className="object-cover"
                   sizes="60vw"
                   loading={index === 0 ? 'eager' : 'lazy'}
-                  onLoad={() => handleImageLoad(index)}
-                  onError={() => handleImageError(index)}
                 />
                 {/* 渐变遮罩 */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
@@ -146,18 +132,6 @@ export function PhotoCarousel({ photos }: PhotoCarouselProps) {
             </div>
           ))}
         </div>
-
-        {/* 加载指示器 */}
-        {loadedImages.size < photos.length && (
-          <div className="absolute inset-0 flex items-center justify-center z-30 bg-black/60 backdrop-blur-sm">
-            <div className="text-center">
-              <div className="w-8 h-8 border-2 border-[#CEA472]/30 border-t-[#CEA472] rounded-full animate-spin mx-auto mb-2" />
-              <p className="text-white/60 text-sm">
-                加载中... {loadedImages.size}/{photos.length}
-              </p>
-            </div>
-          </div>
-        )}
 
         {/* 左箭头 - 移到左右两侧 */}
         <button
