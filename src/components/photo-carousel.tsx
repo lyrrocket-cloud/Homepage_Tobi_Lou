@@ -66,19 +66,19 @@ export function PhotoCarousel({ photos, isLoading = false }: PhotoCarouselProps)
     touchDeltaX.current = 0;
   };
 
+  /* ===== 骨架屏 ===== */
   if (isLoading) {
     return (
       <div className="w-full">
-        {/* 手机单列 | 桌面 flex 三栏 —— 关键：block 在 base，flex 在 md+ */}
-        <div className="block md:flex md:items-stretch w-full overflow-hidden bg-black/40 backdrop-blur-md">
+        <div className="flex flex-col md:flex-row md:items-stretch w-full overflow-hidden bg-black/40 backdrop-blur-md">
           {/* 左预览骨架（仅桌面） */}
-          <div className="hidden md:flex-1 md:relative md:min-w-0">
+          <div className="hidden md:block md:flex-1 md:min-w-0 md:relative">
             <div className="absolute inset-0 skeleton-shimmer opacity-60" />
             <div className="absolute inset-0 bg-black/30" />
           </div>
 
-          {/* 主图骨架 —— 始终 3:2，始终有明确宽度 */}
-          <div className="relative w-full md:flex-none md:w-[900px] md:max-w-[60vw] aspect-[3/2]">
+          {/* 主图骨架 —— 始终 3:2 */}
+          <div className="relative w-full md:w-[900px] md:max-w-[60vw] md:shrink-0 aspect-[3/2]">
             <div className="absolute inset-0 skeleton-shimmer" />
             <div className="absolute bottom-0 left-0 right-0 p-4 md:p-8">
               <div className="h-6 md:h-7 w-48 md:w-64 rounded-md skeleton-shimmer mb-2" />
@@ -87,7 +87,7 @@ export function PhotoCarousel({ photos, isLoading = false }: PhotoCarouselProps)
           </div>
 
           {/* 右预览骨架（仅桌面） */}
-          <div className="hidden md:flex-1 md:relative md:min-w-0">
+          <div className="hidden md:block md:flex-1 md:min-w-0 md:relative">
             <div className="absolute inset-0 skeleton-shimmer opacity-60" />
             <div className="absolute inset-0 bg-black/30" />
           </div>
@@ -97,9 +97,7 @@ export function PhotoCarousel({ photos, isLoading = false }: PhotoCarouselProps)
           {Array.from({ length: 5 }).map((_, i) => (
             <div
               key={i}
-              className={`rounded-full skeleton-shimmer ${
-                i === 0 ? 'w-6 h-2' : 'w-2 h-2'
-              }`}
+              className={`rounded-full skeleton-shimmer ${i === 0 ? 'w-6 h-2' : 'w-2 h-2'}`}
             />
           ))}
         </div>
@@ -109,24 +107,27 @@ export function PhotoCarousel({ photos, isLoading = false }: PhotoCarouselProps)
 
   if (photos.length === 0) return null;
 
+  const prevPhoto = photos[(currentIndex - 1 + photos.length) % photos.length];
+  const nextPhoto = photos[(currentIndex + 1) % photos.length];
+
   return (
     <div className="w-full carousel-content-enter">
-      {/* 手机单列 | 桌面 flex 三栏 */}
+      {/* 手机：竖向单列；桌面：横向三栏，中间主图决定整体高度 */}
       <div
-        className="block md:flex md:items-stretch w-full overflow-hidden bg-black/40 backdrop-blur-md"
+        className="flex flex-col md:flex-row md:items-stretch w-full overflow-hidden bg-black/40 backdrop-blur-md"
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
-        {/* 左侧上一张预览 —— 仅桌面，flex-1 被主图撑开 */}
-        {photos[(currentIndex - 1 + photos.length) % photos.length] && (
+        {/* 左侧上一张预览 —— 仅桌面 */}
+        {prevPhoto && (
           <div
-            className="hidden md:flex md:flex-1 md:relative md:min-w-0 cursor-pointer group"
+            className="hidden md:block md:relative md:flex-1 md:min-w-0 cursor-pointer group"
             onClick={goPrev}
           >
             <Image
-              src={photos[(currentIndex - 1 + photos.length) % photos.length].image_url}
-              alt="上一张"
+              src={prevPhoto.image_url}
+              alt={prevPhoto.title}
               fill
               className="object-cover transition-transform duration-500 group-hover:scale-105"
               sizes="(min-width: 768px) 25vw"
@@ -139,51 +140,47 @@ export function PhotoCarousel({ photos, isLoading = false }: PhotoCarouselProps)
           </div>
         )}
 
-        {/* 中间主图 —— 关键：w-full 在手机，md:flex-none md:w-[900px] 在桌面，始终 aspect-[3/2] */}
-        <div className="relative w-full md:flex-none md:w-[900px] md:max-w-[60vw] aspect-[3/2]">
+        {/* 中间主图 —— 3:2，桌面端有明确宽度 */}
+        <div className="relative w-full md:w-[900px] md:max-w-[60vw] md:shrink-0 aspect-[3/2]">
           {photos.map((photo, index) => (
-            <div
+            <Link
               key={photo.id}
-              className={`absolute inset-0 transition-opacity duration-700 ${
-                index === currentIndex ? 'opacity-100 z-10' : 'opacity-0 z-0'
+              href={photo.url || `/photos?region=${photo.region_id}`}
+              onClick={() => setIsAutoPlaying(false)}
+              className={`absolute inset-0 block transition-opacity duration-700 ${
+                index === currentIndex ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'
               }`}
             >
-              <Link
-                href={photo.url || `/photos?region=${photo.region_id}`}
-                className="block w-full h-full"
-                onClick={() => setIsAutoPlaying(false)}
-              >
-                <Image
-                  src={photo.image_url}
-                  alt={photo.title}
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 768px) 100vw, 900px"
-                  loading={index === 0 ? 'eager' : 'lazy'}
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-black/10" />
-                <div className="absolute bottom-0 left-0 right-0 p-4 md:p-8 text-left">
-                  <h3 className="text-xl md:text-3xl font-bold text-white mb-1 md:mb-2 drop-shadow-md">
-                    {photo.title}
-                  </h3>
-                  <div className="text-white/85 text-xs md:text-sm drop-shadow-md">
-                    {photo.location} {photo.date}
-                  </div>
+              <Image
+                src={photo.image_url}
+                alt={photo.title}
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, 900px"
+                loading={index === 0 ? 'eager' : 'lazy'}
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-black/10" />
+              <div className="absolute bottom-0 left-0 right-0 p-4 md:p-8 text-left">
+                <h3 className="text-xl md:text-3xl font-bold text-white mb-1 md:mb-2 drop-shadow-md">
+                  {photo.title}
+                </h3>
+                <div className="text-white/85 text-xs md:text-sm drop-shadow-md">
+                  {photo.location} {photo.date}
                 </div>
-              </Link>
-            </div>
+              </div>
+            </Link>
           ))}
         </div>
 
         {/* 右侧下一张预览 —— 仅桌面 */}
-        {photos[(currentIndex + 1) % photos.length] && (
+        {nextPhoto && (
           <div
-            className="hidden md:flex md:flex-1 md:relative md:min-w-0 cursor-pointer group"
+            className="hidden md:block md:relative md:flex-1 md:min-w-0 cursor-pointer group"
             onClick={goNext}
           >
             <Image
-              src={photos[(currentIndex + 1) % photos.length].image_url}
-              alt="下一张"
+              src={nextPhoto.image_url}
+              alt={nextPhoto.title}
               fill
               className="object-cover transition-transform duration-500 group-hover:scale-105"
               sizes="(min-width: 768px) 25vw"
@@ -197,6 +194,7 @@ export function PhotoCarousel({ photos, isLoading = false }: PhotoCarouselProps)
         )}
       </div>
 
+      {/* dots */}
       <div className="flex justify-center gap-2 mt-4">
         {photos.map((_, index) => (
           <button
