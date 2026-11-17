@@ -135,21 +135,22 @@ export async function GET() {
       .order('order', { ascending: true });
     
     if (error) {
-      console.error('[Tools API] Error reading tools:', error);
-      return NextResponse.json(
-        { success: false, error: 'Failed to read tools' },
-        { status: 500 }
-      );
+      console.warn('[Tools API] Supabase error, using default tools:', error.message);
+      return NextResponse.json({ success: true, data: defaultTools, fallback: true });
+    }
+    
+    // 没有数据也返回兜底
+    if (!data || data.length === 0) {
+      console.warn('[Tools API] No data in Supabase, using default tools');
+      return NextResponse.json({ success: true, data: defaultTools, fallback: true });
     }
     
     const tools = (data as DbTool[]).map(dbToTool);
     return NextResponse.json({ success: true, data: tools });
   } catch (error) {
-    console.error('[Tools API] Error reading tools:', error);
-    return NextResponse.json(
-      { success: false, error: 'Failed to read tools' },
-      { status: 500 }
-    );
+    // Supabase 未配置 → 返回默认数据，不 500
+    console.warn('[Tools API] Supabase unavailable, using default tools:', (error as Error).message);
+    return NextResponse.json({ success: true, data: defaultTools, fallback: true });
   }
 }
 

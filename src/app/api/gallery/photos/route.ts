@@ -26,6 +26,89 @@ export interface GalleryPhoto {
   };
 }
 
+// ===== 默认本地照片（Supabase 不可用时的兜底数据） =====
+// 使用 public/assets 下已有的本地图片，保证本地预览完整可用
+const FALLBACK_PHOTOS: GalleryPhoto[] = [
+  {
+    id: 1,
+    title: '元阳梯田',
+    region_id: 124,
+    date: '2026-01',
+    year: 2026,
+    image_key: 'assets/yunnan-025.jpg',
+    image_url: '/assets/yunnan-025.jpg',
+    url: 'https://lyrrocket.quickconnect.cn/mo/sharing/TVaRw7iRq',
+    category: '国内旅行',
+    created_at: new Date().toISOString(),
+    region: { id: 124, name: '云南', type: 'china' },
+  },
+  {
+    id: 2,
+    title: '新天鹅堡',
+    region_id: 800,
+    date: '2025-12',
+    year: 2025,
+    image_key: 'assets/germany-031.jpg',
+    image_url: '/assets/germany-031.jpg',
+    url: 'https://lyrrocket.quickconnect.cn/mo/sharing/a9FuKhqcd',
+    category: '国际旅行',
+    created_at: new Date().toISOString(),
+    region: { id: 800, name: '德国', type: 'world' },
+  },
+  {
+    id: 3,
+    title: '马特洪峰',
+    region_id: 803,
+    date: '2025-10',
+    year: 2025,
+    image_key: 'assets/europe-053.jpg',
+    image_url: '/assets/europe-053.jpg',
+    url: 'https://lyrrocket.quickconnect.cn/mo/sharing/t2SsMNSu8',
+    category: '国际旅行',
+    created_at: new Date().toISOString(),
+    region: { id: 803, name: '瑞士', type: 'world' },
+  },
+  {
+    id: 4,
+    title: '武功山',
+    region_id: 113,
+    date: '2025-09',
+    year: 2025,
+    image_key: 'assets/jiangxi-032.jpg',
+    image_url: '/assets/jiangxi-032.jpg',
+    url: 'https://lyrrocket.quickconnect.cn/mo/sharing/36y3K2gm1',
+    category: '国内旅行',
+    created_at: new Date().toISOString(),
+    region: { id: 113, name: '江西', type: 'china' },
+  },
+  {
+    id: 5,
+    title: '国清寺',
+    region_id: 110,
+    date: '2025-07',
+    year: 2025,
+    image_key: 'assets/zhejiang-003.jpg',
+    image_url: '/assets/zhejiang-003.jpg',
+    url: 'https://lyrrocket.quickconnect.cn/mo/sharing/ghF4s7F9D',
+    category: '国内旅行',
+    created_at: new Date().toISOString(),
+    region: { id: 110, name: '浙江', type: 'china' },
+  },
+  {
+    id: 6,
+    title: '千户苗寨',
+    region_id: 123,
+    date: '2025-05',
+    year: 2025,
+    image_key: 'assets/guizhou-036.jpg',
+    image_url: '/assets/guizhou-036.jpg',
+    url: 'https://lyrrocket.quickconnect.cn/mo/sharing/1ylcTSRaI',
+    category: '国内旅行',
+    created_at: new Date().toISOString(),
+    region: { id: 123, name: '贵州', type: 'china' },
+  },
+];
+
 // 获取所有照片
 export async function GET() {
   try {
@@ -37,8 +120,14 @@ export async function GET() {
       .order('date', { ascending: false });
 
     if (error) {
-      console.error('获取照片失败:', error);
-      return NextResponse.json({ error: '获取照片失败' }, { status: 500 });
+      console.warn('[Gallery API] Supabase error, using fallback photos:', error.message);
+      return NextResponse.json({ photos: FALLBACK_PHOTOS, fallback: true });
+    }
+
+    // 没有数据也返回兜底（避免空 gallery）
+    if (!data || data.length === 0) {
+      console.warn('[Gallery API] No data in Supabase, using fallback photos');
+      return NextResponse.json({ photos: FALLBACK_PHOTOS, fallback: true });
     }
 
     // 为每张照片刷新签名 URL
@@ -61,8 +150,9 @@ export async function GET() {
 
     return NextResponse.json({ photos: photosWithUrls });
   } catch (error) {
-    console.error('获取照片失败:', error);
-    return NextResponse.json({ error: '获取照片失败' }, { status: 500 });
+    // Supabase 未配置或连接失败 → 返回本地兜底数据，不 500
+    console.warn('[Gallery API] Supabase unavailable, using fallback photos:', (error as Error).message);
+    return NextResponse.json({ photos: FALLBACK_PHOTOS, fallback: true });
   }
 }
 
