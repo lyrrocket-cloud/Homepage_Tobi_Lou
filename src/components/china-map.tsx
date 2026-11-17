@@ -299,7 +299,7 @@ export function ChinaMap({ onRegionClick, selectedRegion, visitedRegions = new S
       </ComposableMap>
 
       {/* 左上角统计信息 */}
-      <div className="absolute top-3 left-3 bg-black/80 backdrop-blur-sm text-white px-3 py-1.5 rounded-lg shadow-lg text-sm font-medium z-50">
+      <div className="absolute top-3 left-3 text-white text-sm font-medium z-50 drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]">
         <span className="text-[#CEA472]">{(() => {
           // 计算已访问的中国省份数量
           const chinaProvinceIds = new Set(Object.values(provinceNameToId));
@@ -317,7 +317,7 @@ export function ChinaMap({ onRegionClick, selectedRegion, visitedRegions = new S
       {/* Tooltip - 固定在容器右上角 */}
       {tooltip.show && (
         <div
-          className="absolute top-3 right-3 pointer-events-none bg-black/80 backdrop-blur-sm text-white px-3 py-1.5 rounded-lg shadow-lg text-sm font-medium z-50"
+          className="absolute top-3 right-3 pointer-events-none text-white text-sm font-medium z-50 drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]"
         >
           {tooltip.content}
         </div>
