@@ -64,7 +64,7 @@ export function PhotoCarousel({ photos }: PhotoCarouselProps) {
   return (
     <div className="relative w-full">
       {/* 轮播容器 */}
-      <div className="relative w-full aspect-[16/9] max-h-[600px] overflow-hidden rounded-2xl bg-black/40 backdrop-blur-md border border-[#CEA472]/20">
+      <div className="relative w-full aspect-[16/9] max-h-[600px] overflow-hidden bg-black/40 backdrop-blur-md">
         {/* 左侧上一张预览 */}
         {prevPhoto && (
           <div className="absolute left-0 top-0 w-1/5 h-full opacity-60 transition-opacity hover:opacity-80">
