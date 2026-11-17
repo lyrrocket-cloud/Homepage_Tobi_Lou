@@ -1,6 +1,10 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
+  // coze-coding-dev-sdk 的输出依赖 rslib 运行时，交给 Node 直接 require（CJS），
+  // 避免被 webpack 打包后出现 "__webpack_require__.add is not a function"
+  serverExternalPackages: ['coze-coding-dev-sdk'],
+
   // 图片优化配置
   images: {
     // 完全禁用图片优化，避免缓存目录创建失败（只读文件系统）
