@@ -243,3 +243,166 @@ body {
 .animate-fadeIn {
   animation: fadeIn 0.2s ease-out forwards;
 }
+
+/* ===== 基础 keyframes：slow spin ===== */
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+.animate-spin-slow {
+  animation: spin-slow 20s linear infinite;
+}
+
+/* ===== 滚动平滑 ===== */
+html {
+  scroll-behavior: smooth;
+}
+
+/* ===== 背景光斑漂移 ===== */
+@keyframes drift-a {
+  0%   { transform: translate(0, 0) scale(1); }
+  50%  { transform: translate(80px, -60px) scale(1.2); }
+  100% { transform: translate(-40px, 30px) scale(0.95); }
+}
+@keyframes drift-b {
+  0%   { transform: translate(0, 0) scale(1); }
+  50%  { transform: translate(-60px, 80px) scale(1.15); }
+  100% { transform: translate(40px, -40px) scale(1.05); }
+}
+@keyframes drift-c {
+  0%   { transform: translate(0, 0) scale(1); opacity: 0.06; }
+  50%  { transform: translate(30px, -30px) scale(1.3); opacity: 0.1; }
+  100% { transform: translate(-30px, 30px) scale(1); opacity: 0.06; }
+}
+
+.bg-blob-a {
+  position: absolute;
+  width: 720px;
+  height: 720px;
+  top: -200px;
+  left: -200px;
+  background: radial-gradient(circle, rgba(206, 164, 114, 0.18) 0%, rgba(206, 164, 114, 0.04) 45%, transparent 70%);
+  filter: blur(40px);
+  pointer-events: none;
+  animation: drift-a 28s ease-in-out infinite alternate;
+}
+.bg-blob-b {
+  position: absolute;
+  width: 640px;
+  height: 640px;
+  bottom: -180px;
+  right: -160px;
+  background: radial-gradient(circle, rgba(0, 45, 40, 0.35) 0%, rgba(0, 45, 40, 0.08) 50%, transparent 70%);
+  filter: blur(45px);
+  pointer-events: none;
+  animation: drift-b 34s ease-in-out infinite alternate;
+}
+.bg-blob-c {
+  position: absolute;
+  width: 420px;
+  height: 420px;
+  top: 45%;
+  left: 55%;
+  background: radial-gradient(circle, rgba(206, 164, 114, 0.12) 0%, transparent 65%);
+  filter: blur(35px);
+  pointer-events: none;
+  animation: drift-c 22s ease-in-out infinite alternate;
+}
+
+/* ===== 滚动进度条 ===== */
+.scroll-progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #CEA472, rgba(206, 164, 114, 0.4));
+  z-index: 200;
+  transform-origin: left;
+  will-change: transform;
+  box-shadow: 0 0 12px rgba(206, 164, 114, 0.6);
+}
+
+/* ===== Hero 入场 ===== */
+@keyframes hero-fade-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes hero-avatar-in {
+  0%   { opacity: 0; transform: scale(0.8); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+.animate-hero-title   { animation: hero-fade-up 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) 0.1s both; }
+.animate-hero-sub     { animation: hero-fade-up 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) 0.3s both; }
+.animate-hero-avatar  { animation: hero-avatar-in 1.1s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+
+/* ===== Scroll Reveal ===== */
+.reveal {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 0.85s cubic-bezier(0.2, 0.8, 0.2, 1),
+              transform 0.85s cubic-bezier(0.2, 0.8, 0.2, 1);
+  will-change: opacity, transform;
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.reveal-delayed-1 { transition-delay: 80ms; }
+.reveal-delayed-2 { transition-delay: 160ms; }
+.reveal-delayed-3 { transition-delay: 240ms; }
+.reveal-delayed-4 { transition-delay: 320ms; }
+
+/* ===== 地图 pulse 发光（已访问区域） ===== */
+@keyframes visited-pulse {
+  0%, 100% { filter: drop-shadow(0 0 2px rgba(206, 164, 114, 0.4)); }
+  50%      { filter: drop-shadow(0 0 7px rgba(206, 164, 114, 0.9)); }
+}
+.visited-glow {
+  animation: visited-pulse 3.5s ease-in-out infinite;
+}
+
+/* ===== 鼠标聚光层 ===== */
+.cursor-glow {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 90;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+@media (pointer: coarse) {
+  .cursor-glow { opacity: 0; }
+}
+
+/* ===== 骨架屏 shimmer 加载动效 ===== */
+@keyframes skeleton-shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+.skeleton-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(206, 164, 114, 0.04) 0%,
+    rgba(206, 164, 114, 0.14) 40%,
+    rgba(206, 164, 114, 0.04) 80%
+  );
+  background-size: 800px 100%;
+  animation: skeleton-shimmer 1.6s ease-in-out infinite;
+}
+
+/* 骨架屏淡入淡出过渡 */
+@keyframes skeleton-fade-out {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+@keyframes content-fade-in {
+  from { opacity: 0; transform: scale(1.01); }
+  to   { opacity: 1; transform: scale(1); }
+}
+.skeleton-exit {
+  animation: skeleton-fade-out 0.4s ease forwards;
+}
+.carousel-content-enter {
+  animation: content-fade-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}

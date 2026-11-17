@@ -27,18 +27,18 @@ export function GlobalNav() {
   const toolsRef = useRef<HTMLDivElement>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // 获取工具列表（只保留旅行工具箱和视频工作流）
+  // 获取工具列表（优先保留旅行工具箱/视频工作流，过滤后为空则显示全部）
   useEffect(() => {
     const fetchTools = async () => {
       try {
         const response = await fetch('/api/tools');
         const result = await response.json();
         if (result.success && result.data && result.data.length > 0) {
-          // 过滤只保留指定工具
-          const filteredTools = result.data.filter((tool: Tool) =>
-            tool.name === '旅行工具箱' || tool.name === '视频工作流'
+          // 优先过滤指定工具，没有则显示全部
+          const filtered = result.data.filter(
+            (tool: Tool) => tool.name === '旅行工具箱' || tool.name === '视频工作流'
           );
-          setTools(filteredTools);
+          setTools(filtered.length > 0 ? filtered : result.data);
         }
       } catch (error) {
         console.error('Failed to fetch tools:', error);

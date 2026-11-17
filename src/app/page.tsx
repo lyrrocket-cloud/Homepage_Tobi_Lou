@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -329,9 +329,66 @@ function VisitTracker() {
   );
 }
 
+// ===== 滚动可见 hook =====
+function useInView<T extends HTMLElement>(options?: IntersectionObserverInit) {
+  const ref = useRef<T | null>(null);
+  const [inView, setInView] = useState(false);
+  const [onceVisible, setOnceVisible] = useState(false);
+
+  useEffect(() => {
+    const node = ref.current;
+    if (!node) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setInView(true);
+          setOnceVisible(true);
+        } else {
+          setInView(false);
+        }
+      },
+      { threshold: 0.15, rootMargin: '0px 0px -60px 0px', ...options }
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [options]);
+
+  return { ref, inView, onceVisible };
+}
+
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [carouselPhotos, setCarouselPhotos] = useState<Photo[]>([]);
+  const [scrollProgress, setScrollProgress] = useState(0);
+
+  // 滚动进度（rAF 节流）
+  useEffect(() => {
+    let rafId = 0;
+    const onScroll = () => {
+      cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(() => {
+        const doc = document.documentElement;
+        const total = doc.scrollHeight - doc.clientHeight;
+        const pct = total > 0 ? doc.scrollTop / total : 0;
+        setScrollProgress(pct);
+      });
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      cancelAnimationFrame(rafId);
+    };
+  }, []);
+
+  // 各 section 的可见性
+  const hero          = useInView<HTMLElement>();
+  const carousel      = useInView<HTMLElement>();
+  const visits        = useInView<HTMLElement>();
+  const visitsLegend  = useInView<HTMLDivElement>();
+  const worldTracker  = useInView<HTMLDivElement>();
+  const chinaTracker  = useInView<HTMLDivElement>();
+  const footer        = useInView<HTMLElement>();
 
   // 获取最新的9张照片用于轮播
   useEffect(() => {
@@ -359,12 +416,18 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-transparent text-white relative font-sans">
+      {/* 滚动进度条 */}
+      <div
+        className="scroll-progress-bar"
+        style={{ transform: `scaleX(${scrollProgress})` }}
+      />
+
       {/* Hero 区域 */}
-      <section className="relative py-20 pt-32 px-4">
+      <section ref={hero.ref} className="relative py-20 pt-32 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col items-center text-center">
             {/* 头像 */}
-            <div className="relative mb-8">
+            <div className={`relative mb-8 ${hero.onceVisible ? 'animate-hero-avatar' : 'opacity-0 scale-90 transition-all duration-500'}`}>
               {/* 发光效果 */}
               <div className="absolute inset-0 bg-[#CEA472] rounded-full blur-2xl opacity-30 scale-110 animate-pulse" />
               {/* 头像容器 */}
@@ -385,13 +448,13 @@ export default function Home() {
 
             {/* 标题和介绍 */}
             <div className="relative z-10">
-              <h2 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
+              <h2 className={`text-5xl md:text-7xl font-bold mb-6 leading-tight ${hero.onceVisible ? 'animate-hero-title' : 'opacity-0'}`}>
                 <span className="text-[#FFFFFF]">你好，我是</span>
                 <br />
                 <span className="text-[#CEA472]">Tobi Lou</span>
               </h2>
               
-              <p className="text-lg md:text-xl text-[#FFFFFF]/70 max-w-2xl mx-auto leading-relaxed">
+              <p className={`text-lg md:text-xl text-[#FFFFFF]/70 max-w-2xl mx-auto leading-relaxed ${hero.onceVisible ? 'animate-hero-sub' : 'opacity-0'}`}>
                 志之所趋，无远弗届
               </p>
             </div>
@@ -400,7 +463,10 @@ export default function Home() {
       </section>
 
       {/* 照片轮播区域 */}
-      <section className="relative py-12">
+      <section
+        ref={carousel.ref}
+        className={`relative py-12 reveal ${carousel.onceVisible ? 'is-visible' : ''}`}
+      >
         <div className="px-4">
           <div className="max-w-7xl mx-auto">
             <div className="flex items-center gap-3 mb-6">
@@ -411,11 +477,15 @@ export default function Home() {
             </div>
           </div>
         </div>
-        <PhotoCarousel photos={carouselPhotos} />
+        <PhotoCarousel photos={carouselPhotos} isLoading={isLoading} />
       </section>
 
       {/* 旅行打卡区域 */}
-      <section id="visits" className="relative py-20 px-4">
+      <section
+        id="visits"
+        ref={visits.ref}
+        className={`relative py-20 px-4 reveal ${visits.onceVisible ? 'is-visible' : ''}`}
+      >
         <div className="max-w-7xl mx-auto space-y-8">
           {/* 标题区域 */}
           <div className="flex items-center gap-3">
@@ -426,7 +496,7 @@ export default function Home() {
           </div>
 
           {/* 图例 - 两幅地图共用 */}
-          <div className="flex items-center gap-6 text-sm">
+          <div ref={visitsLegend.ref} className={`flex items-center gap-6 text-sm reveal reveal-delayed-1 ${visitsLegend.onceVisible ? 'is-visible' : ''}`}>
             <div className="flex items-center gap-2">
               <div className="w-4 h-4 bg-[#002D28] rounded"></div>
               <span className="text-[#FFFFFF]/70">久居</span>
@@ -442,15 +512,22 @@ export default function Home() {
           </div>
 
           {/* 世界地图 */}
-          <WorldTracker />
+          <div ref={worldTracker.ref} className={`reveal reveal-delayed-2 ${worldTracker.onceVisible ? 'is-visible' : ''}`}>
+            <WorldTracker />
+          </div>
           
           {/* 中国地图 */}
-          <VisitTracker />
+          <div ref={chinaTracker.ref} className={`reveal reveal-delayed-3 ${chinaTracker.onceVisible ? 'is-visible' : ''}`}>
+            <VisitTracker />
+          </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="relative py-12 px-4 bg-black/60 backdrop-blur-sm border-t border-[#CEA472]/10">
+      <footer
+        ref={footer.ref}
+        className={`relative py-12 px-4 bg-black/60 backdrop-blur-sm border-t border-[#CEA472]/10 reveal reveal-delayed-2 ${footer.onceVisible ? 'is-visible' : ''}`}
+      >
         <div className="max-w-7xl mx-auto text-center">
           <div className="flex items-center justify-center gap-3 mb-4">
             <div className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-[#CEA472]/50 shadow-lg shadow-[#CEA472]/30">
@@ -484,21 +561,6 @@ export default function Home() {
           </div>
         </div>
       </footer>
-
-      {/* 自定义样式 */}
-      <style jsx global>{`
-        @keyframes spin-slow {
-          from {
-            transform: rotate(0deg);
-          }
-          to {
-            transform: rotate(360deg);
-          }
-        }
-        .animate-spin-slow {
-          animation: spin-slow 20s linear infinite;
-        }
-      `}</style>
     </div>
   );
 }

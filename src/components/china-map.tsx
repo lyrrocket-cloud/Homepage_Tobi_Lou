@@ -258,6 +258,7 @@ export function ChinaMap({ onRegionClick, selectedRegion, visitedRegions = new S
                   <Geography
                     key={geo.rsmKey}
                     geography={geo}
+                    className={isChecked ? 'visited-glow' : undefined}
                     onClick={() => onRegionClick(regionId, getProvinceName(geo))}
                     onMouseEnter={(e) => handleMouseEnter(geo, e)}
                     onMouseLeave={handleMouseLeave}
@@ -270,6 +271,7 @@ export function ChinaMap({ onRegionClick, selectedRegion, visitedRegions = new S
                         outline: 'none',
                         transition: 'all 0.3s ease',
                         cursor: 'pointer',
+                        filter: isChecked ? 'drop-shadow(0 0 3px rgba(206, 164, 114, 0.7))' : 'none',
                       },
                       hover: {
                         fill: isHome ? '#003d36' : '#CEA472',
@@ -278,6 +280,7 @@ export function ChinaMap({ onRegionClick, selectedRegion, visitedRegions = new S
                         strokeWidth: 1,
                         outline: 'none',
                         cursor: 'pointer',
+                        filter: isChecked ? 'drop-shadow(0 0 9px rgba(206, 164, 114, 1))' : 'drop-shadow(0 0 4px rgba(206, 164, 114, 0.5))',
                       },
                       pressed: {
                         fill: isHome ? '#001f1c' : '#CEA472',
