@@ -198,29 +198,35 @@ function WorldVisitList({ regionId, regionName, onRefresh }: { regionId: number 
     fetchVisits();
   }, [fetchVisits]);
 
-  if (loading) {
-    return (
-      <div className="w-full h-[480px] flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-2 border-[#CEA472] border-t-transparent mx-auto mb-4"></div>
-          <p className="text-white/60">加载中...</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="bg-gradient-to-br from-[#CEA472]/5 to-black/40 rounded-lg border border-[#CEA472]/10 p-4 flex flex-col h-[480px]">
       <div className="flex items-center justify-between mb-4 flex-shrink-0">
-        <h3 className="text-lg font-bold text-[#CEA472]">
+        <h3
+          key={regionName || 'all'}
+          className="text-lg font-bold text-[#CEA472] visit-title-in"
+        >
           {regionName ? regionName : '全部访问记录'}
         </h3>
-        <span className="text-xs text-[#CEA472]/60">
-          共 {visits.length} 条记录
-        </span>
+        {loading ? (
+          <span className="skeleton-shimmer block h-3 w-16 rounded-full" />
+        ) : (
+          <span key={visits.length} className="text-xs text-[#CEA472]/60 visit-title-in">
+            共 {visits.length} 条记录
+          </span>
+        )}
       </div>
-      
-      {visits.length === 0 ? (
+
+      {loading ? (
+        <div className="flex-1 space-y-3 pr-2" key="skeleton">
+          {[0, 1, 2, 3].map((i) => (
+            <div
+              key={i}
+              className="skeleton-shimmer h-[84px] rounded-lg"
+              style={{ animationDelay: `${i * 120}ms` }}
+            />
+          ))}
+        </div>
+      ) : visits.length === 0 ? (
         <div className="flex items-center justify-center flex-1">
           <div className="text-center">
             <MapPin className="w-12 h-12 text-[#CEA472]/50 mx-auto mb-3" />
@@ -230,12 +236,13 @@ function WorldVisitList({ regionId, regionName, onRefresh }: { regionId: number 
           </div>
         </div>
       ) : (
-        <div className="flex-1 overflow-y-auto space-y-3 pr-2">
-          {visits.map((visit) => (
+        <div key={regionId ?? 'all'} className="flex-1 overflow-y-auto space-y-3 pr-2">
+          {visits.map((visit, index) => (
             <div
               key={visit.id}
               onClick={() => handleClick(visit.url)}
-              className={`bg-black/40 border border-[#CEA472]/10 hover:border-[#CEA472]/30 rounded-lg overflow-hidden transition-all duration-300 hover:bg-black/60 flex ${visit.url ? 'cursor-pointer' : ''}`}
+              style={{ animationDelay: `${Math.min(index, 8) * 70}ms` }}
+              className={`visit-card-in bg-black/40 border border-[#CEA472]/10 hover:border-[#CEA472]/30 rounded-lg overflow-hidden transition-all duration-300 hover:bg-black/60 flex ${visit.url ? 'cursor-pointer' : ''}`}
             >
               {/* 左侧：文字信息 */}
               <div className="flex-1 p-3 flex flex-col justify-center">
