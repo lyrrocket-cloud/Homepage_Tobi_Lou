@@ -399,6 +399,27 @@ export default function Home() {
         </div>
       </section>
 
+      {/* 同步数据按钮 - 固定在最右上角 */}
+      <a
+        href="/admin/sync"
+        className="fixed top-4 right-4 z-50 p-2 rounded-md bg-black/40 backdrop-blur-md hover:bg-[#CEA472]/20 transition-all duration-300"
+        title="数据同步"
+      >
+        <svg
+          className="w-4 h-4 text-[#CEA472]"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+          />
+        </svg>
+      </a>
+
       {/* 照片轮播区域 */}
       <section className="relative py-12">
         <div className="px-4">

@@ -139,7 +139,7 @@ export function PhotoCarousel({ photos }: PhotoCarouselProps) {
           className="absolute left-0 top-0 bottom-0 w-1/5 z-20 flex items-center justify-center group hover:bg-black/20 transition-colors"
           aria-label="上一张"
         >
-          <div className="p-3 rounded-full bg-black/60 backdrop-blur-md border border-[#CEA472]/30 hover:border-[#CEA472]/50 hover:bg-[#CEA472]/20 transition-all duration-300 group-hover:scale-110">
+          <div className="p-3 rounded-full bg-black/60 backdrop-blur-md hover:bg-[#CEA472]/20 transition-all duration-300 group-hover:scale-110">
             <ChevronLeft className="w-6 h-6 text-[#CEA472]" />
           </div>
         </button>
@@ -150,7 +150,7 @@ export function PhotoCarousel({ photos }: PhotoCarouselProps) {
           className="absolute right-0 top-0 bottom-0 w-1/5 z-20 flex items-center justify-center group hover:bg-black/20 transition-colors"
           aria-label="下一张"
         >
-          <div className="p-3 rounded-full bg-black/60 backdrop-blur-md border border-[#CEA472]/30 hover:border-[#CEA472]/50 hover:bg-[#CEA472]/20 transition-all duration-300 group-hover:scale-110">
+          <div className="p-3 rounded-full bg-black/60 backdrop-blur-md hover:bg-[#CEA472]/20 transition-all duration-300 group-hover:scale-110">
             <ChevronRight className="w-6 h-6 text-[#CEA472]" />
           </div>
         </button>
