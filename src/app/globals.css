@@ -484,3 +484,123 @@ html {
 .carousel-slide-snap {
   transition: none;
 }
+
+/* ===== 照片集 · 页面区块入场 ===== */
+@keyframes section-fade-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-section-in {
+  animation: section-fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.animate-section-delay-1 { animation-delay: 80ms; }
+.animate-section-delay-2 { animation-delay: 160ms; }
+.animate-section-delay-3 { animation-delay: 240ms; }
+
+/* ===== 照片集 · 筛选标签入场 ===== */
+@keyframes chip-pop-in {
+  from { opacity: 0; transform: translateY(8px) scale(0.92); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.animate-chip-in {
+  animation: chip-pop-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* ===== 照片集 · 时间轴项入场 ===== */
+@keyframes timeline-dot-in {
+  from { opacity: 0; transform: translateX(-10px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+.timeline-item {
+  animation: timeline-dot-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* ===== 照片集 · 卡片交错入场 ===== */
+@keyframes photo-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.96);
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+.photo-card {
+  animation: photo-card-in 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+/* 交错延迟：每 60ms 错峰 */
+.photo-card:nth-child(1n)  { animation-delay: calc(var(--pc-delay, 0) + 0ms); }
+.photo-card:nth-child(2n)  { animation-delay: calc(var(--pc-delay, 0) + 60ms); }
+.photo-card:nth-child(3n)  { animation-delay: calc(var(--pc-delay, 0) + 120ms); }
+.photo-card:nth-child(4n)  { animation-delay: calc(var(--pc-delay, 0) + 180ms); }
+.photo-card:nth-child(5n)  { animation-delay: calc(var(--pc-delay, 0) + 240ms); }
+.photo-card:nth-child(6n)  { animation-delay: calc(var(--pc-delay, 0) + 300ms); }
+.photo-card:nth-child(7n)  { animation-delay: calc(var(--pc-delay, 0) + 360ms); }
+.photo-card:nth-child(8n)  { animation-delay: calc(var(--pc-delay, 0) + 420ms); }
+
+/* 网格容器：筛选切换时短暂淡出再淡入 */
+.photo-grid-fade {
+  animation: section-fade-up 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* ===== 照片集 · 骨架屏 ===== */
+.photo-grid-skeleton {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+@media (min-width: 640px) {
+  .photo-grid-skeleton { grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+}
+@media (min-width: 1024px) {
+  .photo-grid-skeleton { grid-template-columns: repeat(3, 1fr); }
+}
+@media (min-width: 1280px) {
+  .photo-grid-skeleton { grid-template-columns: repeat(4, 1fr); }
+}
+
+.photo-skeleton-card {
+  border: 1px solid rgba(206, 164, 114, 0.1);
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 0.5rem;
+  overflow: hidden;
+  animation: photo-card-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.photo-skeleton-card .skel-image {
+  aspect-ratio: 4 / 3;
+  width: 100%;
+  background: linear-gradient(
+    90deg,
+    rgba(206, 164, 114, 0.06) 0%,
+    rgba(206, 164, 114, 0.18) 42%,
+    rgba(206, 164, 114, 0.06) 80%
+  );
+  background-size: 800px 100%;
+  animation: skeleton-shimmer 1.6s ease-in-out infinite;
+}
+.photo-skeleton-card .skel-meta {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.photo-skeleton-card .skel-line {
+  height: 14px;
+  border-radius: 4px;
+  background: linear-gradient(
+    90deg,
+    rgba(206, 164, 114, 0.06) 0%,
+    rgba(206, 164, 114, 0.18) 42%,
+    rgba(206, 164, 114, 0.06) 80%
+  );
+  background-size: 400px 100%;
+  animation: skeleton-shimmer 1.6s ease-in-out infinite;
+}
+.photo-skeleton-card .skel-line.short { width: 60%; }
+.photo-skeleton-card .skel-line.xshort { width: 40%; height: 12px; opacity: 0.7; }
+.photo-skeleton-card:nth-child(2n) { animation-delay: 60ms; }
+.photo-skeleton-card:nth-child(3n) { animation-delay: 120ms; }
+.photo-skeleton-card:nth-child(4n) { animation-delay: 180ms; }

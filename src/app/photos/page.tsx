@@ -506,9 +506,9 @@ function PhotoGalleryContent() {
           )}
 
           {/* 左侧时间轴 */}
-          <aside className={`min-h-[calc(100vh-65px)] sticky top-[65px] self-start transition-all duration-300 overflow-hidden ${
+          <aside className={`min-h-[calc(100vh-65px)] sticky top-[65px] self-start transition-all duration-300 overflow-hidden animate-section-in ${
             isTimelineVisible ? 'w-48' : 'w-0 lg:w-48'
-          }`}>
+          }`} style={{ animationDelay: '120ms' }}>
             <div className={`relative h-full py-6 w-48 ${isTimelineVisible ? 'opacity-100' : 'opacity-0 lg:opacity-100'} transition-opacity duration-300`}>
               {isTimelineVisible && (
                 <button
@@ -547,13 +547,13 @@ function PhotoGalleryContent() {
 
                   {/* 年份列表 */}
                   <div className="space-y-1 mb-2">
-                    {years.map((year) => {
+                    {years.map((year, i) => {
                       const count = getYearCount(year);
                       const isActive = selectedYear === year;
                       const hasPhotos = count > 0;
                       
                       return (
-                        <div key={year} className="relative pl-10 group/item">
+                        <div key={year} className="relative pl-10 group/item timeline-item" style={{ animationDelay: `${160 + i * 40}ms` }}>
                           <span className={`absolute left-3 w-2.5 h-2.5 rounded-full border-2 transition-all ${
                             isActive ? 'bg-[#CEA472] border-[#CEA472] scale-110'
                               : hasPhotos ? 'bg-[#0a0a0f] border-[#CEA472]/50 group-hover/item:border-[#CEA472] group-hover/item:scale-110'
@@ -577,13 +577,13 @@ function PhotoGalleryContent() {
                   </div>
 
                   {/* 特殊年份 */}
-                  {specialYears.map((special) => {
+                  {specialYears.map((special, i) => {
                     const count = getSpecialYearCount(special.id);
                     const isActive = selectedYear === special.id;
                     const hasPhotos = count > 0;
                     
                     return (
-                      <div key={special.id} className="relative pl-10">
+                      <div key={special.id} className="relative pl-10 timeline-item" style={{ animationDelay: `${160 + (years.length + i) * 40}ms` }}>
                         <span className={`absolute left-3 w-2.5 h-2.5 rounded-full border-2 transition-all ${
                           isActive ? 'bg-[#CEA472] border-[#CEA472] scale-110'
                             : hasPhotos ? 'bg-[#0a0a0f] border-[#CEA472]/50'
@@ -614,29 +614,31 @@ function PhotoGalleryContent() {
           {/* 右侧内容区 */}
           <main className="flex-1 p-6">
             {/* 分类筛选栏 */}
-            <div className="mb-6 flex items-center gap-3 flex-wrap">
+            <div className="mb-6 flex items-center gap-3 flex-wrap animate-section-in" style={{ animationDelay: '200ms' }}>
               <span className="text-sm text-gray-400">分类：</span>
               <button
                 onClick={() => setSelectedCategories([])}
-                className={`px-4 py-1.5 rounded-full text-sm transition-all border ${
+                className={`animate-chip-in px-4 py-1.5 rounded-full text-sm transition-all border ${
                   selectedCategories.length === 0
                     ? 'bg-[#CEA472] text-[#0a0a0f] font-medium border-[#CEA472]'
                     : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white border-[#CEA472]/20'
                 }`}
+                style={{ animationDelay: '220ms' }}
               >
                 全部
               </button>
               <span className="text-[#CEA472]/30">|</span>
-              {categories.map((cat) => {
+              {categories.map((cat, i) => {
                 const isActive = selectedCategories.includes(cat.id);
                 return (
                   <button
                     key={cat.id}
                     onClick={() => toggleCategoryFilter(cat.id)}
-                    className={`px-4 py-1.5 rounded-full text-sm transition-all border ${
+                    className={`animate-chip-in px-4 py-1.5 rounded-full text-sm transition-all border ${
                       isActive ? 'bg-[#CEA472] text-[#0a0a0f] font-medium border-[#CEA472]'
                         : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white border-[#CEA472]/20'
                     }`}
+                    style={{ animationDelay: `${280 + i * 60}ms` }}
                   >
                     {cat.name}
                   </button>
@@ -645,7 +647,7 @@ function PhotoGalleryContent() {
             </div>
 
             {/* 标题 + 管理按钮 */}
-            <div className="mb-6 flex items-center justify-between">
+            <div className="mb-6 flex items-center justify-between animate-section-in" style={{ animationDelay: '300ms' }}>
               <h2 className="text-xl font-semibold text-white flex items-center gap-2">
                 {selectedYear === 'all' ? '全部照片' : 
                   typeof selectedYear === 'number' ? `${selectedYear}年` :
@@ -662,21 +664,33 @@ function PhotoGalleryContent() {
 
             {/* 照片网格 */}
             {isLoading ? (
-              <div className="flex items-center justify-center h-64">
-                <Loader2 className="w-8 h-8 text-[#CEA472] animate-spin" />
+              <div className="photo-grid-skeleton animate-section-in" style={{ animationDelay: '400ms' }}>
+                {Array.from({ length: 8 }).map((_, i) => (
+                  <div key={i} className="photo-skeleton-card">
+                    <div className="skel-image" />
+                    <div className="skel-meta">
+                      <div className="skel-line short" />
+                      <div className="skel-line xshort" />
+                    </div>
+                  </div>
+                ))}
               </div>
             ) : filteredPhotos.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-64 text-gray-500">
+              <div className="flex flex-col items-center justify-center h-64 text-gray-500 animate-section-in" style={{ animationDelay: '400ms' }}>
                 <Camera className="w-12 h-12 mb-4 opacity-50" />
                 <p>暂无照片</p>
                 <p className="text-sm mt-1">点击右上角"管理"添加照片</p>
               </div>
             ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
-                {filteredPhotos.map((photo) => (
+              <div 
+                className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 photo-grid-fade"
+                key={`${selectedYear}-${selectedCategories.join(',')}`}
+              >
+                {filteredPhotos.map((photo, idx) => (
                   <Card 
                     key={photo.id} 
-                    className="group border border-[#CEA472]/10 bg-black/40 backdrop-blur-sm hover:border-[#CEA472]/50 hover:bg-black/60 transition-all duration-500 cursor-pointer overflow-hidden"
+                    className="photo-card group border border-[#CEA472]/10 bg-black/40 backdrop-blur-sm hover:border-[#CEA472]/50 hover:bg-black/60 transition-all duration-500 cursor-pointer overflow-hidden"
+                    style={{ ['--pc-delay' as string]: `${idx * 40}ms` }}
                     onClick={() => {
                       if (photo.url) {
                         window.open(photo.url, '_blank');
