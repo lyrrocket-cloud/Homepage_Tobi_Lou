@@ -35,19 +35,48 @@ function getSlideOffset(index: number, current: number, total: number) {
 export function PhotoCarousel({ photos, isLoading = false }: PhotoCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const [decodedSources, setDecodedSources] = useState<Set<string>>(new Set());
+  const arePhotosReady =
+    photos.length > 0 && photos.every((photo) => decodedSources.has(photo.image_url));
+
+  // 先在后台完整下载并解码照片，再一次性展示，避免渐进式 JPEG 半幅出现
+  useEffect(() => {
+    let cancelled = false;
+
+    photos.forEach((photo) => {
+      const image = new window.Image();
+      image.src = photo.image_url;
+      image
+        .decode()
+        .catch(() => undefined)
+        .then(() => {
+          if (cancelled) return;
+          setDecodedSources((previous) => {
+            if (previous.has(photo.image_url)) return previous;
+            const next = new Set(previous);
+            next.add(photo.image_url);
+            return next;
+          });
+        });
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [photos]);
 
   // 触摸滑动
   const touchStartX = useRef<number | null>(null);
   const touchDeltaX = useRef(0);
 
-  // 自动轮播
+  // 自动轮播：等首批照片完整解码后再开始计时
   useEffect(() => {
-    if (!isAutoPlaying || photos.length <= 1) return;
+    if (!isAutoPlaying || photos.length <= 1 || !arePhotosReady) return;
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % photos.length);
     }, 5000);
     return () => clearInterval(interval);
-  }, [isAutoPlaying, photos.length]);
+  }, [isAutoPlaying, photos.length, arePhotosReady]);
 
   const goToSlide = (index: number) => {
     setIsAutoPlaying(false);
@@ -90,8 +119,8 @@ export function PhotoCarousel({ photos, isLoading = false }: PhotoCarouselProps)
     );
   });
 
-  // ===== 骨架屏（full-bleed：两侧预览延伸到边缘，中间主图 3:2）=====
-  if (isLoading) {
+  // ===== 数据请求和照片解码期间都保留骨架屏 =====
+  if (isLoading || (photos.length > 0 && !arePhotosReady)) {
     return (
       <div className="carousel-content-enter">
         {/* 占位容器尺寸与真实舞台一致，加载时不会塌陷 */}
