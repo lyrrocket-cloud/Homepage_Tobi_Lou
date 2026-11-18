@@ -199,7 +199,7 @@ function WorldVisitList({ regionId, regionName, onRefresh }: { regionId: number 
   }, [fetchVisits]);
 
   return (
-    <div className="bg-gradient-to-br from-[#CEA472]/5 to-black/40 rounded-lg border border-[#CEA472]/10 p-4 flex flex-col h-[480px]">
+    <div className="bg-gradient-to-br from-[#CEA472]/5 to-black/40 p-4 flex flex-col h-[480px]">
       <div className="flex items-center justify-between mb-4 flex-shrink-0">
         <h3
           key={regionName || 'all'}
@@ -242,7 +242,7 @@ function WorldVisitList({ regionId, regionName, onRefresh }: { regionId: number 
               key={visit.id}
               onClick={() => handleClick(visit.url)}
               style={{ animationDelay: `${Math.min(index, 8) * 70}ms` }}
-              className={`visit-card-in bg-black/40 border border-[#CEA472]/10 hover:border-[#CEA472]/30 rounded-lg overflow-hidden transition-all duration-300 hover:bg-black/60 flex ${visit.url ? 'cursor-pointer' : ''}`}
+              className={`visit-card-in bg-black/40 hover:bg-black/60 transition-all duration-300 flex ${visit.url ? 'cursor-pointer' : ''}`}
             >
               {/* 左侧：文字信息 */}
               <div className="flex-1 p-3 flex flex-col justify-center">
@@ -262,7 +262,7 @@ function WorldVisitList({ regionId, regionName, onRefresh }: { regionId: number 
               
               {/* 右侧：图片 */}
               {visit.image_url && (
-                <div className="relative w-20 h-20 flex-shrink-0">
+                <div className="relative aspect-[3/2] h-[72px] flex-shrink-0">
                   <Image
                     src={visit.image_url}
                     alt={visit.title}
