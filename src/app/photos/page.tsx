@@ -614,10 +614,10 @@ function PhotoGalleryContent() {
               <span className="text-sm text-gray-400">分类：</span>
               <button
                 onClick={() => setSelectedCategories([])}
-                className={`animate-chip-in px-4 py-1.5 text-sm transition-all ${
+                className={`animate-chip-in px-2 py-1.5 text-sm font-medium transition-colors ${
                   selectedCategories.length === 0
-                    ? 'bg-[#CEA472] text-[#0a0a0f] font-medium'
-                    : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white'
+                    ? 'text-[#CEA472]'
+                    : 'text-[#FFFFFF]/80 hover:text-[#CEA472]'
                 }`}
                 style={{ animationDelay: '220ms' }}
               >
@@ -630,9 +630,9 @@ function PhotoGalleryContent() {
                   <button
                     key={cat.id}
                     onClick={() => toggleCategoryFilter(cat.id)}
-                    className={`animate-chip-in px-4 py-1.5 text-sm transition-all ${
-                      isActive ? 'bg-[#CEA472] text-[#0a0a0f] font-medium'
-                        : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white'
+                    className={`animate-chip-in px-2 py-1.5 text-sm font-medium transition-colors ${
+                      isActive ? 'text-[#CEA472]'
+                        : 'text-[#FFFFFF]/80 hover:text-[#CEA472]'
                     }`}
                     style={{ animationDelay: `${280 + i * 60}ms` }}
                   >
