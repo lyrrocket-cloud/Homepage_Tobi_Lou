@@ -77,8 +77,18 @@ function PhotoGalleryLoading() {
         <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/80 to-black/90" />
         <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-transparent to-black/60" />
       </div>
-      <div className="relative z-10 flex items-center justify-center min-h-screen">
-        <Loader2 className="w-8 h-8 text-[#CEA472] animate-spin" />
+      <div className="relative z-10 max-w-7xl mx-auto px-6 pt-28">
+        <div className="photo-grid-skeleton">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <div key={i} className="photo-skeleton-card">
+              <div className="skel-image" />
+              <div className="skel-meta">
+                <div className="skel-line short" />
+                <div className="skel-line xshort" />
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
