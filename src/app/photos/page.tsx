@@ -498,7 +498,7 @@ function PhotoGalleryContent() {
           {!isTimelineVisible && (
             <button
               onClick={() => setIsTimelineVisible(true)}
-              className="lg:hidden fixed left-0 top-24 z-30 bg-[#CEA472] text-[#0a0a0f] p-1.5 rounded-r-lg shadow-lg"
+              className="lg:hidden fixed left-0 top-24 z-30 bg-[#CEA472] text-[#0a0a0f] p-1.5 shadow-lg"
               title="显示时间轴"
             >
               <Menu className="w-4 h-4" />
@@ -513,7 +513,7 @@ function PhotoGalleryContent() {
               {isTimelineVisible && (
                 <button
                   onClick={() => setIsTimelineVisible(false)}
-                  className="lg:hidden absolute right-2 top-0 z-10 p-1 rounded text-gray-400 hover:text-[#CEA472] transition-colors"
+                  className="lg:hidden absolute right-2 top-0 z-10 p-1 text-gray-400 hover:text-[#CEA472] transition-colors"
                   title="隐藏时间轴"
                 >
                   <ChevronLeft className="w-4 h-4" />
@@ -521,8 +521,6 @@ function PhotoGalleryContent() {
               )}
               
               <div className="relative h-full flex flex-col">
-                <div className="absolute top-0 left-0 right-0 h-8 bg-gradient-to-b from-[#0a0a0f] to-transparent z-10 pointer-events-none" />
-                
                 <div className="flex-1 overflow-y-auto px-2 py-8" style={{ scrollbarWidth: 'none' }}>
                   <div className="absolute left-6 top-8 bottom-8 w-0.5 bg-[#CEA472]/20" />
                   
@@ -536,10 +534,10 @@ function PhotoGalleryContent() {
                           : 'text-gray-400 hover:text-white'
                       }`}
                     >
-                      <span className={`absolute left-3 w-2.5 h-2.5 rounded-full border-2 transition-all ${
+                      <span className={`absolute left-3 w-2.5 h-2.5 rounded-full transition-all ${
                         selectedYear === 'all' && selectedCategories.length === 0
-                          ? 'bg-[#CEA472] border-[#CEA472]'
-                          : 'bg-[#0a0a0f] border-[#CEA472]/50'
+                          ? 'bg-[#CEA472]'
+                          : 'bg-[#CEA472]/30'
                       }`} />
                       <span>全部</span>
                     </button>
@@ -554,10 +552,10 @@ function PhotoGalleryContent() {
                       
                       return (
                         <div key={year} className="relative pl-10 group/item timeline-item" style={{ animationDelay: `${160 + i * 40}ms` }}>
-                          <span className={`absolute left-3 w-2.5 h-2.5 rounded-full border-2 transition-all ${
-                            isActive ? 'bg-[#CEA472] border-[#CEA472] scale-110'
-                              : hasPhotos ? 'bg-[#0a0a0f] border-[#CEA472]/50 group-hover/item:border-[#CEA472] group-hover/item:scale-110'
-                              : 'bg-[#0a0a0f] border-gray-700'
+                          <span className={`absolute left-3 w-2.5 h-2.5 rounded-full transition-all ${
+                            isActive ? 'bg-[#CEA472] scale-110'
+                              : hasPhotos ? 'bg-[#CEA472]/30 group-hover/item:bg-[#CEA472] group-hover/item:scale-110'
+                              : 'bg-white/15'
                           }`} />
                           <button
                             onClick={() => hasPhotos && setSelectedYear(year)}
@@ -584,10 +582,10 @@ function PhotoGalleryContent() {
                     
                     return (
                       <div key={special.id} className="relative pl-10 timeline-item" style={{ animationDelay: `${160 + (years.length + i) * 40}ms` }}>
-                        <span className={`absolute left-3 w-2.5 h-2.5 rounded-full border-2 transition-all ${
-                          isActive ? 'bg-[#CEA472] border-[#CEA472] scale-110'
-                            : hasPhotos ? 'bg-[#0a0a0f] border-[#CEA472]/50'
-                            : 'bg-[#0a0a0f] border-gray-700'
+                        <span className={`absolute left-3 w-2.5 h-2.5 rounded-full transition-all ${
+                          isActive ? 'bg-[#CEA472] scale-110'
+                            : hasPhotos ? 'bg-[#CEA472]/30'
+                            : 'bg-white/15'
                         }`} />
                         <button
                           onClick={() => hasPhotos && setSelectedYear(special.id)}
@@ -605,8 +603,6 @@ function PhotoGalleryContent() {
                     );
                   })}
                 </div>
-                
-                <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-[#0a0a0f] to-transparent z-10 pointer-events-none" />
               </div>
             </div>
           </aside>
@@ -618,10 +614,10 @@ function PhotoGalleryContent() {
               <span className="text-sm text-gray-400">分类：</span>
               <button
                 onClick={() => setSelectedCategories([])}
-                className={`animate-chip-in px-4 py-1.5 rounded-full text-sm transition-all border ${
+                className={`animate-chip-in px-4 py-1.5 text-sm transition-all ${
                   selectedCategories.length === 0
-                    ? 'bg-[#CEA472] text-[#0a0a0f] font-medium border-[#CEA472]'
-                    : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white border-[#CEA472]/20'
+                    ? 'bg-[#CEA472] text-[#0a0a0f] font-medium'
+                    : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white'
                 }`}
                 style={{ animationDelay: '220ms' }}
               >
@@ -634,9 +630,9 @@ function PhotoGalleryContent() {
                   <button
                     key={cat.id}
                     onClick={() => toggleCategoryFilter(cat.id)}
-                    className={`animate-chip-in px-4 py-1.5 rounded-full text-sm transition-all border ${
-                      isActive ? 'bg-[#CEA472] text-[#0a0a0f] font-medium border-[#CEA472]'
-                        : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white border-[#CEA472]/20'
+                    className={`animate-chip-in px-4 py-1.5 text-sm transition-all ${
+                      isActive ? 'bg-[#CEA472] text-[#0a0a0f] font-medium'
+                        : 'bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white'
                     }`}
                     style={{ animationDelay: `${280 + i * 60}ms` }}
                   >
@@ -689,7 +685,7 @@ function PhotoGalleryContent() {
                 {filteredPhotos.map((photo, idx) => (
                   <Card 
                     key={photo.id} 
-                    className="photo-card group border border-[#CEA472]/10 bg-black/40 backdrop-blur-sm hover:border-[#CEA472]/50 hover:bg-black/60 transition-all duration-500 cursor-pointer overflow-hidden"
+                    className="photo-card group border-0 rounded-none bg-black/40 backdrop-blur-sm hover:bg-black/60 transition-all duration-500 cursor-pointer overflow-hidden"
                     style={{ ['--pc-delay' as string]: `${idx * 40}ms` }}
                     onClick={() => {
                       if (photo.url) {
@@ -712,7 +708,7 @@ function PhotoGalleryContent() {
                             const cat = categories.find(c => c.id === catId);
                             if (!cat) return null;
                             return (
-                              <span key={catId} className="px-2 py-0.5 text-xs rounded-full bg-black/60 text-[#CEA472] backdrop-blur-sm">
+                              <span key={catId} className="px-2 py-0.5 text-xs bg-black/60 text-[#CEA472] backdrop-blur-sm">
                                 {cat.name}
                               </span>
                             );
@@ -744,17 +740,17 @@ function PhotoGalleryContent() {
             )}
 
             {/* 快捷入口 */}
-            <div className="mt-8 pt-6 border-t border-[#CEA472]/10 flex items-center gap-3 flex-wrap">
+            <div className="mt-8 pt-6 flex items-center gap-3 flex-wrap">
               <span className="text-sm text-gray-400">快捷入口：</span>
               <a
                 href="/photos/friend"
-                className="px-4 py-1.5 rounded-full text-sm bg-[#CEA472]/10 text-[#CEA472] hover:bg-[#CEA472]/20 transition-all border border-[#CEA472]/30"
+                className="px-4 py-1.5 text-sm bg-[#CEA472]/10 text-[#CEA472] hover:bg-[#CEA472]/20 transition-all"
               >
                 朋友照片 →
               </a>
               <a
                 href="/photos/family"
-                className="px-4 py-1.5 rounded-full text-sm bg-[#CEA472]/10 text-[#CEA472] hover:bg-[#CEA472]/20 transition-all border border-[#CEA472]/30"
+                className="px-4 py-1.5 text-sm bg-[#CEA472]/10 text-[#CEA472] hover:bg-[#CEA472]/20 transition-all"
               >
                 家庭照片 →
               </a>
