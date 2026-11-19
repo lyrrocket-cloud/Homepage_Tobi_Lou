@@ -261,21 +261,25 @@ html.lenis body {
   pointer-events: none;
 }
 
-/* ===== 路由切换：淡入淡出过渡 ===== */
-.page-transition-clip {
-  overflow-x: clip;
-}
-@keyframes page-fade-in {
+/* ===== 路由切换：遮罩淡出（视觉上的淡入） =====
+   独立 fixed 遮罩，不与页面内容的入场动画叠加，
+   也不会因 transform/opacity 让容器成为 fixed 元素的包含块。 */
+@keyframes page-overlay-fade-out {
   from {
-    opacity: 0;
-  }
-  to {
     opacity: 1;
   }
+  to {
+    opacity: 0;
+  }
 }
-.page-transition-inner {
-  animation: page-fade-in 0.45s ease-out backwards;
-  will-change: opacity;
+.page-fade-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  background: #0a0a0f;
+  pointer-events: none;
+  opacity: 1;
+  animation: page-overlay-fade-out 0.4s ease-out forwards;
 }
 
 /* 逐字标题：SplitText 生成的字符 */

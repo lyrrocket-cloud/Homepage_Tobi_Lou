@@ -4,8 +4,10 @@ import { useEffect } from 'react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 /**
- * 路由切换淡入淡出过渡（Next.js App Router template 会在每次导航时重新挂载）
- * 新页面内容淡入；结束后动画自动失效（backwards）。
+ * 路由切换过渡
+ * 使用独立的全屏遮罩做淡出（fade-in 视觉），而不是对整页内容做 opacity 动画。
+ * 这样页面元素自身的入场动画（reveal / SplitText / count-up）不会被二次叠加，
+ * 也不会让容器成为 position: fixed 的包含块。
  */
 export default function Template({ children }: { children: React.ReactNode }) {
   useEffect(() => {
@@ -14,8 +16,9 @@ export default function Template({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <div className="page-transition-clip">
-      <div className="page-transition-inner">{children}</div>
-    </div>
+    <>
+      {children}
+      <div className="page-fade-overlay" aria-hidden="true" />
+    </>
   );
 }
