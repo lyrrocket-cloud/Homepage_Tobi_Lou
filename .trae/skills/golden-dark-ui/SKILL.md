@@ -293,7 +293,7 @@ useEffect(() => {
 ```css
 @theme inline {
   --color-gold: #CEA472;
-  --font-sans: 'PangMenZhengDao', 'PingFang SC', 'Hiragino Sans GB',
+  --font-sans: 'PingFang SC', 'Hiragino Sans GB',
     'Microsoft YaHei', ui-sans-serif, system-ui, sans-serif;
 }
 
