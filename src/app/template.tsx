@@ -4,8 +4,8 @@ import { useEffect } from 'react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 /**
- * 路由切换滑入过渡（Next.js App Router template 会在每次导航时重新挂载）
- * 入场：从右侧轻微滑入 + 淡入；结束后移除 transform，避免破坏 fixed 定位。
+ * 路由切换淡入淡出过渡（Next.js App Router template 会在每次导航时重新挂载）
+ * 新页面内容淡入；结束后动画自动失效（backwards）。
  */
 export default function Template({ children }: { children: React.ReactNode }) {
   useEffect(() => {
