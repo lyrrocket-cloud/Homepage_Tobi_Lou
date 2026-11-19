@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { ComposableMap, Geographies, Geography } from 'react-simple-maps';
+import { CountUp } from '@/components/count-up';
 
 interface ChinaMapProps {
   onRegionClick: (regionId: number, regionName: string) => void;
@@ -299,19 +300,21 @@ export function ChinaMap({ onRegionClick, selectedRegion, visitedRegions = new S
       </ComposableMap>
 
       {/* 左上角统计信息 */}
-      <div className="absolute top-3 left-3 text-white text-sm font-medium z-50 drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]">
-        <span className="text-[#CEA472]">{(() => {
-          // 计算已访问的中国省份数量
-          const chinaProvinceIds = new Set(Object.values(provinceNameToId));
-          let count = 0;
-          visitedRegions.forEach(id => {
-            if (chinaProvinceIds.has(id)) count++;
-          });
-          return count;
-        })()}</span>
-        <span className="text-white/60"> / </span>
-        <span className="text-white/80">{mapData?.features?.length || 34}</span>
-        <span className="text-white/60 ml-1">省区</span>
+      <div className="absolute top-3 left-3 z-50 flex items-baseline gap-1.5 text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]">
+        <span className="text-white/60 text-sm">已访问</span>
+        <CountUp
+          value={(() => {
+            // 计算已访问的中国省份数量
+            const chinaProvinceIds = new Set(Object.values(provinceNameToId));
+            let count = 0;
+            visitedRegions.forEach(id => {
+              if (chinaProvinceIds.has(id)) count++;
+            });
+            return count;
+          })()}
+          className="text-[#CEA472] text-xl font-bold tabular-nums"
+        />
+        <span className="text-white/60 text-sm">个省市</span>
       </div>
 
       {/* Tooltip - 固定在容器右上角 */}

@@ -17,7 +17,6 @@ import { RegionMap } from '@/components/visit-map';
 import { Region } from '@/app/api/regions/route';
 import { PhotoCarousel } from '@/components/photo-carousel';
 import { SplitTextTitle } from '@/components/split-text-title';
-import { TravelStats } from '@/components/travel-stats';
 
 // 格式化日期：将 '2025.01' 转换为 '2025年01月'
 function formatDate(dateStr: string): string {
@@ -488,11 +487,6 @@ export default function Home() {
         className={`relative py-20 reveal ${visits.onceVisible ? 'is-visible' : ''}`}
       >
         <div className="relative max-w-7xl mx-auto px-4 space-y-8">
-          {/* 旅行统计 */}
-          <div className="pb-2">
-            <TravelStats />
-          </div>
-
           {/* 图例 - 两幅地图共用 */}
           <div ref={visitsLegend.ref} className={`flex items-center gap-6 text-sm reveal reveal-delayed-1 ${visitsLegend.onceVisible ? 'is-visible' : ''}`}>
             <div className="flex items-center gap-2">
