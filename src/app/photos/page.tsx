@@ -503,7 +503,7 @@ function PhotoGalleryContent() {
     <div className="min-h-screen bg-transparent relative overflow-hidden">
       {/* 主内容区 */}
       <div className="relative z-10 pt-14">
-        <div className="flex relative">
+        <div className="flex relative max-w-7xl mx-auto px-4">
           {/* 时间轴切换按钮 - 移动端 */}
           {!isTimelineVisible && (
             <button

@@ -231,7 +231,7 @@ export function GlobalNav() {
           {/* 右侧同步按钮 */}
           <button
             onClick={() => window.open('/admin/sync', '_blank')}
-            className="p-2 rounded-lg bg-black/40 backdrop-blur-md hover:bg-[#CEA472]/20 transition-all duration-300 group"
+            className="p-2 bg-transparent hover:opacity-75 transition-all duration-300 group"
             title="同步数据"
           >
             <svg
