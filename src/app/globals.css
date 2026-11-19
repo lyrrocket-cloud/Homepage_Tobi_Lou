@@ -253,9 +253,50 @@ body {
   animation: spin-slow 20s linear infinite;
 }
 
-/* ===== 滚动平滑 ===== */
-html {
-  scroll-behavior: smooth;
+/* ===== 平滑滚动（由 Lenis 接管，禁用原生 scroll-behavior 避免冲突） ===== */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
+}
+
+/* ===== 路由切换：滑动入场过渡 =====
+   clip 包装层防止横向溢出；动画结束后（backwards）移除 transform，
+   避免残留 transform 破坏 fixed 定位。 */
+.page-transition-clip {
+  overflow-x: clip;
+}
+@keyframes page-slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(48px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+.page-transition-inner {
+  animation: page-slide-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  will-change: transform, opacity;
+}
+
+/* 逐字标题：SplitText 生成的字符 */
+.split-char {
+  display: inline-block;
+  transform-origin: 50% 100%;
+  will-change: transform, opacity, filter;
 }
 
 /* ===== 背景光斑漂移 ===== */

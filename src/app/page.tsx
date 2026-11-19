@@ -16,6 +16,8 @@ import { OptimizedImage } from '@/components/OptimizedImage';
 import { RegionMap } from '@/components/visit-map';
 import { Region } from '@/app/api/regions/route';
 import { PhotoCarousel } from '@/components/photo-carousel';
+import { SplitTextTitle } from '@/components/split-text-title';
+import { TravelStats } from '@/components/travel-stats';
 
 // 格式化日期：将 '2025.01' 转换为 '2025年01月'
 function formatDate(dateStr: string): string {
@@ -455,11 +457,13 @@ export default function Home() {
 
             {/* 标题和介绍 */}
             <div className="relative z-10">
-              <h2 className={`text-5xl md:text-7xl font-bold mb-6 leading-tight ${hero.onceVisible ? 'animate-hero-title' : 'opacity-0'}`}>
-                <span className="text-[#FFFFFF]">你好，我是</span>
-                <br />
-                <span className="text-[#CEA472]">Tobi Lou</span>
-              </h2>
+              <SplitTextTitle
+                className="text-5xl md:text-7xl font-bold mb-6 leading-tight"
+                lines={[
+                  { text: '你好，我是', className: 'text-[#FFFFFF]' },
+                  { text: 'Tobi Lou', className: 'text-[#CEA472]' },
+                ]}
+              />
               
               <p className={`text-lg md:text-xl text-[#FFFFFF]/70 max-w-2xl mx-auto leading-relaxed ${hero.onceVisible ? 'animate-hero-sub' : 'opacity-0'}`}>
                 志之所趋，无远弗届
@@ -484,6 +488,11 @@ export default function Home() {
         className={`relative py-20 reveal ${visits.onceVisible ? 'is-visible' : ''}`}
       >
         <div className="relative max-w-7xl mx-auto px-4 space-y-8">
+          {/* 旅行统计 */}
+          <div className="pb-2">
+            <TravelStats />
+          </div>
+
           {/* 图例 - 两幅地图共用 */}
           <div ref={visitsLegend.ref} className={`flex items-center gap-6 text-sm reveal reveal-delayed-1 ${visitsLegend.onceVisible ? 'is-visible' : ''}`}>
             <div className="flex items-center gap-2">

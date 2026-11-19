@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { GlobalBackground } from '@/components/global-background';
 import { GlobalNav } from '@/components/global-nav';
+import { SmoothScroll } from '@/components/smooth-scroll';
 
 export const metadata: Metadata = {
   title: {
@@ -45,6 +46,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`antialiased`}>
+        <SmoothScroll />
         <GlobalBackground />
         <GlobalNav />
         {children}
