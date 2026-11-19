@@ -1,0 +1,186 @@
+/* ==========================================================================
+   Golden Dark UI — Design Tokens (v2)
+   纯 CSS，无 Tailwind 依赖。可直接 @import 到任意项目的全局样式。
+   ========================================================================== */
+
+:root {
+  /* ---- 色彩 ---- */
+  --gd-gold: #CEA472;
+  --gd-gold-90: rgba(206, 164, 114, 0.9);
+  --gd-gold-70: rgba(206, 164, 114, 0.7);
+  --gd-gold-50: rgba(206, 164, 114, 0.5);
+  --gd-gold-30: rgba(206, 164, 114, 0.3);
+  --gd-gold-20: rgba(206, 164, 114, 0.2);
+  --gd-gold-10: rgba(206, 164, 114, 0.1);
+  --gd-gold-06: rgba(206, 164, 114, 0.06);
+
+  --gd-bg: #0a0a0f;
+  --gd-bg-soft: #0d0d14;
+
+  --gd-text: #FFFFFF;
+  --gd-text-sub: rgba(255, 255, 255, 0.8);
+  --gd-text-muted: rgba(255, 255, 255, 0.6);
+  --gd-text-dim: rgba(255, 255, 255, 0.5);
+
+  --gd-card: rgba(0, 0, 0, 0.4);
+  --gd-card-hover: rgba(0, 0, 0, 0.6);
+
+  /* ---- 字体：仅系统字体栈，禁止 CDN 字体 ---- */
+  --gd-font-sans: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei',
+    ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    Roboto, 'Helvetica Neue', Arial, sans-serif;
+
+  /* ---- 圆角：内容卡片为 0（扁平），仅模态层使用 ---- */
+  --gd-radius: 0.625rem; /* 对话框 / 模态层 */
+  --gd-radius-card: 0;
+
+  /* ---- 容器 ---- */
+  --gd-container: 80rem; /* max-w-7xl = 1280px */
+  --gd-gutter: 1rem;
+
+  /* ---- 缓动 ---- */
+  --gd-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --gd-ease-carousel: cubic-bezier(0.33, 1, 0.68, 1);
+  --gd-ease-hero: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* ---- 基础 ---- */
+html {
+  /* 使用 Lenis 时不要开启原生平滑滚动，二者会冲突 */
+  scroll-behavior: auto;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background-color: var(--gd-bg);
+  color: var(--gd-text);
+  font-family: var(--gd-font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ---- 页面容器：全站等宽 ---- */
+.gd-container {
+  width: 100%;
+  max-width: var(--gd-container);
+  margin-inline: auto;
+  padding-inline: var(--gd-gutter);
+}
+
+/* ---- 内容卡片（扁平：无边框、无圆角） ---- */
+.gd-card {
+  background: var(--gd-card);
+  border: 0;
+  border-radius: var(--gd-radius-card);
+  transition: background-color 0.3s var(--gd-ease);
+}
+.gd-card:hover {
+  background: var(--gd-card-hover);
+}
+
+/* ---- 文字按钮（导航 / 筛选标签：无底框，金/白切换） ---- */
+.gd-text-btn {
+  background: transparent;
+  border: 0;
+  padding-inline: 0;
+  color: var(--gd-text-sub);
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: color 0.25s ease;
+  cursor: pointer;
+}
+.gd-text-btn:hover,
+.gd-text-btn[aria-selected='true'],
+.gd-text-btn.is-active {
+  color: var(--gd-gold);
+}
+
+/* ---- 图标按钮（透明底、无边框） ---- */
+.gd-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  color: var(--gd-gold);
+  cursor: pointer;
+  transition: opacity 0.25s ease;
+}
+.gd-icon-btn:hover {
+  opacity: 0.75;
+}
+
+/* ---- 滚动进度条 ---- */
+.gd-scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  width: 100%;
+  background: linear-gradient(90deg, var(--gd-gold), var(--gd-gold-30));
+  box-shadow: 0 0 12px var(--gd-gold-30);
+  transform: scaleX(0);
+  transform-origin: left;
+  will-change: transform;
+  z-index: 200;
+}
+
+/* ---- 滚动条 ---- */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--gd-gold-30);
+  border-radius: 4px;
+  transition: background 0.3s ease;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--gd-gold-50);
+}
+::-webkit-scrollbar-thumb:active {
+  background: var(--gd-gold-70);
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--gd-gold-30) transparent;
+}
+
+/* ---- Lenis 适配 ---- */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
+}
+
+/* ---- 无障碍：减少动态效果 ---- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
