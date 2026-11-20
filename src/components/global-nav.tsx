@@ -228,26 +228,9 @@ export function GlobalNav() {
           </div>
           </div>
 
-          {/* 右侧同步按钮 */}
-          <button
-            onClick={() => window.open('/admin/sync', '_blank')}
-            className="p-2 bg-transparent hover:opacity-75 transition-all duration-300 group"
-            title="同步数据"
-          >
-            <svg
-              className="w-4 h-4 text-[#CEA472] transition-transform duration-500 group-hover:rotate-180"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-              />
-            </svg>
-          </button>
+          {/* 右侧占位（与左侧等宽，保持导航居中） */}
+          <div className="w-10" aria-hidden="true"></div>
+
         </div>
       </div>
     </nav>

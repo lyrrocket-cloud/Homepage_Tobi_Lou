@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { ComposableMap, Geographies, Geography } from 'react-simple-maps';
 import { CountUp } from '@/components/count-up';
+import { MapLoading } from '@/components/map-loading';
 
 interface ChinaMapProps {
   onRegionClick: (regionId: number, regionName: string) => void;
@@ -197,14 +198,7 @@ export function ChinaMap({ onRegionClick, selectedRegion, visitedRegions = new S
   };
 
   if (loading) {
-    return (
-      <div className={`w-full h-[480px] bg-transparent flex items-center justify-center ${className}`}>
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-2 border-[#CEA472] border-t-transparent mx-auto mb-4"></div>
-          <p className="text-white/60">加载中国地图中...</p>
-        </div>
-      </div>
-    );
+    return <MapLoading label="加载中国地图中..." className={className} />;
   }
 
   if (error || !mapData) {

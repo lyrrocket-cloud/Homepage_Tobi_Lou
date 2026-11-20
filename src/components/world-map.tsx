@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { ComposableMap, Geographies, Geography } from 'react-simple-maps';
 import { feature } from 'topojson-client';
 import { CountUp } from '@/components/count-up';
+import { MapLoading } from '@/components/map-loading';
 
 // 本地地图数据路径
 const WORLD_MAP_URL = '/data/world-110m.json';
@@ -347,14 +348,7 @@ export function WorldMap({ onRegionClick, selectedRegion, visitedRegions = new S
   };
 
   if (loading) {
-    return (
-      <div className={`w-full h-[480px] bg-transparent flex items-center justify-center ${className}`}>
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-2 border-[#CEA472] border-t-transparent mx-auto mb-4"></div>
-          <p className="text-white/60">加载世界地图中...</p>
-        </div>
-      </div>
-    );
+    return <MapLoading label="加载世界地图中..." className={className} />;
   }
 
   if (error || !mapData) {

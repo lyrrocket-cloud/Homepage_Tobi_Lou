@@ -18,6 +18,7 @@ import { Region } from '@/app/api/regions/route';
 import { PhotoCarousel } from '@/components/photo-carousel';
 import { SplitTextTitle } from '@/components/split-text-title';
 import { sizedImageUrl } from '@/lib/image-url';
+import { MapLoading } from '@/components/map-loading';
 
 // 格式化日期：将 '2025.01' 转换为 '2025年01月'
 function formatDate(dateStr: string): string {
@@ -43,26 +44,12 @@ interface Photo {
 // 动态导入地图组件（SSR: false）
 const ChinaMap = dynamic(() => import('@/components/china-map').then(mod => ({ default: mod.ChinaMap })), {
   ssr: false,
-  loading: () => (
-    <div className="w-full h-[480px] flex items-center justify-center">
-      <div className="text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-2 border-[#CEA472] border-t-transparent mx-auto mb-4"></div>
-        <p className="text-white/60">加载中国地图中...</p>
-      </div>
-    </div>
-  )
+  loading: () => <MapLoading label="加载中国地图中..." />
 });
 
 const WorldMap = dynamic(() => import('@/components/world-map').then(mod => ({ default: mod.WorldMap })), {
   ssr: false,
-  loading: () => (
-    <div className="w-full h-[480px] flex items-center justify-center">
-      <div className="text-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-2 border-[#CEA472] border-t-transparent mx-auto mb-4"></div>
-        <p className="text-white/60">加载世界地图中...</p>
-      </div>
-    </div>
-  )
+  loading: () => <MapLoading label="加载世界地图中..." />
 });
 
 // 动态导入打卡列表组件
