@@ -1,0 +1,32 @@
+# 依赖和构建产物
+node_modules
+.next
+out
+
+# 环境变量（.env.nas 由 compose 注入，不进入镜像）
+.env
+.env.local
+.env.production
+.env.nas
+
+# Git
+.git
+.gitignore
+
+# 日志
+*.log
+logs
+
+# macOS
+.DS_Store
+._*
+
+# IDE
+.vscode
+.idea
+
+# 文档与素材（不参与构建）
+*.md
+assets
+scripts
+coze.config.json

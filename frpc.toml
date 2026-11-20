@@ -1,0 +1,19 @@
+serverAddr = "115.191.68.254"
+serverPort = 7000
+
+loginFailExit = false
+transport.dialServerTimeout = 20
+
+auth.method = "token"
+# token 由容器环境变量 FRP_TOKEN 注入（见 .env.nas）
+auth.token = "{{ .Envs.FRP_TOKEN }}"
+
+log.to = "console"
+log.level = "info"
+
+[[proxies]]
+name = "home-tobi"
+type = "http"
+localIP = "home-tobi"
+localPort = 3000
+customDomains = ["tobilou.top", "www.tobilou.top"]

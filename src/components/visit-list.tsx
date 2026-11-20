@@ -4,6 +4,7 @@ import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { MapPin, Calendar } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { sizedImageUrl } from '@/lib/image-url';
 
 // 照片类型定义（从 gallery_photos 获取）
 interface PhotoVisit {
@@ -152,7 +153,7 @@ export function VisitList({ regionId, regionName, onRefresh }: VisitListProps) {
               {visit.image_url && (
                 <div className="relative aspect-[3/2] h-[72px] flex-shrink-0">
                   <Image
-                    src={visit.image_url}
+                    src={sizedImageUrl(visit.image_url, 400)}
                     alt={visit.title}
                     fill
                     className="object-cover"

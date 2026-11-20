@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { isPhotoTransitionPending } from '@/lib/photo-transition';
 
 /** 首页全屏背景图，加载完成前遮罩保持不透明，避免慢网下露出黑底 */
 const HOME_BG_IMAGE = '/assets/background.jpg';
@@ -18,6 +19,8 @@ const BG_READY_TIMEOUT = 1500;
 export default function Template({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const overlayRef = useRef<HTMLDivElement>(null);
+  // 照片集 → 详情页的共享元素过渡：由克隆元素接管视觉，遮罩直接保持透明
+  const [skipOverlay] = useState(() => isPhotoTransitionPending());
 
   useEffect(() => {
     const t = window.setTimeout(() => ScrollTrigger.refresh(), 200);
@@ -27,6 +30,9 @@ export default function Template({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const overlay = overlayRef.current;
     if (!overlay) return;
+
+    // 共享元素过渡场景：不加 .ready，遮罩始终保持透明
+    if (skipOverlay) return;
 
     const reduceMotion =
       typeof window !== 'undefined' &&
@@ -63,12 +69,16 @@ export default function Template({ children }: { children: React.ReactNode }) {
       img.onload = null;
       img.onerror = null;
     };
-  }, [pathname]);
+  }, [pathname, skipOverlay]);
 
   return (
     <>
       {children}
-      <div ref={overlayRef} className="page-fade-overlay" aria-hidden="true" />
+      <div
+        ref={overlayRef}
+        className={`page-fade-overlay${skipOverlay ? ' shared-skip' : ''}`}
+        aria-hidden="true"
+      />
     </>
   );
 }

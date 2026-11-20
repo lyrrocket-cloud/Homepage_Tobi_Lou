@@ -17,6 +17,7 @@ import { RegionMap } from '@/components/visit-map';
 import { Region } from '@/app/api/regions/route';
 import { PhotoCarousel } from '@/components/photo-carousel';
 import { SplitTextTitle } from '@/components/split-text-title';
+import { sizedImageUrl } from '@/lib/image-url';
 
 // 格式化日期：将 '2025.01' 转换为 '2025年01月'
 function formatDate(dateStr: string): string {
@@ -265,7 +266,7 @@ function WorldVisitList({ regionId, regionName, onRefresh }: { regionId: number 
               {visit.image_url && (
                 <div className="relative aspect-[3/2] h-[72px] flex-shrink-0">
                   <Image
-                    src={visit.image_url}
+                    src={sizedImageUrl(visit.image_url, 400)}
                     alt={visit.title}
                     fill
                     className="object-cover"

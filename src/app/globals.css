@@ -285,6 +285,11 @@ html.lenis body {
 .page-fade-overlay.ready {
   animation: page-overlay-fade-out 0.4s ease-out forwards;
 }
+/* 照片集 → 详情页共享元素过渡：由 FLIP 克隆元素接管视觉，遮罩直接透明 */
+.page-fade-overlay.shared-skip {
+  opacity: 0;
+  animation: none;
+}
 
 /* 逐字标题：SplitText 生成的字符 */
 .split-char {

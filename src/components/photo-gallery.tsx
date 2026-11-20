@@ -1,13 +1,16 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { beginPhotoTransition } from '@/lib/photo-transition';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { MapPin, Calendar, Camera, Upload, Loader2, ChevronLeft, Menu, Home } from 'lucide-react';
 import { UnifiedPhotoManager } from '@/components/unified-photo-manager';
+import { sizedImageUrl } from '@/lib/image-url';
 import React from 'react';
 
 // 照片类型定义
@@ -70,6 +73,7 @@ export function PhotoGallery({
   showCategoryFilter = true,
   showBackToMain = false
 }: PhotoGalleryProps) {
+  const router = useRouter();
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [regions, setRegions] = useState<Region[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -486,15 +490,17 @@ export function PhotoGallery({
                     key={photo.id} 
                     className="photo-card group border-0 rounded-none bg-black/40 backdrop-blur-sm hover:bg-black/60 transition-all duration-500 cursor-pointer overflow-hidden"
                     style={{ ['--pc-delay' as string]: `${idx * 40}ms` }}
-                    onClick={() => {
-                      if (photo.url) {
-                        window.open(photo.url, '_blank');
+                    onClick={(event) => {
+                      const thumb = event.currentTarget.querySelector<HTMLElement>('[data-photo-thumb]');
+                      if (thumb) {
+                        beginPhotoTransition(thumb, photo);
                       }
+                      router.push(`/photos/${photo.id}`);
                     }}
                   >
-                    <div className="relative aspect-[4/3] overflow-hidden">
+                    <div data-photo-thumb className="relative aspect-[4/3] overflow-hidden">
                       <Image
-                        src={photo.image_url}
+                        src={sizedImageUrl(photo.image_url, 800)}
                         alt={photo.title}
                         fill
                         sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"

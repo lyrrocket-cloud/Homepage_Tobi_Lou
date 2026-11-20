@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getStorage } from '@/lib/storage';
+import { getStorage, isLocalStorage } from '@/lib/storage';
 
 // 获取存储实例
 const storage = getStorage();
@@ -11,10 +11,10 @@ export async function POST(request: NextRequest) {
   const timeoutId = setTimeout(() => controller.abort(), 30000); // 30秒超时
 
   try {
-    // 检查对象存储配置
+    // 检查对象存储配置（本地文件存储模式无需 bucket）
     const bucketName = process.env.COZE_BUCKET_NAME;
 
-    if (!bucketName) {
+    if (!isLocalStorage() && !bucketName) {
       console.error('[Upload] Missing Coze Storage config');
       clearTimeout(timeoutId);
       return NextResponse.json(

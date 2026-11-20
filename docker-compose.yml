@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  home-tobi:
+    build: .
+    container_name: home-tobi-lou
+    restart: unless-stopped
+    ports:
+      - "3002:3000"
+    environment:
+      - NODE_ENV=production
+      - NEXT_TELEMETRY_DISABLED=1
+      # 对象存储改为 NAS 本地文件，落在 ./data（宿主机 /volume2/docker/home-tobi/data）
+      - STORAGE_TYPE=local
+      - DATA_STORAGE_PATH=/app/data
+    volumes:
+      - ./data:/app/data
+    # 敏感配置从 .env.nas 读取（不入库），参考 .env.nas.example
+    env_file:
+      - .env.nas
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  home-tobi-frpc:
+    image: frpc:local
+    container_name: home-tobi-frpc
+    restart: unless-stopped
+    command: ["-c", "/frpc.toml"]
+    volumes:
+      - ./frpc.toml:/frpc.toml:ro
+    # FRP_TOKEN 等敏感配置从 .env.nas 注入
+    env_file:
+      - .env.nas
+    depends_on:
+      - home-tobi

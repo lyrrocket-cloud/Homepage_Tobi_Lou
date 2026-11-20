@@ -1,5 +1,37 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { createHash } from 'crypto';
+import { promises as fs } from 'fs';
+import path from 'path';
+import sharp from 'sharp';
 import { getSupabaseClient } from '@/storage/database/supabase-client';
+import { getStorageRoot, isLocalStorage, readLocalFile } from '@/lib/storage';
+
+// 允许的缩略图宽度（防止任意尺寸刷缓存）
+const ALLOWED_WIDTHS = [400, 800, 1200, 1600];
+
+/** 读取或生成缩略图（webp，落盘缓存到 .thumbs） */
+async function getThumbnail(key: string, width: number): Promise<Buffer> {
+  const root = getStorageRoot();
+  const hash = createHash('sha1').update(key).digest('hex').slice(0, 16);
+  const cachePath = path.join(root, '.thumbs', `${hash}-w${width}.webp`);
+
+  try {
+    return await fs.readFile(cachePath);
+  } catch {
+    // 未命中缓存，生成后写入
+  }
+
+  const source = await readLocalFile(key);
+  const buffer = await sharp(source)
+    .rotate()
+    .resize({ width, withoutEnlargement: true })
+    .webp({ quality: 78 })
+    .toBuffer();
+
+  await fs.mkdir(path.dirname(cachePath), { recursive: true });
+  await fs.writeFile(cachePath, buffer);
+  return buffer;
+}
 
 // 图片代理API - 从 Supabase Storage 获取图片并返回
 export async function GET(
@@ -24,6 +56,55 @@ export async function GET(
         { error: '无效的图片路径' },
         { status: 400 }
       );
+    }
+
+    // 根据 key 确定内容类型
+    const ext = decodedKey.split('.').pop()?.toLowerCase() || 'jpg';
+    const contentTypeMap: Record<string, string> = {
+      jpg: 'image/jpeg',
+      jpeg: 'image/jpeg',
+      png: 'image/png',
+      gif: 'image/gif',
+      webp: 'image/webp',
+      avif: 'image/avif',
+    };
+    const contentType = contentTypeMap[ext] || 'image/jpeg';
+
+    // 本地文件存储模式（NAS）：直接从磁盘读取
+    if (isLocalStorage()) {
+      // 可选宽度参数：?w=400|800|1200|1600，命中时返回 webp 缩略图
+      const widthParam = Number(request.nextUrl.searchParams.get('w'));
+      const width = ALLOWED_WIDTHS.includes(widthParam) ? widthParam : 0;
+
+      try {
+        if (width) {
+          const thumb = await getThumbnail(decodedKey, width);
+          clearTimeout(timeoutId);
+          return new NextResponse(new Uint8Array(thumb), {
+            headers: {
+              'Content-Type': 'image/webp',
+              'Cache-Control': 'public, max-age=31536000, immutable',
+              'Content-Disposition': 'inline',
+            },
+          });
+        }
+
+        const buffer = await readLocalFile(decodedKey);
+        clearTimeout(timeoutId);
+        return new NextResponse(new Uint8Array(buffer), {
+          headers: {
+            'Content-Type': contentType,
+            'Cache-Control': 'public, max-age=31536000, immutable',
+            'Content-Disposition': 'inline',
+          },
+        });
+      } catch {
+        clearTimeout(timeoutId);
+        return NextResponse.json(
+          { error: '图片不存在', key: decodedKey },
+          { status: 404 }
+        );
+      }
     }
 
     console.log('[Image API] Fetching image from Supabase Storage:', decodedKey);
@@ -78,18 +159,6 @@ export async function GET(
         { status: 413 }
       );
     }
-
-    // 根据 key 确定内容类型
-    const ext = decodedKey.split('.').pop()?.toLowerCase() || 'jpg';
-    const contentTypeMap: Record<string, string> = {
-      jpg: 'image/jpeg',
-      jpeg: 'image/jpeg',
-      png: 'image/png',
-      gif: 'image/gif',
-      webp: 'image/webp',
-      avif: 'image/avif',
-    };
-    const contentType = contentTypeMap[ext] || 'image/jpeg';
 
     // 返回图片
     return new NextResponse(data, {

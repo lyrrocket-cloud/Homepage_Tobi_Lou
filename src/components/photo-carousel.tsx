@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { sizedImageUrl } from '@/lib/image-url';
 
 interface Photo {
   id: number;
@@ -203,7 +204,7 @@ export function PhotoCarousel({ photos, isLoading = false }: PhotoCarouselProps)
                 aria-hidden={!isActive}
               >
                 <Image
-                  src={photo.image_url}
+                  src={sizedImageUrl(photo.image_url, 1200)}
                   alt={photo.title}
                   fill
                   className="object-cover"
