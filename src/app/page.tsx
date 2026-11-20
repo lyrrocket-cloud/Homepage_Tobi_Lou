@@ -462,11 +462,9 @@ export default function Home() {
                   { text: '你好，我是', className: 'text-[#FFFFFF]' },
                   { text: 'Tobi Lou', className: 'text-[#CEA472]' },
                 ]}
+                subtitle="志之所趋，无远弗届"
+                subtitleClassName="text-lg md:text-xl text-[#FFFFFF]/70 max-w-2xl mx-auto leading-relaxed"
               />
-              
-              <p className={`text-lg md:text-xl text-[#FFFFFF]/70 max-w-2xl mx-auto leading-relaxed ${hero.onceVisible ? 'animate-hero-sub' : 'opacity-0'}`}>
-                志之所趋，无远弗届
-              </p>
             </div>
           </div>
         </div>
