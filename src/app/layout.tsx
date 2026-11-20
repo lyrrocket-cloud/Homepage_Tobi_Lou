@@ -24,6 +24,9 @@ export const metadata: Metadata = {
     '无远弗届',
   ],
   authors: [{ name: 'Tobi Lou' }],
+  alternates: {
+    canonical: 'https://tobilou.top/',
+  },
   openGraph: {
     title: 'Tobi Lou | 无远弗届',
     description:
@@ -31,6 +34,7 @@ export const metadata: Metadata = {
     siteName: 'Tobi Lou',
     locale: 'zh_CN',
     type: 'website',
+    url: 'https://tobilou.top/',
   },
   robots: {
     index: true,
@@ -44,7 +48,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="zh-CN">
       <body className={`antialiased`}>
         <SmoothScroll />
         <GlobalBackground />

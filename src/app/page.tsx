@@ -536,7 +536,7 @@ export default function Home() {
           </div>
           <p className="text-[#FFFFFF]/60 mb-6">志之所趋，无远弗届</p>
           <div className="text-sm text-[#FFFFFF]/40">
-            <p>© 2024 Tobi Lou. All rights reserved.</p>
+            <p>© {new Date().getFullYear()} Tobi Lou. All rights reserved.</p>
             <p className="mt-2">
               <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer" className="hover:text-[#CEA472] transition-colors">
                 沪ICP备2026010449号-1
