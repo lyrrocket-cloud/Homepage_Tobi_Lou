@@ -279,6 +279,10 @@ html.lenis body {
   background: #0a0a0f;
   pointer-events: none;
   opacity: 1;
+  /* 默认不播放淡出：由 JS 添加 .ready 后才触发。
+     首页会等背景图加载完成再加 .ready，避免遮罩褪去后露出黑底。 */
+}
+.page-fade-overlay.ready {
   animation: page-overlay-fade-out 0.4s ease-out forwards;
 }
 
