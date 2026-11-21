@@ -1,37 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createHash } from 'crypto';
-import { promises as fs } from 'fs';
-import path from 'path';
-import sharp from 'sharp';
 import { getSupabaseClient } from '@/storage/database/supabase-client';
-import { getStorageRoot, isLocalStorage, readLocalFile } from '@/lib/storage';
-
-// 允许的缩略图宽度（防止任意尺寸刷缓存）
-const ALLOWED_WIDTHS = [400, 800, 1200, 1600];
-
-/** 读取或生成缩略图（webp，落盘缓存到 .thumbs） */
-async function getThumbnail(key: string, width: number): Promise<Buffer> {
-  const root = getStorageRoot();
-  const hash = createHash('sha1').update(key).digest('hex').slice(0, 16);
-  const cachePath = path.join(root, '.thumbs', `${hash}-w${width}.webp`);
-
-  try {
-    return await fs.readFile(cachePath);
-  } catch {
-    // 未命中缓存，生成后写入
-  }
-
-  const source = await readLocalFile(key);
-  const buffer = await sharp(source)
-    .rotate()
-    .resize({ width, withoutEnlargement: true })
-    .webp({ quality: 78 })
-    .toBuffer();
-
-  await fs.mkdir(path.dirname(cachePath), { recursive: true });
-  await fs.writeFile(cachePath, buffer);
-  return buffer;
-}
+import { isLocalStorage, readLocalFile } from '@/lib/storage';
+import { ALLOWED_WIDTHS, getThumbnail } from '@/lib/thumbnails';
 
 // 图片代理API - 从 Supabase Storage 获取图片并返回
 export async function GET(

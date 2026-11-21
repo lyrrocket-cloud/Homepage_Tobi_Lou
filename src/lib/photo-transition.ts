@@ -125,12 +125,14 @@ export function cancelPhotoTransition() {
  *
  * @param snapshot 起始快照
  * @param target 详情页真实主图容器
- * @param onReveal 克隆移除后显示真实主图
+ * @param onReveal 克隆开始淡出前显示真实主图（需立即不透明）
+ * @param waitReady 动画结束后的等待（如主图解码），确保克隆淡出时下方已有画面
  */
 export function playPhotoFlip(
   snapshot: PhotoTransitionSnapshot,
   target: HTMLElement,
-  onReveal: () => void
+  onReveal: () => void,
+  waitReady?: () => Promise<void>
 ): void {
   if (prefersReducedMotion()) {
     pending = null;
@@ -169,7 +171,7 @@ export function playPhotoFlip(
     left: `${targetRect.left}px`,
     width: `${targetRect.width}px`,
     height: `${targetRect.height}px`,
-    backgroundImage: `url("${sizedImageUrl(snapshot.photo.image_url, 800)}")`,
+    backgroundImage: `url("${sizedImageUrl(snapshot.photo.image_url, 400)}")`,
     backgroundSize: 'cover',
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',
@@ -186,16 +188,29 @@ export function playPhotoFlip(
   document.body.appendChild(clone);
   cloneElement = clone;
 
-  const finish = () => {
+  const finish = async () => {
     if (myToken !== token) return;
+    // 等真实主图解码完成，避免克隆淡出时露出空白
+    if (waitReady) await waitReady();
+    if (myToken !== token) return;
+
     onCancel = null;
     pending = null;
-    // 先显示真实主图，再在下一帧移除克隆，避免闪黑
+    // 真实主图先瞬间上屏（不做透明度过渡）
     onReveal();
+
+    // 等两帧确保主图已绘制，再让克隆淡出后移除，避免闪黑
     requestAnimationFrame(() => {
-      if (myToken !== token) return;
-      clone.remove();
-      if (cloneElement === clone) cloneElement = null;
+      requestAnimationFrame(() => {
+        if (myToken !== token) return;
+        clone.style.transition = 'opacity 140ms ease-out';
+        clone.style.opacity = '0';
+        window.setTimeout(() => {
+          if (myToken !== token) return;
+          clone.remove();
+          if (cloneElement === clone) cloneElement = null;
+        }, 160);
+      });
     });
   };
 

@@ -11,6 +11,7 @@ import {
   prefersReducedMotion,
   type SharedPhoto,
 } from '@/lib/photo-transition';
+import { sizedImageUrl } from '@/lib/image-url';
 
 /** 分类 id → 中文名（兼容直接存中文的分类） */
 const CATEGORY_LABELS: Record<string, string> = {
@@ -48,7 +49,11 @@ export default function PhotoDetailPage() {
     Number.isFinite(photoId) ? photoId : undefined
   ));
   const [notFound, setNotFound] = useState(false);
+  /** 1600px 主图是否已完整下载并解码 */
+  const [imageReady, setImageReady] = useState(false);
   const mainImageRef = useRef<HTMLDivElement>(null);
+  /** FLIP 交接时真实主图瞬时上屏，避免与克隆交叉淡入淡出产生闪烁 */
+  const instantRevealRef = useRef(false);
   const snapshotRef = useRef(peekPhotoTransition(
     Number.isFinite(photoId) ? photoId : undefined
   ));
@@ -84,6 +89,27 @@ export default function PhotoDetailPage() {
     };
   }, [photo, photoId]);
 
+  // 预加载 1600px 主图，完整解码后再显示，避免远程访问时逐步渲染
+  useEffect(() => {
+    if (!photo) return;
+    let alive = true;
+    setImageReady(false);
+
+    const src = sizedImageUrl(photo.image_url, 1600);
+    const image = new window.Image();
+    image.src = src;
+    image
+      .decode()
+      .catch(() => undefined)
+      .then(() => {
+        if (alive) setImageReady(true);
+      });
+
+    return () => {
+      alive = false;
+    };
+  }, [photo]);
+
   // FLIP：主图渲染后从缩略图位置放大到目标位置
   useEffect(() => {
     if (!photo) return;
@@ -102,25 +128,22 @@ export default function PhotoDetailPage() {
     }
 
     setRevealed(false);
-    let cancelled = false;
 
-    // 主图未解码完成时先等一小会，避免克隆里出现空白
-    const img = target.querySelector('img');
-    const ready =
-      img && !img.complete
-        ? Promise.race([
-            img.decode().catch(() => undefined),
-            new Promise((resolve) => setTimeout(resolve, 600)),
-          ])
-        : Promise.resolve();
+    // 主图解码完成前保持克隆覆盖，避免交接时露出空白
+    const waitReady = () => {
+      const img = target.querySelector('img');
+      if (!img || img.complete) return Promise.resolve();
+      return Promise.race([
+        img.decode().catch(() => undefined),
+        new Promise((resolve) => setTimeout(resolve, 1200)),
+      ]).then(() => undefined);
+    };
 
-    ready.then(() => {
-      if (cancelled) return;
-      playPhotoFlip(snapshot, target, () => setRevealed(true));
-    });
+    // 立即开始 FLIP（克隆用已缓存的缩略图），不等待原图解码
+    instantRevealRef.current = true;
+    playPhotoFlip(snapshot, target, () => setRevealed(true), waitReady);
 
     return () => {
-      cancelled = true;
       cancelPhotoTransition();
       setRevealed(true);
     };
@@ -163,14 +186,22 @@ export default function PhotoDetailPage() {
             >
               {photo && (
                 <Image
-                  src={photo.image_url}
+                  src={sizedImageUrl(photo.image_url, 1600)}
                   alt={photo.title}
                   fill
                   priority
                   sizes="(max-width: 1024px) 100vw, 1024px"
-                  className="object-cover transition-opacity duration-200"
-                  style={{ opacity: revealed ? 1 : 0 }}
+                  className="object-cover"
+                  style={{
+                    opacity: revealed && imageReady ? 1 : 0,
+                    transition: instantRevealRef.current ? 'none' : 'opacity 200ms',
+                  }}
                 />
+              )}
+
+              {/* 主图未完整加载前用骨架占位，避免渐进式渲染 */}
+              {!imageReady && (
+                <div className="absolute inset-0 skeleton-shimmer" aria-hidden="true" />
               )}
             </div>
 
@@ -198,17 +229,28 @@ export default function PhotoDetailPage() {
                   </div>
                 </div>
 
-                {photo.url && (
+                <div className="flex flex-wrap items-center gap-2">
+                  {photo.url && (
+                    <a
+                      href={photo.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-4 py-2 text-sm text-[#CEA472] border border-[#CEA472]/30 hover:bg-[#CEA472]/10 transition-colors"
+                    >
+                      <ExternalLink className="w-4 h-4" />
+                      查看相册原链接
+                    </a>
+                  )}
                   <a
-                    href={photo.url}
+                    href={photo.image_url}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 px-4 py-2 text-sm text-[#CEA472] border border-[#CEA472]/30 hover:bg-[#CEA472]/10 transition-colors"
                   >
                     <ExternalLink className="w-4 h-4" />
-                    查看相册原链接
+                    查看原图
                   </a>
-                )}
+                </div>
               </div>
             )}
           </>

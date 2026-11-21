@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getStorage } from '@/lib/storage';
+import { getStorage, isLocalStorage } from '@/lib/storage';
+import { prewarmThumbnails } from '@/lib/thumbnails';
 
 // 获取存储实例
 const storage = getStorage();
@@ -41,6 +42,11 @@ export async function POST(request: NextRequest) {
       fileName: fileName,
       contentType: file.type,
     });
+
+    // 本地存储：立即生成各档缩略图，新图片与既有规则一致
+    if (isLocalStorage()) {
+      await prewarmThumbnails(actualKey);
+    }
     
     // 生成签名 URL（有效期 30 天）
     const signedUrl = await storage.generatePresignedUrl({

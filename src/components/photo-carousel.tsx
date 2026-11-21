@@ -37,25 +37,32 @@ export function PhotoCarousel({ photos, isLoading = false }: PhotoCarouselProps)
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const [decodedSources, setDecodedSources] = useState<Set<string>>(new Set());
-  const arePhotosReady =
-    photos.length > 0 && photos.every((photo) => decodedSources.has(photo.image_url));
+  const decodedRef = useRef<Set<string>>(new Set());
+  // 首张解码完成即可展示，避免等全部照片下载完
+  const arePhotosReady = decodedSources.size > 0;
 
-  // 先在后台完整下载并解码照片，再一次性展示，避免渐进式 JPEG 半幅出现
+  // 只预解码当前图及左右相邻图，避免一次性拉取全部原图
   useEffect(() => {
+    if (photos.length === 0) return;
     let cancelled = false;
+    const total = photos.length;
 
-    photos.forEach((photo) => {
+    [currentIndex, (currentIndex + 1) % total, (currentIndex - 1 + total) % total].forEach((index) => {
+      const src = sizedImageUrl(photos[index].image_url, 900);
+      if (decodedRef.current.has(src)) return;
+      decodedRef.current.add(src);
+
       const image = new window.Image();
-      image.src = photo.image_url;
+      image.src = src;
       image
         .decode()
         .catch(() => undefined)
         .then(() => {
           if (cancelled) return;
           setDecodedSources((previous) => {
-            if (previous.has(photo.image_url)) return previous;
+            if (previous.has(src)) return previous;
             const next = new Set(previous);
-            next.add(photo.image_url);
+            next.add(src);
             return next;
           });
         });
@@ -64,7 +71,7 @@ export function PhotoCarousel({ photos, isLoading = false }: PhotoCarouselProps)
     return () => {
       cancelled = true;
     };
-  }, [photos]);
+  }, [photos, currentIndex]);
 
   // 触摸滑动
   const touchStartX = useRef<number | null>(null);
@@ -204,7 +211,7 @@ export function PhotoCarousel({ photos, isLoading = false }: PhotoCarouselProps)
                 aria-hidden={!isActive}
               >
                 <Image
-                  src={sizedImageUrl(photo.image_url, 1200)}
+                  src={sizedImageUrl(photo.image_url, 900)}
                   alt={photo.title}
                   fill
                   className="object-cover"

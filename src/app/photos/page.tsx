@@ -710,7 +710,7 @@ function PhotoGalleryContent() {
                   >
                     <div data-photo-thumb className="relative aspect-[4/3] overflow-hidden">
                       <Image
-                        src={sizedImageUrl(photo.image_url, 800)}
+                        src={sizedImageUrl(photo.image_url, 400)}
                         alt={photo.title}
                         fill
                         sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
