@@ -38,17 +38,18 @@ export function PhotoCarousel({ photos, isLoading = false }: PhotoCarouselProps)
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const [decodedSources, setDecodedSources] = useState<Set<string>>(new Set());
   const decodedRef = useRef<Set<string>>(new Set());
-  // 首张解码完成即可展示，避免等全部照片下载完
-  const arePhotosReady = decodedSources.size > 0;
+  // 全部照片解码完成后才展示，避免逐张出现
+  const arePhotosReady =
+    photos.length > 0 &&
+    photos.every((photo) => decodedSources.has(sizedImageUrl(photo.image_url, 900)));
 
-  // 只预解码当前图及左右相邻图，避免一次性拉取全部原图
+  // 预加载全部轮播图（900px 稿）
   useEffect(() => {
     if (photos.length === 0) return;
     let cancelled = false;
-    const total = photos.length;
 
-    [currentIndex, (currentIndex + 1) % total, (currentIndex - 1 + total) % total].forEach((index) => {
-      const src = sizedImageUrl(photos[index].image_url, 900);
+    photos.forEach((photo) => {
+      const src = sizedImageUrl(photo.image_url, 900);
       if (decodedRef.current.has(src)) return;
       decodedRef.current.add(src);
 
@@ -71,7 +72,7 @@ export function PhotoCarousel({ photos, isLoading = false }: PhotoCarouselProps)
     return () => {
       cancelled = true;
     };
-  }, [photos, currentIndex]);
+  }, [photos]);
 
   // 触摸滑动
   const touchStartX = useRef<number | null>(null);
@@ -204,7 +205,7 @@ export function PhotoCarousel({ photos, isLoading = false }: PhotoCarouselProps)
               style={{ transform: `translateX(calc(${offset} * var(--sw)))` }}
             >
               <Link
-                href={photo.url || `/photos?region=${photo.region_id}`}
+                href={`/photos/${photo.id}`}
                 className="relative block w-full h-full"
                 onClick={() => setIsAutoPlaying(false)}
                 tabIndex={isActive ? 0 : -1}

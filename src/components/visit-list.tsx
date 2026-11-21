@@ -36,11 +36,9 @@ export function VisitList({ regionId, regionName, onRefresh }: VisitListProps) {
   const [loading, setLoading] = useState(true);
   const onRefreshRef = useRef(onRefresh);
 
-  // 处理点击事件
-  const handleClick = (url?: string) => {
-    if (url) {
-      window.open(url, '_blank');
-    }
+  // 点击进入照片详情页
+  const handleClick = (id: number) => {
+    router.push(`/photos/${id}`);
   };
 
   // 更新 onRefresh 的引用
@@ -129,9 +127,9 @@ export function VisitList({ regionId, regionName, onRefresh }: VisitListProps) {
           {visits.map((visit, index) => (
             <div
               key={visit.id}
-              onClick={() => handleClick(visit.url)}
+              onClick={() => handleClick(visit.id)}
               style={{ animationDelay: `${Math.min(index, 8) * 70}ms` }}
-              className={`visit-card-in bg-black/40 hover:bg-black/60 transition-all duration-300 flex ${visit.url ? 'cursor-pointer' : ''}`}
+              className="visit-card-in bg-black/40 hover:bg-black/60 transition-all duration-300 flex cursor-pointer"
             >
               {/* 左侧：文字信息 */}
               <div className="flex-1 p-3 flex flex-col justify-center">

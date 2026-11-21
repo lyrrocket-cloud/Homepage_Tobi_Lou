@@ -151,6 +151,24 @@ export default function PhotoDetailPage() {
 
   const categories = photo?.category ? photo.category.split(',').filter(Boolean) : [];
 
+  // 有历史记录时返回上一页，直接访问时回到照片集
+  const handleBack = () => {
+    if (typeof window === 'undefined') return;
+    if (window.history.length <= 1) {
+      router.push('/photos');
+      return;
+    }
+
+    const before = window.location.pathname;
+    router.back();
+    // 兜底：没有可回退的历史时，退回照片集
+    window.setTimeout(() => {
+      if (window.location.pathname === before) {
+        router.push('/photos');
+      }
+    }, 500);
+  };
+
   return (
     <div className="min-h-screen bg-transparent relative overflow-hidden">
       {/* 背景 */}
@@ -161,21 +179,21 @@ export default function PhotoDetailPage() {
 
       <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 pt-24 pb-16">
         <button
-          onClick={() => router.back()}
+          onClick={handleBack}
           className="mb-6 inline-flex items-center gap-2 text-sm text-[#CEA472] hover:text-[#CEA472]/80 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
-          返回照片集
+          返回
         </button>
 
         {notFound ? (
           <div className="flex flex-col items-center justify-center h-64 text-gray-500">
             <p>照片不存在或已删除</p>
             <button
-              onClick={() => router.push('/photos')}
+              onClick={handleBack}
               className="mt-4 text-sm text-[#CEA472] hover:text-[#CEA472]/80"
             >
-              返回照片集
+              返回
             </button>
           </div>
         ) : (
@@ -229,28 +247,17 @@ export default function PhotoDetailPage() {
                   </div>
                 </div>
 
-                <div className="flex flex-wrap items-center gap-2">
-                  {photo.url && (
-                    <a
-                      href={photo.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-4 py-2 text-sm text-[#CEA472] border border-[#CEA472]/30 hover:bg-[#CEA472]/10 transition-colors"
-                    >
-                      <ExternalLink className="w-4 h-4" />
-                      查看相册原链接
-                    </a>
-                  )}
+                {photo.url && (
                   <a
-                    href={photo.image_url}
+                    href={photo.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-4 py-2 text-sm text-[#CEA472] border border-[#CEA472]/30 hover:bg-[#CEA472]/10 transition-colors"
+                    className="inline-flex items-center gap-2 text-sm text-[#CEA472]/80 hover:text-[#CEA472] transition-colors"
                   >
                     <ExternalLink className="w-4 h-4" />
-                    查看原图
+                    打开相册
                   </a>
-                </div>
+                )}
               </div>
             )}
           </>
